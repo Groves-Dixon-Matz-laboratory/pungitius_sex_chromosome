@@ -1,0 +1,469 @@
+#Initial_data_processing.txt
+#Groves Dixon
+#last updated 7-11-18
+
+########################
+####### DATASETS #######
+########################
+#Note I did not change all the file names to clearly include species and sex but wish I had!
+
+#--- Genus Pungitius:
+#These read files have been uploaded to NCBI SRA accession: SRP151119
+
+#Data stored here:
+#/corral-repl/utexas/Recombining-sex-chro/pungitius/
+#P. pungitius: 15 male 15 female
+#P. sinensis: 13 male 9 female
+#P. tymensis: 15 male 10 female
+#77 samples total
+
+
+#--- Gasterosteus nipponica and aculeatus
+#Data from Yoshida et al. 2014:
+#They are all located here:
+ftp://ftp.ddbj.nig.ac.jp/ddbj_database/dra/fastq/DRA001/DRA001136/
+
+#Download the metadata:
+mkdir metadata
+cd metadata
+wget ftp://ftp.ddbj.nig.ac.jp/ddbj_database/dra/fastq/DRA001/DRA001136/DRA*.xml
+
+#Download reads one directory at a time to make sure it all works
+wget -r ftp://ftp.ddbj.nig.ac.jp/ddbj_database/dra/fastq/DRA001/DRA001136/DRX026607/
+wget -r ftp://ftp.ddbj.nig.ac.jp/ddbj_database/dra/fastq/DRA001/DRA001136/DRX026608/
+wget -r ftp://ftp.ddbj.nig.ac.jp/ddbj_database/dra/fastq/DRA001/DRA001136/DRX026609/
+wget -r ftp://ftp.ddbj.nig.ac.jp/ddbj_database/dra/fastq/DRA001/DRA001136/DRX026610/
+etc..
+up to
+wget -r ftp://ftp.ddbj.nig.ac.jp/ddbj_database/dra/fastq/DRA001/DRA001136/DRX026626/
+up to 14 so far
+
+
+#in total this download has:
+#G. aculeatus:
+	#5 males
+	#4 females
+	
+#G. nipponicus
+	#5 males
+	#5 females
+
+#To help organize the Yoshia data, see stickle_back_sex_chromosomes/datasets/yoshida_2014_metadata
+#To build commands for concatenating the fastq files from the download use assemble_yoshida_metadata.R
+#Once you've downloaded all the directories, decompress the files:
+cd ftp.ddbj.nig.ac.jp/ddbj_database/dra/fastq/DRA001/DRA001136/
+>decomp; for dir in DRX*; do echo "bzip2 -dk ${dir}/*.bz2" >> decomp;done
+
+###################################
+######### QC AND TRIMMING #########
+###################################
+
+#GET RAW READ COUNTS
+>raw_counts.txt
+for file in *.fastq
+do count=$(($(cat $file | wc -l)/4))
+echo "${file}..."
+echo -e "${file}\t${count}">>raw_counts.txt
+done
+
+#CHECK QUALITY WITH FASTQC
+module load fastqc
+mkdir Fastqc_Restults_raw/
+echo fastqc -o Fastqc_Restults_raw/ -f fastq *.fastq > runFQC
+launcher_creator.py -n runFQC -j runFQC -q normal -N 1 -w 48 -a $allok -e $email -t 05:00:00
+sbatch runFQC.slurm
+
+
+#BASED ON THE FASTQC RESULTS, NEED TO TRIM FOLLOWING ADAPTER SEQUENCE FROM BOTH SIDES
+AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+
+
+#SET UP TRIMMING COMMANDS
+
+#generic command
+cutadapt -a ADAPTER_FWD -A ADAPTER_REV -o out.1.fastq -p out.2.fastq reads.1.fastq reads.2.fastq
+
+#move paired end and single end reads to separate directories
+
+
+
+cd paired
+>trimpe
+for file in *_2.fastq
+do echo "cutadapt -b AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -B AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC  --minimum-length 50 -q 30 -o ${file/_2.fastq/}_1.trim -p ${file/_2.fastq/}_2.trim ${file/_2.fastq/}_1.fastq $file" >> trimpe; done
+
+cd single
+>trimse
+for file in *.fastq; do echo "cutadapt -b AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC --minimum-length 50 -q 30 -o ${file/.fastq/}.trim $file" >> trimse; done
+
+
+launcher_creator.py -n trim1 -j trim1 -a $allok -e $email -q normal -t 24:00:00 -N 1 -w 15
+sbatch trim1.slurm
+
+
+### RE-CHECK QUALITY AFTER TRIMMING
+
+#redo read counts
+>trimmed_counts.txt
+for file in *.trim
+do count=$(($(cat $file | wc -l)/4))
+echo "${file}..."
+echo -e "${file}\t${count}">>trimmed_counts.txt
+done
+
+
+#redo fastqc
+module load fastqc
+mkdir Fastqc_Restults_trimmed/
+echo fastqc -o Fastqc_Restults_trimmed/ -f fastq *.trim > runFQC
+launcher_creator.py -n runFQC -j runFQC -q normal -N 1 -w 48 -a $allok -e $email -t 05:00:00
+sbatch runFQC.slurm
+
+
+#rename files after with fastq suffix
+
+
+#####################################
+############### MAPPING #############
+#####################################
+#Mapping the reads for each species against the 3-spine reference
+
+#----- From Yoshida 2014 ----- #
+#concatenate the fastqs
+#first decompress the files downloaded from the DNA Data Bank of Japan
+cd /scratch/02260/grovesd/sex_chrom_evo_history/from_yoshia_2014/ftp.ddbj.nig.ac.jp/ddbj_database/dra/fastq/DRA001/DRA001136
+for dir in DRX*; do echo "bzip2 -dk ${dir}/*.bz2
+
+#then assemble the fastqs
+cd /scratch/02260/grovesd/sex_chrom_evo_history/from_yoshia_2014/fastqs
+for dir in /scratch/02260/grovesd/sex_chrom_evo_history/from_yoshia_2014/ftp.ddbj.nig.ac.jp/ddbj_database/dra/fastq/DRA001/DRA001136/DRX*; do echo "ln -s ${dir}/*.fastq ."; done
+
+#check the file counts
+ls *.fastq | wc -l
+		#232 total fastq files
+ls *.fastq | grep -v "_" | wc -l
+		#64 unpaired fastq files
+ls *_1.fastq | wc -l
+		#84 forward paired end files
+ls *_2.fastq | wc -l
+		#84 reverse paired end files
+
+
+#### MAP WITH BWA
+#*note tried to concatenate them all and then map, but this
+#could not finish in 48 hours. Map them separately, then merge
+#the bam files for genotyping
+
+#SET UP MAPPING COMMANDS
+module load bwa
+module load samtools
+
+#for paired end files
+>mapYoshida; for file in *_1.fastq; do echo "bwa mem $stickleGenome ${file} ${file/_1.fastq/_2.fastq} -t 12 | samtools view -b | samtools sort -o ${file/_1.fastq/_sorted.bam}" >> mapYoshida; done
+
+#for unpaired
+for file in $(ls *.fastq | grep -v "_"); do echo "bwa mem $stickleGenome $file -t 12 | samtools view -b | samtools sort -o ${file/.fastq/_sorted.bam}" >> mapYoshida; done
+
+
+#check the command file
+cat mapYoshida | wc -l
+		#148 = 84 PE + 64 SE
+
+#launch the mapping job
+
+
+#----- Quartet reads ----- #
+#these are a mixutre of G. aculeatus, G. nipponicus, and their offspring
+
+
+###################################################
+############### PCR DUPLICATE REMOVAL #############
+###################################################
+
+#count the number of primary alignments in the bam files
+echo '>initial_alignment_counts.tsv;for file in *.bam; do count=$(samtools view -c -F 260 $file); echo -e "$file\t$count" >> initial_alignment_counts.tsv;done' > countAlign
+launcher_creator.py -n countAlign -j countAlign -q normal -a $allok -e $email -t 2:00:00
+sbatch countAlign.slurm
+
+
+#REMOVE DUPLICATES
+>removeDups;for file in *sorted.bam; do echo "java -Xms4g -jar /work/02260/grovesd/lonestar/picard/picard-tools-1.119/MarkDuplicates.jar\
+ INPUT=$file\
+ OUTPUT=${file/.sorted.bam/}_dupsRemoved.bam\
+ METRICS_FILE=${file/.sorted.bam/}_dupMetrics.txt\
+ REMOVE_DUPLICATES=true" >> removeDups; done
+launcher_creator.py -n removeDups -j removeDups -t 12:00:00 -q normal -a $allok -e $email -N 4 -w 2
+sbatch removeDups.slurm
+
+
+#GATHER THE REMOVAL METRIC DATA
+>dupRemovalMetrics.tsv;for file in *dupMetrics.txt; do pct=$(sed '8q;d' $file | cut -f 8); echo -e "$file\t$pct" >> dupRemovalMetrics.tsv; done
+
+
+#GET NEW PRIMARY ALIGNMENT COUNTS TO MAKE SURE EVERYTHING MAKES SENSE
+module load samtools
+echo '>dedeup_alignment_counts.tsv;for file in *dupsRemoved.bam; do count=$(samtools view -c -F 260 $file); echo -e "$file\t$count" >> dedeup_alignment_counts.tsv;done' > countAlign
+launcher_creator.py -n countAlign -j countAlign -q normal -a $allok -e $email -t 2:00:00
+sbatch countAlign.slurm
+
+
+
+#RE-INDEX DUP REMOVED BAMS
+>reIndex;for file in *dupsRemoved.bam; do echo "samtools index $file" >> reIndex;done
+launcher_creator.py -n reIndex -j reIndex -q normal -t 00:30:00 -a $allok -e $email -N 1 -w 48
+sbatch reIndex.slurm
+
+
+##################################################
+############ SPLIT BAMS BY CHROMOSOME ############
+##################################################
+ls *bam | wc -l
+		#155
+
+#rename the files so they all just end in bam
+rename _merged.bam .bam *merged.bam
+rename _dupsRemoved.bam .bam *dupsRemoved.bam
+
+#get chromosome list
+grep "^>" $stickleGenome | sed 's/>//' > chromList.txt
+
+#set up subsetting commands
+>sepChroms;for file in *.bam
+do while read p
+do echo "samtools view -b -h -o ${file/.bam/_$p.bam} $file $p && samtools index ${file/dupsRemoved.bam/$p.bam}"
+done<chromList.txt >> sepChroms;done
+
+
+#check
+cat sepChroms | wc -l
+#3565 = 155*23
+
+#launch
+module load samtools
+
+
+#################################################
+########### GET INSERT SIZE ESTIMATES ###########
+#################################################
+module load java
+module load Rstats
+>insertSize; for file in *dupsRemoved.bam
+do echo "java -Xms4g -jar /work/02260/grovesd/lonestar/picard/picard-tools-1.119/CollectInsertSizeMetrics.jar\
+ INPUT=$file\
+ REFERENCE_SEQUENCE=$stickleGenome\
+ OUTPUT=${file/dupsRemoved.bam/insertSizes.tsv}\
+ HISTOGRAM_FILE=${file/dupsRemoved.bam/insertSizes.pdf}">>insertSize
+ done
+
+launcher_creator.py -n insertSize -j insertSize -q normal -N 1 -w 4 -t 1:00:00 -a $allok -e $email
+sbatch insertSize.slurm
+
+#assemble the results
+>meanInsert0;for file in *insertSizes.tsv; do grep -A 1 "MEAN_INSERT_SIZE" $file >> meanInsert0; done
+head -n 1 meanInsert0 > insert_results.tsv
+grep -v "MEAN_INSERT_SIZE" meanInsert0 >> insert_results.tsv
+
+
+
+
+#################################
+########## RUN MPILEUP ##########
+#################################
+
+#it takes too long to run with all species split only by chromosomes
+#subset the bam files further for more parallelization
+fasta_sequence_characters.py -fa $stickleGenome > chromLengths.txt
+
+
+
+#subset the bams into 1/4 chunks
+subset_bams_by_chrom_size.py chromLengths.txt 4 *.bam > subsetBams
+
+cat subsetBams | wc -l
+		#14260 = 155 samples * 23 chroms * 4 subsets per chrom
+
+launcher_creator.py -n subsetBams -j subsetBams -q normal -N 2 -w 48 -a $allok -t 05:00:00
+sbatch subsetBams.slurm
+
+
+#check you have all the split bam files
+ls *sub*.bam | wc -l
+		#14260
+
+
+#set up bam lists for each linkage group subset (assuming 4 subsets)
+for i in $(seq 4)
+do while read chr
+do ls *${chr}_sub${i}.bam > ${chr}_sub${i}_bamlist.txt
+done < chromList.txt
+done
+
+
+#build mpileup commands for each species-chromosome pair
+#outputting the results as an uncompressed VCF file so they can be concatenated
+>runmpile
+for file in *_bamlist.txt
+do echo "samtools mpileup -f $stickleGenome -t DP,AD,ADF,ADR,SP -u -v -b $file > ${file/bamlist.txt/mpileupResults.vcf}" >> runmpile
+done
+
+launcher_creator.py -n runmpile -j runmpile -q normal -t 48:00:00 -a $allok -e $email -N 4 -w 24
+#took 1 day and 20 hours to run with 155 samples, chromosomes split 4 ways, 4 nodes, wayness = 24
+
+
+#change the column headings in the VCF to allow concatentaion
+#simultaneously makes backups of the VCFs
+> changeNames
+for i in $(seq 4)
+do for file in *_sub${i}_mpileupResults.vcf
+do CHROM=${file/_sub${i}_mpileupResults.vcf/}
+torm="_${CHROM}_sub${i}.bam"
+echo "sed -i.bak 's/${torm}//g' $file" >> changeNames
+done
+done
+
+launcher_creator.py -n changeNames -j changeNames -q normal -N 2 -w 48 -t 05:30:00 -a $allok -e $email
+sbatch changeNames.slurm
+
+
+
+#merge the VCFs back together
+>concatVcfs
+for file in *_sub1_mpileupResults.vcf
+do echo "vcf-concat $file ${file/_sub1_/_sub2_} ${file/_sub1_/_sub3_} ${file/_sub1_/_sub4_} > ${file/_sub1_mpileupResults.vcf/_gls.vcf}" >> concatVcfs;done
+
+#check that the commands are correct
+head concatVcfs
+cat concatVcfs | wc -l
+	#23
+
+launcher_creator.py -n concatVcfs -j concatVcfs -q normal -N 1 -w 24 -a $allok -t 04:00:00
+sbatch concatVcfs.slurm
+
+
+ls *gls.vcf | wc -l
+	#23
+
+
+#now call genotypes
+>callQuality
+for file in *gls.vcf
+do echo "bcftools call -vmO v -o ${file/gls.vcf/rawCalls.vcf} $file && \
+bcftools filter --exclude 'QUAL < 20' ${file/gls.vcf/rawCalls.vcf} | \
+bcftools view > ${file/gls.vcf/filt0.vcf}" >>callQuality;done
+
+
+ls *filt0.vcf | wc -l
+	#23
+
+###################################################
+#################### FILTERING ####################
+###################################################
+#remove sites with mean depth less than 1
+#reduce file to sites with non-zero alternative alleles
+#make some vcf that are only SNPs by removing indels
+
+
+#--------- FILTERING LIKELIHOODS ---------#
+#here separate the likelihood files by species then filter them
+>filtLikes
+for file in *gls.vcf
+do echo "vcftools --vcf $file --remove-indels --min-meanDP 1 --recode --recode-INFO-all -c > ${file/gls.vcf/filtGls.vcf}" >>filtLikes
+done
+launcher_creator.py -n filtLikes -j filtLikes -q normal -N 2 -w 48 -a tagmap -t 0:30:00 -e $email
+
+
+
+#--------- FILTERING CALLED VARIANTS ---------#
+#do all filtering steps at once:
+>filtAll
+for file in *filt0.vcf
+do filt1File=${file/filt0.vcf/filt1.vcf}
+singletonOut=${file/_filt0.vcf/}
+singletonFile=${singletonOut}_toRemove.tsv
+filt2File=${file/filt0.vcf/filt2.vcf}
+echo "vcftools --vcf $file --remove-indels --maf 0.001 --min-meanDP 1 --min-alleles 2 --max-alleles 2 --recode --recode-INFO-all -c > $filt1File && \
+vcftools --vcf $filt1File --singletons --out $singletonOut && \
+cat ${singletonOut}.singletons | awk '{print \$1\"\\t\"\$2}' > $singletonFile && \
+vcftools --vcf $filt1File --exclude-positions $singletonFile --recode -c > $filt2File" >>filtAll
+done
+
+
+#ALSO REMOVE OUTLIER SAMPLES SIN8 AND SIN20 (THESE WERE IDENTIFIED DOWNSTREAM, BUT EASIER TO REMOVE NOW)
+
+
+
+#-------- REMOVE DUPLICATE POSITIONS FROM VCF CONCATENATION --------#
+#Note the commands below seemed to work, but should check out command: vcf-merge -d
+
+
+>fixVcfs
+for file in *filt2.vcf; do echo "vcf-sort $file | awk '{ if (a[\$2]++ == 0) print \$0; }' \"$@\" > ${file/filt2.vcf/filt3.vcf}" >>fixVcfs;done
+
+launcher_creator.py -n fixVcfs -j fixVcfs -q normal -N 1 -w 1 -a $allok -e $email -t 08:00:00
+
+#note compared two of these manually to make sure it's working correctly GD 1-15-18
+
+
+#--------- FINAL NAME FIX TO REMOVE JUNK FROM SAMPLE NAMES ---------#
+#running sed on entire files takes to long, change just the headers instead
+for file in *filt3.vcf; do head -n 1000 | grep "^#" $file | sed 's/.sorted//g' > ${file}__HEADER; done
+for file in *filt3.vcf; do echo $file; grep -v "^#" $file >> ${file}__HEADER;done
+
+
+#check the names
+for file in *filt3.vcf; do echo $file; head -n 100 $file | grep CHROM; done
+
+#get final list of names
+
+
+#############################
+#### SEPARATE BY SPECIES ####
+#############################
+
+>sepSpp
+for sFile in *samples.txt
+do SPP=${sFile/_samples.txt/}
+for vFile in *filt3.vcf
+do echo "vcftools --vcf $vFile --keep $sFile --maf 0.001 --max-maf 0.999 --min-alleles 2 --max-alleles 2 --minDP 1 --max-missing 0.9 --recode --out ${vFile/_filt3.vcf/}_${SPP}">>sepSpp
+done
+done
+
+launcher_creator.py -n sepSpp -j sepSpp -q normal -N 2 -w 48 -a $allok -e $email -t 04:00:00
+sbatch sepSpp.slurm
+
+
+#########################
+#### SEPARATE BY SEX ####
+#########################
+#start with the species-separated vcfs
+ln -s ../species_separate_filt3/*.vcf .
+
+#split each vcf again by sex
+> splitSex
+for file in *.vcf
+do SPPVCF=$(echo $file | awk '{split($1, a, "_");print a[2]}')
+SPP=${SPPVCF/.vcf/}
+echo "vcftools --vcf $file --keep male_${SPP}.txt --recode --out ${file/.vcf/_male}" >> splitSex
+echo "vcftools --vcf $file --keep female_${SPP}.txt --recode --out ${file/.vcf/_female}" >> splitSex
+done
+
+launcher_creator.py -n splitSex -j splitSex -q normal -N 1 -w 48 -a $allok -e $email -t 01:00:00
+sbatch splitSex.slurm
+
+
+#change the names to remove the recode
+
+#USE THE SPECIES AND SEX-SEPARATED FILT3 VCF FILES TO GENERATE DOWNSTREAM WINDOW STATISTICS
+
+
+#######################################################
+#### FILTER BASED ON REPRESENTATION FOR GENE TREES ####
+#######################################################
+#reduced the vcfs to only the clean species and filter by 90% representation
+#note the --maf 0.005 is set to 1/(N*2) to remove any singletons present after removal of nonessential samples not found in all_gene_tree_samples.txt
+>doFilt4
+for file in *filt3.vcf
+do echo "vcftools --vcf $file --keep all_gene_tree_samples.txt --maf 0.005 --max-missing 0.9 --recode --out ${file/_filt3.vcf/_filt4}">>doFilt4
+done
+
+#THESE ARE THE STARTING POINT FOR THE GENE TREE WALKTHROUGH

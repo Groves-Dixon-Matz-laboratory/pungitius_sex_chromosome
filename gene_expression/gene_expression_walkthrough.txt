@@ -1,0 +1,749 @@
+#RNA_data
+
+#outline:
+1. download reads
+2. trim all 
+3. map all reads with bowtie --local
+4. call SNPs
+5. get general expression counts for males/females and 3-spine
+6. use SNPs to get Y-linked alleles
+7. mask X and Y alleles in reference
+8. remap to masked reference and 
+
+
+
+
+
+
+
+#################################
+########## AQUIRE DATA ##########
+#################################
+#go on SRA
+#search pungitius
+#go to run selector
+#found 25 sequencing runs
+#download the run table
+#then cut out the Run column to get a run list
+#saved runInfoTable as RNA_data_SraRunTable.txt
+
+#download the runs
+>dlRuns
+while read srr
+do echo "/work/02260/grovesd/stampede2/sratoolkit.2.8.2-1-centos_linux64/bin/prefetch $srr --max-size 100G" >>dlRuns
+done <runList.txt
+
+
+#dump the fastqs
+>dump
+while read srr
+do echo "/work/02260/grovesd/stampede2/sratoolkit.2.8.2-1-centos_linux64/bin/fastq-dump --split-files /scratch/02260/grovesd/pfetch_pathway/sra/${srr}.sra">>dump
+done < runList.txt
+
+
+#sets of run data are saved for each project in the metadata folder
+
+
+
+#----- Data summary -----#
+
+#From BioProject PRJNA301475_endocrine:
+	13 total sequencing runs
+	7 PE + 6 SE should be 20
+	ls SRR*_2.fastq | wc -l 
+		= 7 PE sets
+	ls SRR297*.fastq | wc -l 
+		= 20 files total
+	
+
+#PRJNA277770_threeSpine_white:
+	6 single-end files
+	3 male
+	3 female
+	ls SRR19*.fastq | wc -l 
+		= 6 
+
+#DRA002524_white_pungitius:
+	8 sets of paired end files
+	4 male
+	4 female
+	ls DRR02313*.fastq | wc -l
+		= 16 
+
+#juns_new_data:
+	8 sets of paired end files
+	4 male
+	4 female
+	ls LS_2158_0*.fastq | wc -l
+		= 16
+
+
+58 files total
+
+
+##################################
+############ RENAMING ############
+##################################
+#sex of samples is available in RNA_data_SraRunTable.excel
+#simplified in RNA_data_sex.tsv 
+
+#rename all the files so that they have _F and _M after their names
+
+
+
+###################################
+######### QC AND TRIMMING #########
+###################################
+
+#GET RAW READ COUNTS
+>raw_counts.txt
+for file in *.fastq
+do count=$(($(cat $file | wc -l)/4))
+echo "${file}..."
+echo -e "${file}\t${count}">>raw_counts.txt
+done
+
+#CHECK QUALITY WITH FASTQC
+module load fastqc
+mkdir Fastqc_Restults_raw/
+echo fastqc -o Fastqc_Restults_raw/ -f fastq *.fastq > runFQC
+launcher_creator.py -n runFQC -j runFQC -q normal -N 1 -w 48 -a $allok -e $email -t 05:00:00
+sbatch runFQC.slurm
+
+
+#BASED ON THE FASTQC RESULTS, NEED TO TRIM FOLLOWING ADAPTER SEQUENCE FROM BOTH SIDES
+AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+
+
+#SET UP TRIMMING COMMANDS
+
+#generic command
+cutadapt -a ADAPTER_FWD -A ADAPTER_REV -o out.1.fastq -p out.2.fastq reads.1.fastq reads.2.fastq
+
+#move paired end and single end reads to separate directories
+
+
+
+cd paired
+>trimpe
+for file in *_2.fastq
+do echo "cutadapt -b AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -B AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC  --minimum-length 50 -q 30 -o ${file/_2.fastq/}_1.trim -p ${file/_2.fastq/}_2.trim ${file/_2.fastq/}_1.fastq $file" >> trimpe; done
+
+cd single
+>trimse
+for file in *.fastq; do echo "cutadapt -b AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC --minimum-length 50 -q 30 -o ${file/.fastq/}.trim $file" >> trimse; done
+
+
+launcher_creator.py -n trim1 -j trim1 -a $allok -e $email -q normal -t 24:00:00 -N 1 -w 15
+sbatch trim1.slurm
+
+
+### RE-CHECK QUALITY AFTER TRIMMING
+
+#redo read counts
+>trimmed_counts.txt
+for file in *.trim
+do count=$(($(cat $file | wc -l)/4))
+echo "${file}..."
+echo -e "${file}\t${count}">>trimmed_counts.txt
+done
+
+
+#redo fastqc
+module load fastqc
+mkdir Fastqc_Restults_trimmed/
+echo fastqc -o Fastqc_Restults_trimmed/ -f fastq *.trim > runFQC
+launcher_creator.py -n runFQC -j runFQC -q normal -N 1 -w 48 -a $allok -e $email -t 05:00:00
+sbatch runFQC.slurm
+
+
+
+###################################
+############# MAPPING #############
+###################################
+
+#paired end
+>mappe
+for file in *_R2.trim
+do echo "bowtie2 -x /work/02260/grovesd/lonestar/stickleback_genome/glazer2015.unmasked -1 ${file/_R2.trim/}_R1.trim -2 $file -p 10 -S ${file/_R2.trim/}.sam --local" >> mappe
+done
+
+cat mappe  | wc -l
+	#23 paired end samples
+
+
+
+
+#single end
+>mapse
+for file in *.trim
+do echo "bowtie2 -x /work/02260/grovesd/lonestar/stickleback_genome/glazer2015.unmasked -U $file -p 10 -S ${file/_1.trim/}.sam --local" >> mapse
+done
+
+cat mapse | wc -l
+	#12 single end samples
+
+launcher_creator.py -n mapse -j mapse -q normal -N 6 -w 2 -a $allok -t 12:00:00 -e $email
+sbatch mapse.slurm
+
+
+
+###################################################
+############### PCR DUPLICATE REMOVAL #############
+###################################################
+
+#CONVERT, SORT, AND INDEX THE SAM FILES
+samSort.py *.sam > convertSort
+launcher_creator.py -n convertSort -j convertSort -q normal -N 2 -w 12 -a $allok -t 04:00:00 -e $email
+sbatch convertSort.slurm
+
+#REMOVE DUPLICATES
+>removeDups;for file in *sorted.bam; do echo "java -Xms4g -jar /work/02260/grovesd/lonestar/picard/picard-tools-1.119/MarkDuplicates.jar\
+ INPUT=$file\
+ OUTPUT=${file/.sorted.bam/}_dupsRemoved.bam\
+ METRICS_FILE=${file/.sorted.bam/}_dupMetrics.txt\
+ REMOVE_DUPLICATES=true" >> removeDups; done
+launcher_creator.py -n removeDups -j removeDups -t 12:00:00 -q normal -a $allok -e $email -N 4 -w 2
+sbatch removeDups.slurm
+
+
+#GATHER THE REMOVAL METRIC DATA
+>dupRemovalMetrics.tsv;for file in *dupMetrics.txt; do pct=$(sed '8q;d' $file | cut -f 8); echo -e "$file\t$pct" >> dupRemovalMetrics.tsv; done
+
+
+#RE-INDEX DUP REMOVED BAMS
+>reIndex;for file in *dupsRemoved.bam; do echo "samtools index $file" >> reIndex;done
+launcher_creator.py -n reIndex -j reIndex -q normal -t 00:30:00 -a $allok -e $email -N 1 -w 24
+sbatch reIndex.slurm
+
+
+
+#GET READ COUNTS TO MAKE SURE EVERYTHING MAKES SENSE
+
+>raw_counts.txt
+for file in *.fastq
+do echo "${file}..."
+count=$(($(cat $file | wc -l)/4))
+echo -e "${file}\t${count}">>raw_counts.txt
+done
+
+>trimmed_counts.txt
+for file in *.trim
+do echo "${file}..."
+count=$(($(cat $file | wc -l)/4))
+echo -e "${file}\t${count}">>trimmed_counts.txt
+done
+
+
+#DATA PROCESSING RESULTS FILES SO FAR:
+raw_counts.tsv
+trimmed_counts.tsv
+initial_alignment_counts.tsv
+dedeup_alignment_counts.tsv
+dupRemovalMetrics.tsv
+
+#ANALYZE THESE WITH analyze_counts.R
+
+
+##################################################
+####### GET COUNTS FOR BASELINE EXPRESSION #######
+##################################################
+
+#RUN COUNTS
+#grab the gtf
+cp /corral-repl/utexas/Recombining-sex-chro/data_analysis/referenceGenome/myThreespineStickleback.2016.gtf .
+
+
+#convert to samfiles
+>convert
+for file in *Removed.bam
+do echo "samtools sort -n -O sam -o ${file/_sorted.bam_dupsRemoved.bam/}.sam $file" >> convert
+done
+launcher_creator.py -n convert -j convert -q normal -N 1 -w 24 -a $allo -e $email -t 13:30:00
+
+
+>docounts; for file in *.sam; do echo "htseq-count -t gene -i gene_id -m intersection-nonempty $file myThreespineStickleback.2016.gtf > ${file/sam/counts.txt}">>docounts;done
+launcher_creator.py -n docounts -j docounts -q normal -t 10:00:00 -N 2 -w 24 -a $allo -e $email
+sbatch docounts.slurm
+
+
+#NOW ASSEMBLE THE COUNTS INTO A SINGLE TABLE
+assemble_htseq_counts.py -i *counts.txt -o pungitius_rnaseq_baseline_counts.tsv
+
+#These are the read counts to use for all baseline expression analyses.
+
+
+################################################
+########### CALL SNPS FROM RNA ALONE ###########
+################################################
+
+cd call_rna_snps_alone/
+ln -s ../removeDups/*dupsRemoved.bam* .
+
+#build mpileup commands for each species-chromosome pair
+#outputting the results as an uncompressed VCF file so they can be concatenated
+
+ls *.bam > bamlist.txt
+echo "samtools mpileup -f /work/02260/grovesd/lonestar/stickleback_genome/glazer2015.unmasked.fa -t DP,AD,ADF,ADR,SP -g -b bamlist.txt > rna_mpileupResults.vcf" > runMpile
+launcher_creator.py -n runMpile -j runMpile -q normal -N 1 -w 1 -a $allok -e $email -t 48:00:00
+sbatch runMpile.slurm
+
+
+
+
+################################################
+######### CALL SNPS EVERYTHING TOGETHER ########
+################################################
+
+#---- SEPARATE THE BAMS BY CHROMOSOME ----#
+
+#get chromosome list
+grep "^>" $stickleGenome | sed 's/>//' > chromList.txt
+
+#set up subsetting commands
+>sepChroms;for file in *.bam
+do while read p
+do echo "samtools view -b -h -o ${file/.bam/}_$p.bam $file $p && samtools index ${file/.bam/}_$p.bam"
+done<chromList.txt >> sepChroms;done
+
+
+#check
+cat sepChroms | wc -l
+#483 = 21*23
+
+#launch
+module load samtools
+launcher_creator.py -n sepChroms -j sepChroms -q normal -N 1 -w 12 -a $allok -t 01:30:00
+sbatch sepChroms.slurm 
+
+
+#---- CHECK FILE COUNTS ----#
+#from PRJDB3147 (pungitius white):
+ls DRR0231*chr*.bam | wc -l
+	#184 = 8*23
+#from PRJNA301475 (endocrine):
+ls SRR297*chr*.bam | wc -l
+	#299 = 13*23
+
+#from PRJNA277770  (threespine white):
+ls SRR19*chr*.bam | wc -l
+	#138 = 6*23
+
+#Pun
+ls Pun*chr*.bam | wc -l
+	#690 = 30*23
+#Sin
+ls Sin*chr*.bam | wc -l
+	#506 = 22*23
+#Tym
+ls Tym*chr*.bam | wc -l
+	#529 = 23*23
+
+
+#---- RUN MPILEUP ----#
+#other chromosome split bam files taken from previous project (see initial_data_processingV2.txt)
+
+
+#set up bamlist for each chromosome
+grep "^>" $stickleGenome | sed 's/>//' > chromList.txt
+
+while read chr
+do ls *${chr}.bam > ${chr}_bamlist.txt
+done < chromList.txt
+
+#check the bamlist lengths
+for file in *bamlist.txt; do x=$(cat $file | wc -l); echo -e "$file\t$x";done
+#133 samples
+
+#build mpileup commands for each species-chromosome pair
+#outputting the results as an uncompressed VCF file so they can be concatenated
+>runmpile
+for file in *_bamlist.txt
+do echo "samtools mpileup -f $stickleGenome -t DP,AD,ADF,ADR,SP -g -b $file > ${file/bamlist.txt/mpileupResults.vcf}" >> runmpile
+done
+
+launcher_creator.py -n runmpile -j runmpile -q normal -t 48:00:00 -a $allok -e $email -N 7 -w 3
+#took 1 day and 21 hours to run with 155 samples, chromosomes split 4 ways, 4 nodes, wayness = 24
+
+
+#MAKE A BACKUP COPY OF THE OUTPUT BEFORE DOING ANYTHING
+
+
+
+################################################
+############# FILTER GENOTYPE CALLS ############
+################################################
+#now call genotypes
+>callQuality
+for file in *mpileupResults.vcf
+do echo "${file}..."
+RAW_CALLS=${file/_mpileupResults.vcf/}_rawCalls.vcf
+FILT0=${file/_mpileupResults.vcf/}_filt0.vcf
+echo "bcftools call -vmO z -o $RAW_CALLS $file && \
+bcftools filter --exclude 'QUAL < 20' $RAW_CALLS > $FILT0" >>callQuality
+done
+
+launcher_creator.py -n callQuality -j callQuality -q normal -N 1 -w 24 -a $allok -t 04:00:00 -e $email
+sbatch callQuality.slurm
+
+
+
+#extract the indels and set those aside
+>getIndels
+for file in *filt0.vcf
+do echo "vcftools --vcf $file --keep-only-indels --recode -c > ${file/_filt0.vcf}_indels.vcf" >>getIndels
+done
+
+
+
+#do all filtering steps at once:
+
+>filtAll
+for file in *filt0.vcf.gz
+do echo "${file}..."
+filt1File=${file/_filt0.vcf.gz/}_filt1.vcf.gz
+singletonOut=${file/_filt0.vcf.gz/}
+singletonFile=${singletonOut}_toRemove.tsv
+filt2File=${file/_filt0.vcf.gz/}_filt2.vcf.gz
+
+
+echo "vcftools --gzvcf $file --remove-indels --maf 0.001 --min-meanDP 1 --min-alleles 2 --max-alleles 2 --recode --recode-INFO-all -c > $filt1File && \
+vcftools --gzvcf $filt1File --singletons --out $singletonOut && \
+cat ${singletonOut}.singletons | awk '{print \$1\"\\t\"\$2}' > $singletonFile && \
+vcftools --gzvcf $filt1File --exclude-positions $singletonFile --recode -c | bgzip > $filt2File" >>filtAll
+done
+
+
+launcher_creator.py -n filtAll -j filtAll -q normal -N 1 -w 24 -a $allok -t 08:00:00
+sbatch filtAll.slurm
+
+
+#RE-NAME THE SAMPLES
+for file in *filt2.vcf
+do chr=$(echo $file | awk '{split($1, a, "_");print a[1]}')
+echo "${file}..."
+sed -i.bak "s/_${chr}.bam//g" $file &
+done
+
+
+
+#SEPARATE INTO SPECIES-SEX
+#here separate out pun, sin, and tym into male and female
+#keep only 10% frequency minor alleles and 75% representation
+#do same with whole species of japan sea and pacific ocean
+
+>separate
+for file in *.txt
+do for vcfFile in *filt2.vcf
+do echo "vcftools --vcf $vcfFile --keep $file --maf 0.1 --max-missing 0.66 --recode --out ${vcfFile/_filt2.vcf/}_${file}" >>separate
+done
+done
+
+
+#assemble all the variants
+>getPos
+for file in chr*.recode.vcf
+do echo "grep -v \"^#\" $file | cut -f 1,2 > ${file/.recode.vcf/}_positions.tsv &" >> getPos
+done
+
+
+
+#### run PCA
+#subset
+for file in *filt2.vcf
+do echo "vcftools --vcf $file --keep white_pungitius.txt --max-missing 1.0 --recode --out ${file/_filt2.vcf/}_whitePunNoMiss &"
+done
+
+#pca
+for file in *whitePunNoMiss.recode.vcf
+do echo "basic_snp_pca.R $file 1 &"
+done
+
+#REUSLTS:
+#DRR023134_F should actually be a male
+#DRR023137_M should be female -- called as outlier in RNAseq too
+#DRR013346_F is somewhat unique as the super highly sequenced sample 
+
+
+#Change sex in these samples
+for file in *filt2.vcf; do echo "sed -i.bak 's/DRR023134_F/DRR023134_M/' $file &";done
+for file in *filt2.vcf; do echo "sed -i.bak 's/DRR023137_M/DRR023137_F/' $file &";done
+
+###################################################
+############# CALLING Y-LINKED ALLELES ############
+###################################################
+
+### RNASEQ DATA ###
+
+#now have VCF filt2 files. Separate those by species and and the SRR RNA project and
+#concatentate all VCFs for the SRR project into single one all_SRR.vcf
+#eg:
+
+for file in *.vcf; do echo "bgzip $file &";done
+vcf-concat *.vcf.gz > all_endocrine.vcf
+
+
+#the RNA VCFs are small enough to handle on Mac
+#use the following R scripts to first set a cutoff for heterozygosity,
+#then output the sets of putative Y-linked SNPs for the two RNA datasets
+
+#call_rna_ylinked0.R -- check what thresholds should be based on false positives
+#call_rna_ylinked.R  -- outputs two files:
+	#newSex_linked_snps.tsv   -- set of Y-linked SNPs with Y allele given as alternative
+	#vcf_for_genome_prep.vcf  -- vcf of the loci tagged with Y-linked SNPs. Used for N-masking
+
+
+### DNA DATA ###
+#separate out the pun samples into sex from all_filt2.vcf.gz
+vcftools --vcf all_dnaPun.vcf --keep female_pun.txt --recode --out allFemalePun &
+vcftools --vcf all_dnaPun.vcf --keep male_pun.txt --recode --out allMalePun &
+
+
+#then get allele frequencies
+vcftools --vcf allMalePun.recode.vcf --freq --out all_male_pun &
+vcftools --vcf allFemalePun.recode.vcf --freq --out all_female_pun &
+
+
+#reformat them
+for file in *male_pun.frq
+do echo $file
+grep -v N_ALLELES $file | awk 'BEGIN{print "CHROM\tPOS\tN_ALLELES\tN_CHR\taf1\taf2\ta1\ta2\tf1\tf2"}{split($5, a, ":"); split($6, b, ":");print $0"\t"a[1]"\t"b[1]"\t"a[2]"\t"b[2]}' > ${file/.frq/_Rin.freq}
+done
+
+
+#get heterozygosity measures for males
+vcftools --vcf allMalePun.recode.vcf --hardy --out allMalePun
+
+#reformat it
+grep -v P_HET_DEFICIT allMalePun.hwe | awk 'BEGIN {print "CHR\tPOS\tHOMO1\tHET\tHOMO2"}; {split($3, a, "/"); print $1"\t"$2"\t"a[1]"\t"a[2]"\t"a[3]}' > allMalePun_Rin.hwe
+
+#get the RNA y-linked calls from the VCF file output from call_rna_ylinked.R
+grep -v "^#" whitePun_vcf_for_genome_prep.vcf | cut -f 1,2 > RNA_y_linked_loci.txt
+
+#on TACC: get false positive rates for different cutoffs
+call_dna_ylinked0.R all_female_pun_Rin.freq all_male_pun_Rin.freq allMalePun_Rin.hwe RNA_y_linked_loci.txt
+
+#use the output het_based_fp_FULLFIX.tsv to get the optimal cutoffs
+
+#on TACC then use call_dna_ylinked2.R to output sites based on DNA
+call_dna_ylinked2.R all_female_pun_Rin.freq all_male_pun_Rin.freq allMalePun_Rin.hwe 0.5 0.3 0.7
+
+
+##############################################
+############### SNP SPLIT PREP ###############
+##############################################
+#cloned from github
+#path:
+/work/02260/grovesd/lonestar/SNPsplit-master/
+
+
+#PREPARE GENOME
+VCF_FILE=whitePun_vcf_for_genome_prep.vcf.gz
+VCF_FILE=endocrine_vcf_for_genome_prep.vcf.gz
+VCF_FILE=white_dna_union_vcf_for_genome_prep.vcf.gz
+
+#set up genome directory
+mkdir stickleGenome
+cp /work/02260/grovesd/lonestar/stickleback_genome/glazer2015.unmasked.fa stickleGenome/
+
+#run N-masking
+/work/02260/grovesd/lonestar/SNPsplit_v0.3.2/SNPsplit_genome_preparation --vcf_file $VCF_FILE --strain N_MASKING_DUMMY_SAMPLE --reference_genome stickleGenome
+
+#concatenate the N-masked chromosomes
+grep "^>" $stickleGenome | awk '{split($1, a, ">"); print a[2]}' > chromList.txt
+>N_masked_ref.fa
+while read chr
+do echo "${chr}..."
+cat chr${chr}.N-masked.fa >> N_masked_ref.fa
+done < chromList.txt
+
+#double-check it all makes sense
+fasta_sequence_characters.py -fa N_masked_ref.fa 
+fasta_sequence_characters.py -fa $stickleGenome
+
+#should give equivalent results
+
+
+#-------- THEN REMAP THE READS TO THE N-MASKED REFERENCE --------#
+#Note, tried STAR, but kept getting segmentation faults with the paired end reads
+#Tried decreasing the reference builds for lower memory usage, but still didn't work.
+#Got frustrated and switched to bowtie2. 
+#Also note, bams generated with --local in bowtie will not work with SNPsplit.
+
+#set up directory for remapping
+#eg:
+mkdir remapping
+cd remapping
+mv ../N_MASKING_DUMMY_SAMPLE_N-masked/N_masked_ref.fa .
+module load bowtie
+bowtie2-build N_masked_ref.fa N_masked_ref.fa
+ln -s /scratch/02260/grovesd/rna_sex_chrom_evo/raw_datasets/PRJDB3147_pungitius_white/*.trim .
+
+
+#run paired end
+>btPaired
+for file in *_2.trim
+do echo "bowtie2 -x ./N_masked_ref.fa -1 ${file/_2.trim/_1.trim} -2 ${file} -N 1 --np 0 -p 10 -S ${file/_2.trim/}.sam --very-sensitive" >> btPaired
+done
+
+launcher_creator.py -n btPaired -j btPaired -q normal -N 4 -w 2 -a $allok -t 24:00:00 -e $email
+
+#run single end
+>btSingle
+for file in *_F.trim
+do echo "bowtie2 -x ./N_masked_ref.fa -U ${file} -N 1 --np 0 -p 5 -S ${file/_up.trim/}.sam --very-sensitive &" >> btSingle
+done
+for file in *_M.trim
+do echo "bowtie2 -x ./N_masked_ref.fa -U ${file} -N 1 --np 0 -p 10 -S ${file/_up.trim/}.sam --very-sensitive" >> btSingle
+done
+
+
+launcher_creator.py -n btSingle -j btSingle -q normal -N 3 -w 2 -a $allok -t 08:00:00
+
+
+#--------------------------------------------------------------#
+
+
+#############################################
+############### RUN SNP SPLIT ###############
+#############################################
+#Run separately for the single and paired end files
+
+#covnert to bam
+
+for file in *.sam
+do echo "samtools view -b -o ${file/.sam/}.bam $file &"
+done 
+
+#--- SPLITTING ---#
+for file in *.sam
+do echo "samtools sort -n -O BAM -o ${file/.sam/}.bam $file"
+done 
+
+#pick the set of sex-linked SNPs to use
+SEX_SNPS="whitePun_newSex_linked_snps.tsv"
+SEX_SNPS="endocrine_newSex_linked_snps.tsv"
+
+#PAIRED END
+>splitPaired
+for file in *M.bam; do echo "/work/02260/grovesd/lonestar/SNPsplit_v0.3.2/SNPsplit --snp_file ${SEX_SNPS} --paired --singletons --no_sort $file &" >> splitPaired
+done
+for file in *F.bam; do echo "/work/02260/grovesd/lonestar/SNPsplit_v0.3.2/SNPsplit --snp_file ${SEX_SNPS} --paired --singletons --no_sort $file &" >> splitPaired
+done
+
+#SINGLE END
+>splitSingle
+for file in *.bam; do echo "/work/02260/grovesd/lonestar/SNPsplit_v0.3.2/SNPsplit --snp_file sex_linked_snps.tsv $file">>splitSingle
+done
+
+launcher_creator.py -n splitSingle -j splitSingle -q normal -N 2 -w 3 -a $allok -e $email -t 06:00:00
+
+
+#GET SUMMARY INFO
+
+#for females
+for file in *F.*SNPsplit_report.txt
+do echo "-----------"
+echo $file
+grep "Reads were specific for genome 1" $file
+grep "Reads were specific for genome 2" $file
+done
+
+#for males
+for file in *M.*SNPsplit_report.txt
+do echo "-----------"
+echo $file
+grep "Reads were specific for genome 1" $file
+grep "Reads were specific for genome 2" $file
+done
+
+
+#based on these, one of the females from the DRR dataset looks like a male:
+DRR023134_F
+
+#generally get proportions that match expectations
+
+
+
+
+##########################################
+############### GET COUNTS ###############
+##########################################
+#gather all the bam files together from SNPsplit:
+#the original bams, and the genome1 and genome2 bams
+#convert to samfiles
+module load samtools
+>convertSort
+for file in *.bam
+do echo "samtools sort -O SAM -o ${file/.bam/}.sam $file" >> convertSort
+done
+
+launcher_creator.py -n convertSort -j convertSort -q normal -N 1 -w 24 -a $allok -t 02:00:00
+sbatch convertSort.slurm
+
+
+#run counts
+ln -s /work/02260/grovesd/lonestar/stickleback_genome/myThreespineStickleback.2016.gtf .
+>docounts
+for file in *.sam
+do echo "htseq-count -t gene -i gene_id -m intersection-nonempty $file myThreespineStickleback.2016.gtf > ${file/sam/counts.txt}">>docounts
+done
+launcher_creator.py -n docounts -j docounts -q normal -t 5:00:00 -N 4 -w 12 -a $allo -e $email
+sbatch docounts.slurm
+
+
+#NOW ASSEMBLE THE COUNTS INTO A SINGLE TABLE
+assemble_htseq_counts.py -i *genome*counts.txt -o readCounts_vonHippel_SNPsplit.tsv
+
+
+##################################################
+############### DATA FROM VCFTOOLS ###############
+##################################################
+
+#get chromosome lengths
+fasta_sequence_characters.py -fa $stickleGenome > chromLengths.txt
+
+
+#set up male/female text files
+grep CHROM chrM_endocrine.recode.vcf | tr "\t" "\n" | grep "_F" > female_endocrine.recode.vcf.txt
+grep CHROM chrM_endocrine.recode.vcf | tr "\t" "\n" | grep "_M" > male_endocrine.recode.vcf.txt
+
+
+#set window size
+w=100000
+
+#set up commands
+>runWrap
+for file in *.vcf
+do echo "${file}..."
+spp=$(echo $file | awk '{split($1, a, "_"); print a[2]}')
+chr=$(echo $file | awk '{split($1, a, "_"); print a[1]}')
+chrLength=$(grep -w $chr chromLengths.txt | awk '{print $2}')
+echo -e "$file\t$spp\t$chr\t$chrLength"
+echo "vcf_window_wrapper_V3.py -males male_${spp}.txt -females female_${spp}.txt -i $file -chr $chr -w $w -l $chrLength" >> runWrap
+done
+
+launcher_creator.py -n runWrap -j runWrap -q normal -N 4 -w 4 -t 24:00:00 -e $email -a $allok
+sbatch runWrap.slurm 
+
+#### ASSEMBLE THE RESULTS
+#make species list
+echo "pun
+sin
+tym
+po" > speciesList.txt
+
+#get chromosomes
+grep "^>" $stickleGenome | awk '{split($1, a, ">"); print a[2]}' > chromList.txt
+
+#concatenate the reuslts files for each chromosome
+while read spp
+do echo "${spp}..."
+head -n 1 chrXX_${spp}_*_RESULTS.tsv > ${spp}_allWindows.tsv
+while read chr
+do grep -v "CHROM" ${chr}_${spp}_*_RESULTS.tsv >> ${spp}_allWindows.tsv
+done < chromList.txt
+done < speciesList.txt
+
+
+#Analyze with chrom_window_figuresV4_wrapped.R

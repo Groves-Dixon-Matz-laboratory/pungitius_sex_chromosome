@@ -1,0 +1,391 @@
+#chrom_window_figures.R#
+library(plotrix)#
+library(ggplot2)#
+library(gridExtra)#
+library(cowplot)#
+#
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+resDir = "dna_100Kb_window_results/"#
+chromsToIgnore = c("chrUn", "chrM")#
+male.color = 'dodgerblue'#
+female.color = 'firebrick'
+#choose focal species#
+spp="pun"
+spp="pun"
+#upload the VCF wrapper results#
+wrapFile = paste(paste(resDir, spp, sep = ""), "allWindows.tsv", sep="_")#
+dat = read.table(wrapFile, header=T, sep="\t", na.strings = c("NA", "no_snps_in_this_window"))#
+dat=dat[!dat$CHROM %in% chromsToIgnore,]#
+dat$mb = dat$BIN_START / 1e6#
+head(dat)#
+dim(dat)#
+dat$chr_pos = paste(dat$CHROM, dat$BIN_START, sep="_")#
+dat$mfPi = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmPi = log( (dat$PI_female/dat$PI_male), 2)#
+dat$mfDens = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmDens = log( (dat$SNP_COUNT_female/dat$SNP_COUNT_male), 2)#
+dat$pctFemaleSpecific = dat$pFemaleSpecific*100#
+dat$pctMaleSpecific = dat$pMaleSpecific*100
+#SET UP NUMBERED CHROMOSOMES#
+chroms = unique(as.character(dat$CHROM))#
+chroms = chroms[!chroms %in% c("chrM", "chrUn")]#
+chroms = chroms[order(chroms)]#
+nums = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+cdat = data.frame(chroms, nums)#
+cdat=cdat[order(cdat$nums),]#
+print(cdat)#
+chromlist = as.character(cdat$chroms)#
+save(cdat, file="~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")
+#ADD NORMALIZED X VALUES#
+head(dat)#
+dat$norm.x = dat$BIN_START#
+for (chr in chromlist){#
+	len = max(dat$BIN_START[dat$CHROM==chr])#
+	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
+}#
+head(dat)
+depthFile = paste(resDir, paste(spp, 'MvsF_foldDiff.Rdata', sep="_"), sep="")
+depthFile
+ll = load(depthFile)#
+res.df$BIN_START = res.df$start + 1#
+res.df$BIN_END = res.df$end#
+res.df$chr_pos = paste(res.df$chr, res.df$BIN_START, sep="_")#
+b=merge(res.df[,c('log2FoldChange', 'chr_pos')], dat, by = 'chr_pos', sort=T)#
+dat=b#
+colnames(dat)[2]<-'bedtoolDepth'
+resDir
+depthFile
+rm(list=ls())
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons/dna_100Kb_window_results")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")
+#####################
+library('DESeq2')#
+#
+#pick one of the three Pungitius species#
+SPP="Pun"; spp='pun'
+#upload and format data#
+ddat = read.table("all_depth.tsv", header = T, stringsAsFactors=F)#
+windows = paste(paste(ddat$chr,ddat$start,sep="_"), ddat$end, sep="_")#
+wdat = ddat[,1:3]#
+chroms=wdat$chr#
+mids=apply(wdat[,2:3], 1, mean)#
+chrList = unique(chroms)#
+chrList = chrList[!chrList %in% c('chrM', 'chrUn')]#
+chrNum = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+chr.df = data.frame(chrList, chrNum)#
+chr.df=chr.df[order(chr.df$chrNum),]#
+chrList=as.character(chr.df$chrList)
+#set up trait data (double-check you have all samples still)#
+t = read.table("~/gitreps/pungitius_sex_chromosome/metadata/multispecies_fish_info.tsv", header = T, sep="\t", row.names='sample')#
+coldata = t[colnames(counts),]#
+head(coldata)#
+dim(coldata)#
+#
+#double-check names align#
+sum(rownames(coldata) == colnames(counts)) == ncol(counts)
+rm(list=ls())
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons/dna_100Kb_window_results")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#
+################################
+####### WINDOW DEPTH ###########
+################################
+library('DESeq2')#
+#
+#pick one of the three Pungitius species#
+SPP="Pun"; spp='pun'
+#upload and format data#
+ddat = read.table("all_depth.tsv", header = T, stringsAsFactors=F)#
+windows = paste(paste(ddat$chr,ddat$start,sep="_"), ddat$end, sep="_")#
+wdat = ddat[,1:3]#
+chroms=wdat$chr#
+mids=apply(wdat[,2:3], 1, mean)#
+chrList = unique(chroms)#
+chrList = chrList[!chrList %in% c('chrM', 'chrUn')]#
+chrNum = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+chr.df = data.frame(chrList, chrNum)#
+chr.df=chr.df[order(chr.df$chrNum),]#
+chrList=as.character(chr.df$chrList)#
+#now subset the counts #
+counts=ddat[, grep(SPP, colnames(ddat))]#
+colnames(counts) = sub("_chrI.bam", "", colnames(counts))#
+head(counts)#
+dim(counts)
+#set up trait data (double-check you have all samples still)#
+t = read.table("~/gitreps/pungitius_sex_chromosome/metadata/multispecies_fish_info.tsv", header = T, sep="\t", row.names='sample')#
+coldata = t[colnames(counts),]#
+head(coldata)#
+dim(coldata)#
+#
+#double-check names align#
+sum(rownames(coldata) == colnames(counts)) == ncol(counts)
+#-------------- FPM WAY ----------------##
+m = apply(counts, 2, sum) / 1e6#
+fpm = sweep(counts, MARGIN=2, FUN='/', STATS=m)#
+head(fpm)#
+male.samples = rownames(coldata)[coldata$sex=='M']#
+female.samples = rownames(coldata)[coldata$sex=='F']#
+m.fpm = fpm[,male.samples]#
+f.fpm = fpm[,female.samples]#
+m.mn = apply(m.fpm, 1, mean)#
+f.mn = apply(f.fpm, 1, mean)#
+res=data.frame(chr=ddat$chr, start=ddat$start, end=ddat$end, m.fpm=m.mn, f.fpm=f.mn)#
+res$ratio=res$m.fpm/res$f.fpm#
+res$logmf = log(res$ratio, 2)#
+#
+select = res[res$chr=='chrXII',]#
+# # select = res[res$chr=='chrXIX',] #use for 3-spine#
+plot(select$logmf~ select$start, ylim=c(-1,1))
+#-------------- DESEQ WAY ----------------##
+#run DESeq#
+ddsHTSeq<-DESeqDataSetFromMatrix(counts,#
+	colData = coldata,#
+	design = formula(~sex))#
+dds = DESeq(ddsHTSeq, fitType='mean')#
+resultsNames(dds)#
+res=results(dds, contrast = c('sex', 'M', 'F'))#
+head(res)#
+rld=rlog(ddsHTSeq, fitType='mean')#
+colnames(rld) = colnames(counts)#
+rld.df = assay(rld)#
+#organize the results#
+res.df=cbind(wdat, data.frame(res))#
+#plot log2 fold diff female vs male#
+par(mfrow=c(5,5))#
+for (chr in chrList){#
+	cres = res.df[res.df$chr==chr,]#
+	plot(cres$log2FoldChange~cres$start, cex=0.5, main=chr, ylab = "M:F Log2 Ratio", xlab="Position (kb)")#
+	loess_fit <- loess(cres$log2FoldChange~cres$start, span = 0.2)#
+	lines(cres$start, predict(loess_fit), col='red', lwd=2)#
+	abline(h=0,lty=2, col='grey')#
+}#
+#write out the depth results#
+head(res.df)#
+outName=paste(spp, 'MvsF_foldDiff.Rdata', sep="_")
+outName
+save(res.df, file=outName)
+rm(list=ls())
+#chrom_window_figures.R#
+library(plotrix)#
+library(ggplot2)#
+library(gridExtra)#
+library(cowplot)#
+#
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+resDir = "dna_100Kb_window_results/"#
+chromsToIgnore = c("chrUn", "chrM")#
+male.color = 'dodgerblue'#
+female.color = 'firebrick'#
+#choose focal species#
+spp="pun"
+#upload the VCF wrapper results#
+wrapFile = paste(paste(resDir, spp, sep = ""), "allWindows.tsv", sep="_")#
+dat = read.table(wrapFile, header=T, sep="\t", na.strings = c("NA", "no_snps_in_this_window"))#
+dat=dat[!dat$CHROM %in% chromsToIgnore,]#
+dat$mb = dat$BIN_START / 1e6#
+head(dat)#
+dim(dat)#
+dat$chr_pos = paste(dat$CHROM, dat$BIN_START, sep="_")#
+dat$mfPi = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmPi = log( (dat$PI_female/dat$PI_male), 2)#
+dat$mfDens = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmDens = log( (dat$SNP_COUNT_female/dat$SNP_COUNT_male), 2)#
+dat$pctFemaleSpecific = dat$pFemaleSpecific*100#
+dat$pctMaleSpecific = dat$pMaleSpecific*100#
+#SET UP NUMBERED CHROMOSOMES#
+chroms = unique(as.character(dat$CHROM))#
+chroms = chroms[!chroms %in% c("chrM", "chrUn")]#
+chroms = chroms[order(chroms)]#
+nums = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+cdat = data.frame(chroms, nums)#
+cdat=cdat[order(cdat$nums),]#
+print(cdat)#
+chromlist = as.character(cdat$chroms)#
+save(cdat, file="~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")
+#ADD NORMALIZED X VALUES#
+head(dat)#
+dat$norm.x = dat$BIN_START#
+for (chr in chromlist){#
+	len = max(dat$BIN_START[dat$CHROM==chr])#
+	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
+}#
+head(dat)#
+#UPLOAD DEPTH RESULTS from bedtools_depth.R#
+depthFile = paste(resDir, paste(spp, 'MvsF_foldDiff.Rdata', sep="_"), sep="")
+ll = load(depthFile)
+res.df$BIN_START = res.df$start + 1#
+res.df$BIN_END = res.df$end#
+res.df$chr_pos = paste(res.df$chr, res.df$BIN_START, sep="_")#
+b=merge(res.df[,c('log2FoldChange', 'chr_pos')], dat, by = 'chr_pos', sort=T)#
+dat=b#
+colnames(dat)[2]<-'bedtoolDepth'
+save(dat, file=paste(paste("datasets/", spp, sep=''), "assembledWindowStats.Rdata", sep = "_"))
+outName = paste(paste("~/gitreps/pungitius_sex_chromosome/figure_plotting/", spp, sep=''), "assembledWindowStats.Rdata", sep = "_")
+outName
+outName = paste(paste("~/gitreps/pungitius_sex_chromosome/figure_plotting/", spp, sep=''), "assembledWindowStats.Rdata", sep = "_")
+outName
+outFile = paste(spp, "assembledWindowStats.Rdata", sep = "_")
+outFile
+outName = paste(outDir, outFile, sep='')
+outDir= "~/gitreps/pungitius_sex_chromosome/figure_plotting/"#
+outFile = paste(spp, "assembledWindowStats.Rdata", sep = "_")#
+outName = paste(outDir, outFile, sep='')
+outName
+print(outName)
+save(dat, file= outName)
+#below are some plots just for reference#
+#--------------- plot multipanel scatterplots ---------------##
+x=dat$BIN_START#
+dat$BIN_START = x/1e6#
+CUT = 0.99
+plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='Dxy', float= CUT, xlab="Position", ylab='Dxy')
+head(dat)
+plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='pctMaleSpecific', float= CUT, xlab="Position", ylab='Density Male-specific')
+plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='pFemaleSpecific', float= CUT, xlab="Position", ylab='Prop. Female-specific')
+plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='pctFemaleSpecific', float= CUT, xlab="Position", ylab='Density Male-specific')
+rm(list=ls())
+#chrom_window_figures.R#
+library(plotrix)#
+library(ggplot2)#
+library(gridExtra)#
+library(cowplot)#
+#
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+resDir = "dna_100Kb_window_results/"#
+chromsToIgnore = c("chrUn", "chrM")#
+male.color = 'dodgerblue'#
+female.color = 'firebrick'
+spp="tym"
+#upload the VCF wrapper results#
+wrapFile = paste(paste(resDir, spp, sep = ""), "allWindows.tsv", sep="_")#
+dat = read.table(wrapFile, header=T, sep="\t", na.strings = c("NA", "no_snps_in_this_window"))#
+dat=dat[!dat$CHROM %in% chromsToIgnore,]#
+dat$mb = dat$BIN_START / 1e6#
+head(dat)#
+dim(dat)#
+dat$chr_pos = paste(dat$CHROM, dat$BIN_START, sep="_")#
+dat$mfPi = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmPi = log( (dat$PI_female/dat$PI_male), 2)#
+dat$mfDens = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmDens = log( (dat$SNP_COUNT_female/dat$SNP_COUNT_male), 2)#
+dat$pctFemaleSpecific = dat$pFemaleSpecific*100#
+dat$pctMaleSpecific = dat$pMaleSpecific*100#
+#SET UP NUMBERED CHROMOSOMES#
+chroms = unique(as.character(dat$CHROM))#
+chroms = chroms[!chroms %in% c("chrM", "chrUn")]#
+chroms = chroms[order(chroms)]#
+nums = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+cdat = data.frame(chroms, nums)#
+cdat=cdat[order(cdat$nums),]#
+print(cdat)#
+chromlist = as.character(cdat$chroms)#
+save(cdat, file="~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")
+#ADD NORMALIZED X VALUES#
+head(dat)#
+dat$norm.x = dat$BIN_START#
+for (chr in chromlist){#
+	len = max(dat$BIN_START[dat$CHROM==chr])#
+	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
+}#
+head(dat)#
+#UPLOAD DEPTH RESULTS from bedtools_depth.R#
+depthFile = paste(resDir, paste(spp, 'MvsF_foldDiff.Rdata', sep="_"), sep="")#
+ll = load(depthFile)#
+res.df$BIN_START = res.df$start + 1#
+res.df$BIN_END = res.df$end#
+res.df$chr_pos = paste(res.df$chr, res.df$BIN_START, sep="_")#
+b=merge(res.df[,c('log2FoldChange', 'chr_pos')], dat, by = 'chr_pos', sort=T)#
+dat=b#
+colnames(dat)[2]<-'bedtoolDepth'#
+#save the formatted data for plotting main figure#
+outDir= "~/gitreps/pungitius_sex_chromosome/figure_plotting/"#
+outFile = paste(spp, "assembledWindowStats.Rdata", sep = "_")#
+outName = paste(outDir, outFile, sep='')#
+print(outName)#
+save(dat, file= outName)
+head(dat)
+plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='bedtoolDepth', float= CUT, xlab="Position", ylab='M:F depth')
+#below are some plots just for reference#
+#--------------- plot multipanel scatterplots ---------------##
+x=dat$BIN_START#
+dat$BIN_START = x/1e6#
+CUT = 0.99
+plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='bedtoolDepth', float= CUT, xlab="Position", ylab='M:F depth')
+plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='MEAN_FST', float= CUT, xlab="Position", ylab='Mean Fst')
+spp
+rm(list=ls())
+#chrom_window_figures.R#
+library(plotrix)#
+library(ggplot2)#
+library(gridExtra)#
+library(cowplot)#
+#
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+resDir = "dna_100Kb_window_results/"#
+chromsToIgnore = c("chrUn", "chrM")#
+male.color = 'dodgerblue'#
+female.color = 'firebrick'
+spp="sin"
+#upload the VCF wrapper results#
+wrapFile = paste(paste(resDir, spp, sep = ""), "allWindows.tsv", sep="_")#
+dat = read.table(wrapFile, header=T, sep="\t", na.strings = c("NA", "no_snps_in_this_window"))#
+dat=dat[!dat$CHROM %in% chromsToIgnore,]#
+dat$mb = dat$BIN_START / 1e6#
+head(dat)#
+dim(dat)#
+dat$chr_pos = paste(dat$CHROM, dat$BIN_START, sep="_")#
+dat$mfPi = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmPi = log( (dat$PI_female/dat$PI_male), 2)#
+dat$mfDens = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmDens = log( (dat$SNP_COUNT_female/dat$SNP_COUNT_male), 2)#
+dat$pctFemaleSpecific = dat$pFemaleSpecific*100#
+dat$pctMaleSpecific = dat$pMaleSpecific*100
+#SET UP NUMBERED CHROMOSOMES#
+chroms = unique(as.character(dat$CHROM))#
+chroms = chroms[!chroms %in% c("chrM", "chrUn")]#
+chroms = chroms[order(chroms)]#
+nums = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+cdat = data.frame(chroms, nums)#
+cdat=cdat[order(cdat$nums),]#
+print(cdat)#
+chromlist = as.character(cdat$chroms)#
+save(cdat, file="~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+#ADD NORMALIZED X VALUES#
+head(dat)#
+dat$norm.x = dat$BIN_START#
+for (chr in chromlist){#
+	len = max(dat$BIN_START[dat$CHROM==chr])#
+	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
+}#
+head(dat)
+#UPLOAD DEPTH RESULTS from bedtools_depth.R#
+depthFile = paste(resDir, paste(spp, 'MvsF_foldDiff.Rdata', sep="_"), sep="")#
+ll = load(depthFile)#
+res.df$BIN_START = res.df$start + 1#
+res.df$BIN_END = res.df$end#
+res.df$chr_pos = paste(res.df$chr, res.df$BIN_START, sep="_")#
+b=merge(res.df[,c('log2FoldChange', 'chr_pos')], dat, by = 'chr_pos', sort=T)#
+dat=b#
+colnames(dat)[2]<-'bedtoolDepth'
+#save the formatted data for plotting main figure#
+outDir= "~/gitreps/pungitius_sex_chromosome/figure_plotting/"#
+outFile = paste(spp, "assembledWindowStats.Rdata", sep = "_")#
+outName = paste(outDir, outFile, sep='')#
+print(outName)#
+save(dat, file= outName)
+#below are some plots just for reference#
+#--------------- plot multipanel scatterplots ---------------##
+x=dat$BIN_START#
+dat$BIN_START = x/1e6#
+CUT = 0.99
+plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='MEAN_FST', float= CUT, xlab="Position", ylab='Mean Fst')

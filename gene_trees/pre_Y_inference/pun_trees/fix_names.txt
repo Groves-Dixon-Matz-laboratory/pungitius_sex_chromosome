@@ -1,0 +1,9 @@
+while read ss
+do SAMPLE=$(echo $ss | awk '{print $1}')
+SEX=$(echo $ss | awk '{print $3}')
+echo -e "Replacing names for: ${SAMPLE}\t${SEX}"
+for file in w20*exampleTree*.newick
+do sed -i '' "s/${SAMPLE}_A/${SAMPLE}_A_${SEX}/" $file
+sed -i '' "s/${SAMPLE}_B/${SAMPLE}_B_${SEX}/" $file
+done
+done < pun_sex.txt

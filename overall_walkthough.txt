@@ -1,0 +1,20 @@
+overall_walkthough.txt
+
+
+###############################
+### male_female_comparisons ###
+###############################
+
+Follow data processing steps in male_female_comparisons_walkthough.txt
+
+Prepare fold coverage differences using bedtools_depth.R
+
+Prepare and explore all window data using window_figures.R
+
+################################
+########## gene_trees ##########
+################################
+
+#--- pre_Y_inference ---#
+
+Follow data processing steps in gene_trees_walkthough.txt

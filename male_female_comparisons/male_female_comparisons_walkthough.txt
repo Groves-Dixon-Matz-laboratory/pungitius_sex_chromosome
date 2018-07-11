@@ -1,0 +1,177 @@
+#male_female_comparisons_walkthrough.txt
+#Groves Dixon
+#last updated 7-11-18
+#This file has instructions for finding evidence of sex chromosomes from male and female genotypes
+#Starting point is the 'filt3' vcf files (see initial_data_processing_walkthough.txt)
+#Not all steps were included in publication, but are kept here for reference
+
+
+##############################################################
+#################### DEPTH USING BEDTOOLS ####################
+##############################################################
+#build input file for making windows
+fasta_sequence_characters.py -fa $stickleGenome > chrLengths.txt
+
+#build bed file of windows
+bedtools makewindows -g chrLengths.txt -w 100000 -s 100000 > 100Kb_windows.bed
+
+#run multicov to get overlap
+ln -s ../multispecies_chrom_splits/*.bam .
+
+>multicov
+while read chr
+do grep -w ${chr} 100Kb_windows.bed > ${chr}_windows.bed
+echo "bedtools multicov -bams *${chr}.bam -bed ${chr}_windows.bed -p > ${chr}_100Kb_counts.tsv" >> multicov
+done < chromList.txt
+
+
+launcher_creator.py -n multicov -j multicov -q normal -t 24:00:00 -a $allok -e $email
+sbatch multicov.slurm
+
+
+#format the results
+h=$(ls *chrI.bam | awk 'BEGIN {ORS="\t"};{print $1}')
+echo -e "chr\tstart\tend\t${h}" > all_depth.tsv
+cat *100Kb_counts.tsv >> all_depth.tsv
+
+#send to Mac and analyze using bedtools_depth.R
+
+
+
+
+######################################
+### BUILD PCAs FOR EACH CHROMOSOME ###
+######################################
+#use R script pca_chrom_snps.R on TACC
+#Note, basic_snp_pca.R probably works better
+
+
+#again add species' command iteratively
+module load Rstats
+>runPCAs
+for file in chr*pun_filt3.vcf; do echo "pca_chrom_snps.R $file pun_pheno.txt 12" >> runPCAs; done
+for file in chr*sin_filt3.vcf; do echo "pca_chrom_snps.R $file sin_pheno.txt 12" >> runPCAs; done
+for file in chr*tym_filt3.vcf; do echo "pca_chrom_snps.R $file tym_pheno.txt 12" >> runPCAs; done
+for file in chr*js_filt3.vcf; do echo "pca_chrom_snps.R $file js_pheno.txt 12" >> runPCAs; done
+for file in chr*po_filt3.vcf; do echo "pca_chrom_snps.R $file po_pheno.txt 12" >> runPCAs; done
+
+launcher_creator.py -n runPCAs -j runPCAs -q normal -t 10:30:00 -a $allok -N 2 -w 4
+sbatch runPCAs.slurm
+
+
+#-------- REMOVE OUTLIER SAMPLES BASED ON PCA --------#
+	#FOR SIMPLICITY THIS IS ACTUALLY DOWN EARLIER, THEY WERE IDENTIFIED HERE
+		#for P. sinensis removed:
+		Sin8
+		Sin20
+
+
+##################################################
+############### DATA FROM VCFTOOLS ###############
+##################################################
+
+#get chromosome lengths
+fasta_sequence_characters.py -fa $stickleGenome > chromLengths.txt
+
+#set window size
+w=100000
+
+#set up commands
+>runWrap
+for file in *.vcf
+do echo "${file}..."
+spp=$(echo $file | awk '{split($1, a, "_"); print a[2]}')
+chr=$(echo $file | awk '{split($1, a, "_"); print a[1]}')
+chrLength=$(grep -w $chr chromLengths.txt | awk '{print $2}')
+echo -e "$file\t$spp\t$chr\t$chrLength"
+echo "vcf_window_wrapper.py -males male_${spp}.txt -females female_${spp}.txt -i $file -chr $chr -w $w -l $chrLength" >> runWrap
+done
+
+launcher_creator.py -n runWrap -j runWrap -q normal -N 4 -w 4 -t 24:00:00 -e $email -a $allok
+sbatch runWrap.slurm 
+
+#### ASSEMBLE THE RESULTS
+#make species list
+echo "pun
+sin
+tym
+po" > speciesList.txt
+
+#get chromosomes
+grep "^>" $stickleGenome | awk '{split($1, a, ">"); print a[2]}' > chromList.txt
+
+#concatenate the reuslts files for each chromosome
+while read spp
+do echo "${spp}..."
+head -n 1 chrXX_${spp}_*_RESULTS.tsv > ${spp}_allWindows.tsv
+while read chr
+do grep -v "CHROM" ${chr}_${spp}_*_RESULTS.tsv >> ${spp}_allWindows.tsv
+done < chromList.txt
+done < speciesList.txt
+
+#These results files were used to make Figure 1
+#Analyze with window_figures.R
+
+
+
+#------------- ADDITIONAL OPTIONAL THINGS:
+
+######################################
+#### CLUSTER SAMPLES WITH K-MEANS ####
+######################################
+
+echo "pun
+sin
+tym
+po
+js" > speciesList.txt
+
+>cluster
+while read SPP
+do for file in *${SPP}*.vcf
+do echo cluster_samples_by_snps.R $file ${SPP}_pheno.txt ${file/.final.vcf/} >> cluster
+done
+done < speciesList.txt
+
+launcher_creator.py -n cluster -j cluster -q normal -t 8:00:00 -N 2 -w 1 -a $allok -e $email
+sbatch cluster_all.slurm
+
+
+SPP=tym
+echo -e "dBIC\tcorr\tfile" > ${SPP}Stats.tsv
+for file in *${SPP}*_stat.tsv; do grep -v dBIC $file >> ${SPP}Stats.tsv;done
+
+
+
+#################################################
+#### CLUSTER SAMPLES WITH K-MEANS IN WINDOWS ####
+#################################################
+
+echo "pun
+sin
+tym
+po
+js
+wheat" > speciesList.txt
+
+>clusterWindows
+while read SPP
+do for file in *${SPP}*.vcf
+do echo cluster_samples_by_snps_WINDOWED.R $file ${SPP}_pheno.txt ${file/_filt3.vcf/_KmeanClusWin} 1000000 >> clusterWindows
+done
+done < speciesList.txt
+
+launcher_creator.py -n clusterWindows -j clusterWindows -q normal -t 8:00:00 -N 4 -w 1 -a $allok -e $email
+sbatch cluster_all.slurm
+
+
+#output files from this are *KmeanClusWin_stat.tsv for each chromosome
+
+#concatenate all the results together and transfer to Mac for plotting
+echo -e "chrom\tlefts\trights\tbicGrp1\tbicGrp2\tbicGrp3\tdbicGrp2vGrp1\tsexCor\tspecies" > all_KmeanClusWin_results.tsv
+for file in *KmeanClusWin_stat.tsv
+do CHROM=$(echo $file | awk '{split($1, a, "_");print a[1]}')
+SPP=$(echo $file | awk '{split($1, a, "_");print a[2]}')
+echo $file
+grep -v dbicGrp2vGrp1 $file | awk -v var1="$CHROM" -v var2="$SPP" '{print var1"\t"$0"\t"var2}' >> all_KmeanClusWin_results.tsv
+done

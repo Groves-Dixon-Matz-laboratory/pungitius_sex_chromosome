@@ -1,0 +1,256 @@
+#gene_trees.txt Walkthrough
+#Groves Dixon
+#written 1-31-18
+#last updated 7-11-18
+#instructions for constructing gene trees in sliding windows and identifying sex-specific haplotypes
+
+
+
+#Walkthrough begins with *filt4.vcf files (see initial_data_processing_walkthough.txt)
+
+#BASIC OUTLINE OF STEPS:
+1. split by species
+2. phase
+3. build trees with individual chromosomes for each species and a concensus for all other species
+
+######################################################
+### BUILD PCAs FOR EACH CHROMOSOME FOR ALL SPECIES ###
+######################################################
+#grab the filt4 vcfs
+ln -s ../../filt4_vcfs/*.vcf .
+
+
+#build a pca from each
+module load Rstats
+>runPCAs
+for file in *.vcf; do echo "multispecies_pca.R $file species_labels.txt 4" >> runPCAs; done
+
+launcher_creator.py -n runPCAs -j runPCAs -q normal -N 4 -w 2 -a $allok -t 12:00:00
+
+
+
+#############################
+#### SEPARATE BY SPECIES ####
+#############################
+
+>sepSpp
+for sFile in *samples.txt
+do SPP=${sFile/_samples.txt/}
+for vFile in *filt4.vcf
+do echo "vcftools --vcf $vFile --keep $sFile --recode --out ${vFile/_filt4.vcf/}_${SPP}">>sepSpp
+done
+done
+
+launcher_creator.py -n sepSpp -j sepSpp -q normal -N 2 -w 48 -a $allok -e $email -t 04:00:00
+sbatch sepSpp.slurm
+
+#rename them after so they all look like this: chrVIII_js.vcf  == chromosome 8 for japan sea (filt4)
+
+##########################################################
+################# BEAGLE ON CALLED GENOTYPES #############
+##########################################################
+#move the files for each species into their own directory then
+#rename them so these commands will be consistent
+
+
+NTHREAD=12
+NITERATIONS=10
+
+>runBeagle
+for file in *.vcf
+do CHROM=$(echo $file | awk '{split($1, a, "_");print a[1]}')
+OUT_PHASED=${file/.vcf/}_PHASED
+OUT_CHROMS=${file/.vcf/_chroms.vcf}
+echo "java -jar /work/02260/grovesd/stampede2/beagle/beagle.08Jun17.d8b.jar gt=$file chrom=$CHROM out=$OUT_PHASED nthreads=$NTHREAD niterations=$NITERATIONS && gunzip ${OUT_PHASED}.vcf.gz && haploidize_phased_vcf.py -i ${OUT_PHASED}.vcf -o $OUT_CHROMS" >> runBeagle
+done
+
+launcher_creator.py -n runBeagle -j runBeagle -q normal -N 4 -w 4 -a $allok -t 8:00:00 -e $email
+sbatch runBeagle.slurm
+
+#Note it cannot allocate memory with wayness of 24
+
+
+#############################################################
+###### SLIDING WINDOW TREES WITH CATTED FASTA FROM VCF ######
+#############################################################
+#First install VCF-kit
+pip install pytest-runner --user --trusted-host=pypi.python.org
+pip install --user --trusted-host pypi.python.org VCF-kit
+#put file vk in bin
+
+###phased vcfs are stored here:
+#/corral-repl/utexas/Recombining-sex-chro/pungitius/vcfs/filt4_phased
+#for file in *.gz; do echo "gunzip $file && haploidize_phased_vcf.py -i ${file/.gz/} -o ${file/_PHASED.vcf.gz/}_chroms.vcf" >> prep; done
+
+
+#once you have your haploidized vcfs assembled:
+windowSize=100000
+sliding_window_tree_launcher.py -i *_chroms.vcf -wBP $windowSize -s $windowSize -qTrees True
+launcher_creator.py -n slidingWindowTreeCommands_w${windowSize}_s${windowSize}.txt -j slidingWindowTreeCommands_w${windowSize}_s${windowSize}.txt -q normal -N 5 -w 48 -a tagmap -t 24:00:00 -e $email
+sbatch slidingWindowTreeCommands.txt.slurm
+
+
+
+#make sure you got all the fasta files
+ls windowFastas_w100000_s100000_bp/*.fasta | wc -l
+cat slidingWindowTreeCommands.txt | wc -l
+
+
+#make species list
+echo "js
+po
+wheat
+pun
+sin
+tym" > speciesList.txt
+
+#make chromosome list
+grep "^>" $stickleGenome | awk '{split($1, a, ">"); print a[2]}' > chromList.txt
+
+
+#make sure you have correct number files for each species
+while read spp; do count=$(ls chr*${spp}*.fasta | wc -l); echo -e "$spp\t$count";done<speciesList.txt
+
+
+#make master fasta files with all samples
+#This will make it easier to subset whichever samples you want later
+> catMaster
+for file in chr*_pun_*.fasta
+do ALL=${file/_pun_chroms/_*_chroms}
+echo $ALL | wc -w
+MASTER=${file/_pun_chroms/_MASTER}
+echo "cat $ALL > $MASTER" >> catMaster
+done
+
+
+#subset the master fasta files for the samples you want for a given tree 
+#eg:
+SAMPLEFILE=sample_names.txt
+
+#(this is the file I used for the final TWISST AND 
+#if you need to add the _A and _B to the file do this:
+cat $SAMPLEFILE outgroup.txt > samplesToKeep.txt
+>chromsToKeep.txt
+while read s
+do echo ${s}_A >> chromsToKeep.txt
+echo ${s}_B >> chromsToKeep.txt
+done < samplesToKeep.txt
+
+
+#then subset
+CHROMFILE=genusPungitius_Yoshia_ylabed_chroms.txt
+> doSubbing
+for file in *MASTER*.fasta; do echo "subset_fasta.py $file $CHROMFILE > ${file/_MASTER_/_SUB_}" >> doSubbing
+done
+launcher_creator.py -n doSubbing -j doSubbing -q normal -N 1 -w 48 -t 01:00:00 -a tagmap
+sbatch doSubbing.slurm 
+
+
+#############################################################
+################# BUILD TREES WITH RAxML ####################
+#############################################################
+#---- optionally set up outgroup ----#
+#print outgroup names in comma delimited eg:
+grep ">" chrXII_SUB_w122.fasta | tr -d ">" | grep DRS | tr "\n" ","
+
+#then make a comma delimited list 
+OUTGROUP="DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B"
+OUTGROUP="DRS012287,DRS012288,DRS012289,DRS012290,DRS012291,DRS012292,DRS012293,DRS012294,DRS012295,DRS012296,DRS012297,DRS012298,DRS012299,DRS012300,DRS012301,DRS012302,DRS012303,DRS012304,DRS012305,DRS012306"
+
+#---- build trees ----#
+
+SPP=allPun
+>raxml_${SPP}
+for file in *_SUB_*.fasta; do echo "$RAXML -s $file -n ${file/.fasta/} -m GTRCAT -f d -p 12345 -T 1 -o $OUTGROUP" >>raxml_${SPP} ;done
+
+launcher_creator.py -n raxml_${SPP} -j raxml_${SPP} -q normal -N 9 -w 24 -t 7:00:00 -a $allok -e $email
+
+
+#----- assemble the trees --------#
+
+#set up chromosome list
+grep "^>" $stickleGenome | awk '{split($1, a, ">"); print a[2]}' > chromList.txt
+
+#assemble the trees in order for each chromosome
+while read CHR
+do echo "Assembling trees for ${CHR}...."
+windowData=${CHR}_w100000_s100000_windowData.tsv
+>all_${CHR}_trees.newick
+> treeFileList_${CHR}.txt
+while read windowLine
+do w=$(echo $windowLine | awk '{print $1}')
+echo "RAxML_bestTree.${CHR}_SUB_${w}" >> treeFileList_${CHR}.txt
+cat RAxML_bestTree.${CHR}_SUB_${w} >> all_${CHR}_trees.newick
+done < $windowData
+done < chromList.txt
+
+
+#check the tree files
+ls all_*_trees.newick | wc -l
+
+
+######################################################
+########### BUILD TREES WITH FastTree ################
+######################################################
+
+
+#SET SPECIES
+SPP="js"
+
+
+#set up chromosome list
+grep "^>" $stickleGenome | awk '{split($1, a, ">"); print a[2]}' > chromList.txt
+
+#assemble the trees in order for each chromosome
+while read CHR
+do echo "Assembling trees for ${CHR}...."
+windowData=${CHR}_w100000_s100000_windowData.tsv
+>all_${CHR}_trees.newick
+> treeFileList_${CHR}.txt
+while read windowLine
+do w=$(echo $windowLine | awk '{print $1}')
+echo "RAxML_bestTree.${CHR}_SUB_${w}" >> treeFileList_${CHR}.txt
+cat RAxML_bestTree.${CHR}_SUB_${w} >> all_${CHR}_trees.newick
+done < $windowData
+done < chromList.txt
+
+
+#check the tree files
+ls all_*_trees.newick | wc -l
+
+
+######################################################################
+################# RUN BIGGEST MONOPHYLETIC SCRIPT ####################
+######################################################################
+
+#run biggest monophyletic on each set of window trees
+SPP="tym"
+SEX="female"
+
+>getBiggestMono
+while read CHR
+do windowData=${CHR}_w100000_s100000_windowData.tsv
+echo "biggest_monophyletic.py -trees all_${CHR}_trees.newick -rooted True -i ${SEX}_${SPP}.txt -w $windowData -o ${CHR}_biggest_monophyletic_results.tsv" >> getBiggestMono
+done < chromList.txt
+
+#this can run on front nodes
+sh getBiggestMono
+
+
+
+#concatenate the results
+ls *biggest_monophyletic_results.tsv | wc -l
+head -n 1 chrXX_biggest_monophyletic_results.tsv | awk '{print "CHROM\t"$0}' > ${SPP}_${SEX}_allBiggestMonoRes.tsv
+while read CHR
+do file=${CHR}_biggest_monophyletic_results.tsv
+grep -v "BIN_START" $file | awk -v var="$CHR" '{print var"\t"$0}' >> ${SPP}_${SEX}_allBiggestMonoRes.tsv
+done < chromList.txt
+
+
+#check everthing worked
+cut -f 1 ${SPP}_${SEX}_allBiggestMonoRes.tsv | sort | uniq
+ls *SUB*.fasta | wc -l
+cat ${SPP}_${SEX}_allBiggestMonoRes.tsv | wc -l
+
+#This can be easily repeated for either sex
+

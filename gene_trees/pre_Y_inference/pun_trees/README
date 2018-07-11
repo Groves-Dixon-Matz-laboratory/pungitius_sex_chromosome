@@ -1,0 +1,4 @@
+100Kb sliding window trees for P. pungitius
+
+raxml_Pun = the file with the commands for tree building
+fix_names.txt = bash script to add sex to sample names

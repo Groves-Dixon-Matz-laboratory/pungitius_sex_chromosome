@@ -1,0 +1,1484 @@
+tab
+rownames(tab) = c('bad', 'ok')
+colnames(tab) = c('y', 'sin')
+fisher.test(tab)
+do.wilcox('y', 'sin', psub, 'score')
+#xy_white_deseq.R#
+#
+library('DESeq2')#
+library('ggplot2')#
+library('cowplot')#
+setwd("~/gitreps/stickle_back_sex_chromosomes/allele_specific_expression/")#
+#
+#load data#
+raw.counts = read.table('readCounts_white_SNPsplit.tsv', header = T, row.names='geneID', sep="\t")#
+#
+#revise mismatched names#
+cn0 = colnames(raw.counts)#
+cn1 = sub("DRR023137_M", "DRR023137_F", cn0)#
+cn2 = sub("DRR023134_F", "DRR023134_M", cn1)#
+colnames(raw.counts) = cn2#
+#
+#isolate the X and Y reads for males#
+drr = colnames(raw.counts)[grep("DRR023", colnames(raw.counts))]#
+males = drr[grep("_M.genome", drr)]#
+counts0=raw.counts[,colnames(raw.counts) %in% males]#
+colnames(counts0) = sub(".counts.txt", "", colnames(counts0))#
+st = counts0[,grep("_st", colnames(counts0))]#
+non = counts0[,-grep("_st", colnames(counts0))]#
+head(st)#
+head(non)#
+sum(sub("_st", "", colnames(st)) == colnames(non)) == ncol(non)#
+colnames(st) = sub("_st", "", colnames(st))#
+counts = st + non#
+head(counts)#
+dim(counts)#
+#double-check that worked#
+sum(counts$DRR023131_M.genome2 == counts0$DRR023131_M.genome2 + counts0$DRR023131_M.genome2_st) == nrow(counts0)#
+#remove non-gene objects from counts data#
+to.remove=rownames(counts)[grep("__", rownames(counts))]#
+counts[to.remove,]#
+dim(counts)#
+counts= counts[!rownames(counts) %in% to.remove,]#
+dim(counts)#
+#
+#remove genes with low coverage#
+cut=1#
+cc=counts#
+means=apply(cc,1,mean)#
+table(means>cut)#
+counts=cc[means>cut,]#
+dim(counts)#
+#
+#add project to coldata#
+sample = colnames(counts)#
+chr = sample#
+chr[grep('genome1', chr)]<-'X'#
+chr[grep('genome2', chr)]<-'Y'#
+coldata = data.frame(row.names=sample, chrom=chr)#
+rownames(coldata)==colnames(counts)#
+#set up input matrix for DESeq
+head(counts)
+dim(coutns)
+dim(counts)
+rm(list=ls())
+#are working correctly.#
+setwd("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression")#
+#
+#LOAD DATA (output from initialize_basicAlignment_counts.R)#
+ll=load("deseqBaselineInput.Rdata")#
+head(counts)#
+#
+#ADD COLUMNS TO COLDATA#
+coldata$sppSex = paste(coldata$species, coldata$sex, sep="_")#
+malePuns = coldata$sample[coldata$sppSex=="pungitius_M"]#
+femalePuns = coldata$sample[coldata$sppSex=="pungitius_F"]#
+maleAcus = coldata$sample[coldata$sppSex=="aculeatus_M"]#
+femaleAcus = coldata$sample[coldata$sppSex=="aculeatus_F"]#
+coldata#
+#---- LOOK FOR EVIDENCE OF DEGENERATION ----##
+#
+#CHOOSE SPECIES YOU WANT TO LOOK AT#
+select.species = 'pungitius'#
+select.males = malePuns#
+select.females = femalePuns#
+#
+#SET UP SEPARATE COUNTS DATA FOR MALES AND FEMALES #
+m.data = coldata[coldata$sppSex!=paste(select.species, "F", sep = "_"),]#
+f.data = coldata[coldata$sppSex!=paste(select.species, "M", sep = "_"),]#
+m.counts = counts[,!colnames(counts) %in% select.females]#
+f.counts = counts[,!colnames(counts) %in% select.males]
+dim(m.counts)
+head(m.counts)
+m.counts = counts[,!colnames(counts) %in% select.females]
+head(m.counts)
+rm(list=ls())
+setwd("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression")#
+#
+#LOAD DATA (output from initialize_basicAlignment_counts.R)#
+ll=load("deseqBaselineInput.Rdata")#
+head(counts)#
+#
+#ADD COLUMNS TO COLDATA#
+coldata$sppSex = paste(coldata$species, coldata$sex, sep="_")#
+malePuns = coldata$sample[coldata$sppSex=="pungitius_M"]#
+femalePuns = coldata$sample[coldata$sppSex=="pungitius_F"]#
+maleAcus = coldata$sample[coldata$sppSex=="aculeatus_M"]#
+femaleAcus = coldata$sample[coldata$sppSex=="aculeatus_F"]#
+coldata
+#---- LOOK FOR EVIDENCE OF DEGENERATION ----##
+#
+#CHOOSE SPECIES YOU WANT TO LOOK AT#
+select.species = 'pungitius'#
+select.males = malePuns#
+select.females = femalePuns#
+#
+#SET UP SEPARATE COUNTS DATA FOR MALES AND FEMALES #
+m.data = coldata[coldata$sppSex!=paste(select.species, "F", sep = "_"),]#
+f.data = coldata[coldata$sppSex!=paste(select.species, "M", sep = "_"),]#
+m.counts = counts[,!colnames(counts) %in% select.females]#
+f.counts = counts[,!colnames(counts) %in% select.males]
+head(m.counts)
+select.females
+setwd("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression")#
+#
+#LOAD DATA (output from initialize_basicAlignment_counts.R)#
+ll=load("deseqBaselineInput.Rdata")#
+head(counts)
+rm(list=ls())
+#initialize_basicAlignment_counts.R#
+#
+library('DESeq2')#
+setwd("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression")#
+#
+#upload read counts#
+counts = read.table("pungitius_rnaseq_baseline_counts.tsv", header = T, row.names='geneID')#
+colnames(counts) = sub(".counts.txt", "", colnames(counts))#
+counts=counts[, !grepl("SRR297", colnames(counts))]#
+counts=counts[, !grepl("LS_2158", colnames(counts))]#
+head(counts)
+head(counts)
+weird = c("DRR023134_F", "DRR023137_M")  #see pca male_female_sdr_pca.pdf for this call
+dim(counts)
+counts = counts[,!colnames(counts) %in% weird]
+dim(counts)
+#remove non-gene objects from counts data#
+to.remove=rownames(counts)[grep("__", rownames(counts))]#
+counts[to.remove,]#
+dim(counts)#
+counts= counts[!rownames(counts) %in% to.remove,]#
+dim(counts)#
+#
+#get count totals#
+tots = apply(counts, 2, sum)#
+hist(tots)#
+write.table(data.frame(tots), file="counted_on_genes.tsv", sep="\t", quote=F) #
+mean(tots)/1e6#
+#remove genes with low coverage#
+cut=2#
+cc=counts#
+means=apply(cc,1,mean)#
+table(means>cut)#
+counts=cc[means>cut,]#
+#SET UP COLDATA#
+#first revise the miss-sexed individuals#
+sample = colnames(counts)#
+substrRight <- function(x, n){#
+  substr(x, nchar(x)-n+1, nchar(x))#
+}
+#assemble sample info#
+sex = substrRight(sample, 1)#
+species=sample#
+species[grepl("SRR297", species)]<-'pungitius'#
+species[grepl("DRR02313", species)]<-'pungitius'#
+species[grepl("LS_2158", species)]<-'pungitius'#
+species[grepl("SRR19", species)]<-'aculeatus'#
+dataset=sample#
+dataset[grepl("SRR297", dataset)]<-'endocrine'#
+dataset[grepl("DRR02313", dataset)]<-'white.pun'#
+dataset[grepl("LS_2158", dataset)]<-'jun'#
+dataset[grepl("SRR19", dataset)]<-'white.acu'#
+tissue=sample#
+tissue[grepl("SRR297", tissue)]<-'pelvic'#
+tissue[grepl("DRR02313", tissue)]<-'brain'#
+tissue[grepl("LS_2158", tissue)]<-'liver'#
+tissue[grepl("SRR19", tissue)]<-'brain'#
+coldata = data.frame(sample, species, sex, dataset, tissue)#
+#------- GET RAW VARIANCE STABILIZED COUNTS ------------##
+#set up input matrix for DESeq#
+ddsHTSeq<-DESeqDataSetFromMatrix(counts,#
+	colData = coldata,#
+	design = formula(~1))#
+#
+#run DESeq#
+dds = DESeq(ddsHTSeq)#
+#
+#get DEseq results#
+res = results(dds)#
+#
+#get variance stabilized counts and save them#
+rld = rlog(dds)#
+rld.df=assay(rld)#
+colnames(rld.df) = colnames(counts)#
+#
+#=====================================================================================#
+##
+#  Code chunk 2#
+# transpose the dataset you have samples as rows and genes as columns#
+#=====================================================================================#
+#
+datExpr0 = as.data.frame(t(rld.df));#
+#
+#=====================================================================================#
+##
+#  Code chunk 3#
+##
+#=====================================================================================#
+#
+#check that the dataset doesn't have geneswith too many missing values#
+#these would likely represent lowly expressed genes and under sequenced samples#
+library(WGCNA)#
+gsg = goodSamplesGenes(datExpr0, verbose = 3);#
+gsg$allOK
+#=====================================================================================#
+##
+#  Code chunk 4#
+#
+#=====================================================================================#
+#removing genes that were flagged with too many missing values#
+#note how many genes we have right now#
+before = ncol(datExpr0)#
+print(before)#
+if (!gsg$allOK)#
+{#
+  # Optionally, print the gene and sample names that were removed:#
+  if (sum(!gsg$goodGenes)>0) #
+     printFlush(paste("Removing genes:", paste(names(datExpr0)[!gsg$goodGenes], collapse = ", ")));#
+  if (sum(!gsg$goodSamples)>0) #
+     printFlush(paste("Removing samples:", paste(rownames(datExpr0)[!gsg$goodSamples], collapse = ", ")));#
+  # Remove the offending genes and samples from the data:#
+  datExpr0 = datExpr0[gsg$goodSamples, gsg$goodGenes]#
+}#
+rld.df=t(datExpr0)#
+rld=rld[rownames(rld.df),]#
+dim(rld.df)#
+dim(rld)#
+nrow(datExpr0)#
+after = ncol(datExpr0)#
+print(paste(before - after, "Genes With Too Many Missing Values Were Removed"))#
+#
+#=====================================================================================#
+##
+#  Code chunk 5#
+##
+#=====================================================================================#
+#
+#build sample heatmaps #
+library(pheatmap)#
+quartz()#
+pheatmap(cor(rld.df))#
+#
+#now cluster samples based on gene expression to identify outliers#
+sampleTree = hclust(dist(datExpr0), method = "average");#
+# Plot the sample tree: Open a graphic output window of size 12 by 9 inches#
+# The user should change the dimensions if the window is too large or too small.#
+sizeGrWindow(12,9)#
+#pdf(file = "Plots/sampleClustering.pdf", width = 12, height = 9);#
+par(cex = 0.6);#
+par(mar = c(0,5,2,0))#
+plot(sampleTree, main = "Sample clustering to detect outliers", sub="", xlab="", cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)
+#=====================================================================================#
+#
+#Remove outliers by setting a branch cut threshold#
+# Plot a line to show the cut#
+cut.height = 120#
+plot(sampleTree, main = "Sample clustering to detect outliers", sub="", xlab="", cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)#
+abline(h = cut.height, col = "red", lty = 2);#
+# Determine cluster under the line#
+clust = cutreeStatic(sampleTree, cutHeight = cut.height, minSize = 4)#
+table(clust)#
+# clust 1 contains the samples we want to keep.#
+keepSamples = (clust==1)#
+keepSampleNames = rownames(datExpr0)[keepSamples]#
+outlierNames = rownames(datExpr0)[clust==0]#
+datExpr = datExpr0[keepSamples, ]#
+nGenes = ncol(datExpr)#
+nSamples = nrow(datExpr) #number of samples left after outlier removal#
+print(paste(length(outlierNames), "samples were flagged as outliers and removed:"))#
+outlierNames#
+print(paste(nSamples, "samples were kept"))#
+#replot heatmap without outlier#
+rld.df = rld.df[, !colnames(rld.df) %in% outlierNames]#
+pheatmap(cor(rld.df))
+#save the outlier names so you can optionally remove them in other analyses#
+# save(outlierNames, file = 'datasets/outliers.Rdata')#
+counts=counts[,!colnames(counts) %in% outlierNames]#
+coldata=coldata[!coldata$sample %in% outlierNames,]#
+save(counts, coldata, file="deseqBaselineInput.Rdata")#
+save(rld.df, file="rldBaseline.Rdata")
+rm(list=ls())
+setwd("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression")#
+#
+#LOAD DATA (output from initialize_basicAlignment_counts.R)#
+ll=load("deseqBaselineInput.Rdata")#
+head(counts)
+#ADD COLUMNS TO COLDATA#
+coldata$sppSex = paste(coldata$species, coldata$sex, sep="_")#
+malePuns = coldata$sample[coldata$sppSex=="pungitius_M"]#
+femalePuns = coldata$sample[coldata$sppSex=="pungitius_F"]#
+maleAcus = coldata$sample[coldata$sppSex=="aculeatus_M"]#
+femaleAcus = coldata$sample[coldata$sppSex=="aculeatus_F"]#
+coldata
+malePuns
+all.males = c(malePuns, femalePuns)
+all.males
+malePuns
+m.counts = counts[,colnames(counts) %in% maleAcus | colnames(counts) %in% malePuns]
+dim(m.counts)
+f.counts = counts[,colnames(counts) %in% femaleAcus | colnames(counts) %in% femalePuns]
+dim(f.counts)
+#RUN DESEQ#
+library(DESeq2)#
+#set up data#
+m=DESeqDataSetFromMatrix(m.counts,#
+	colData = m.data, #
+	design = formula(~ species))
+m.data
+#SET UP SEPARATE COUNTS DATA FOR MALES AND FEMALES #
+m.data = coldata[coldata$sppSex!=paste(select.species, "F", sep = "_"),]#
+f.data = coldata[coldata$sppSex!=paste(select.species, "M", sep = "_"),]#
+m.counts = counts[,colnames(counts) %in% maleAcus | colnames(counts) %in% malePuns]#
+f.counts = counts[,colnames(counts) %in% femaleAcus | colnames(counts) %in% femalePuns]
+m.data
+setwd("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression")#
+#
+#LOAD DATA (output from initialize_basicAlignment_counts.R)#
+ll=load("deseqBaselineInput.Rdata")#
+head(counts)#
+#
+#ADD COLUMNS TO COLDATA#
+coldata$sppSex = paste(coldata$species, coldata$sex, sep="_")#
+malePuns = coldata$sample[coldata$sppSex=="pungitius_M"]#
+femalePuns = coldata$sample[coldata$sppSex=="pungitius_F"]#
+maleAcus = coldata$sample[coldata$sppSex=="aculeatus_M"]#
+femaleAcus = coldata$sample[coldata$sppSex=="aculeatus_F"]#
+coldata#
+#---- LOOK FOR EVIDENCE OF DEGENERATION ----##
+#
+#CHOOSE SPECIES YOU WANT TO LOOK AT#
+select.species = 'pungitius'#
+select.males = malePuns#
+select.females = femalePuns#
+#SET UP SEPARATE COUNTS DATA FOR MALES AND FEMALES #
+m.data = coldata[coldata$sppSex!=paste(select.species, "F", sep = "_"),]#
+f.data = coldata[coldata$sppSex!=paste(select.species, "M", sep = "_"),]#
+m.counts = counts[,colnames(counts) %in% maleAcus | colnames(counts) %in% malePuns]#
+f.counts = counts[,colnames(counts) %in% femaleAcus | colnames(counts) %in% femalePuns]
+m.data
+coldata
+#SET UP SEPARATE COUNTS DATA FOR MALES AND FEMALES #
+m.data = coldata[coldata$sex=='M',]#
+f.data = coldata[coldata$sex=='F',]#
+m.counts = counts[,colnames(counts) %in% maleAcus | colnames(counts) %in% malePuns]#
+f.counts = counts[,colnames(counts) %in% femaleAcus | colnames(counts) %in% femalePuns]
+m.counts
+setwd("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression")#
+#
+#LOAD DATA (output from initialize_basicAlignment_counts.R)#
+ll=load("deseqBaselineInput.Rdata")#
+head(counts)#
+#
+#ADD COLUMNS TO COLDATA#
+coldata$sppSex = paste(coldata$species, coldata$sex, sep="_")#
+malePuns = coldata$sample[coldata$sppSex=="pungitius_M"]#
+femalePuns = coldata$sample[coldata$sppSex=="pungitius_F"]#
+maleAcus = coldata$sample[coldata$sppSex=="aculeatus_M"]#
+femaleAcus = coldata$sample[coldata$sppSex=="aculeatus_F"]#
+coldata#
+#---- LOOK FOR EVIDENCE OF DEGENERATION ----##
+#
+#CHOOSE SPECIES YOU WANT TO LOOK AT#
+select.species = 'pungitius'#
+select.males = malePuns#
+select.females = femalePuns#
+#SET UP SEPARATE COUNTS DATA FOR MALES AND FEMALES #
+m.data = coldata[coldata$sex=='M',]#
+f.data = coldata[coldata$sex=='F',]#
+m.counts = counts[,colnames(counts) %in% maleAcus | colnames(counts) %in% malePuns]#
+f.counts = counts[,colnames(counts) %in% femaleAcus | colnames(counts) %in% femalePuns]#
+#RUN DESEQ
+head(m.counts)
+head(f.counts)
+dim(m.counts)
+dim(f.counts)
+m.data
+f.data
+#RUN DESEQ#
+library(DESeq2)#
+#set up data#
+m=DESeqDataSetFromMatrix(m.counts,#
+	colData = m.data, #
+	design = formula(~ species))#
+#
+f=DESeqDataSetFromMatrix(f.counts,#
+	colData = f.data, #
+	design = formula(~ species))
+#run#
+m<-DESeq(m)#
+f<-DESeq(f)#
+#
+#get results#
+m.r = results(m, contrast=c('species', 'pungitius', 'aculeatus'))#
+f.r = results(f, contrast=c('species', 'pungitius', 'aculeatus'))#
+head(m.r)#
+head(f.r)
+#GET GTF DATA AND TAG GENES WITH THEIR REGION TYPE#
+gdat = read.table("gene_locations.txt", header = T, stringsAsFactors=F)#
+#
+#set autosome, par, stratum2, and stratum1#
+subChr='chrXII'#
+gdat$type = '1' #autosomes#
+gdat$type[gdat$chr==subChr]<-'3' #inversion#
+gdat$type[gdat$chr==subChr & gdat$stop < 2.5e6]<-'2'   #PAR#
+gdat$type[gdat$chr==subChr & gdat$start > 18.9e6]<-'4' #low.recomb#
+#ASSEMBLE FOLD DIFFERENCES#
+#simply take the difference between male and female log2s#
+#
+sum(rownames(m.r)==rownames(f.r))==nrow(m.r) #double-check genes are same#
+ldat = data.frame(m.r$log2FoldChange, f.r$log2FoldChange)#
+rownames(ldat) = rownames(m.r)#
+colnames(ldat) = c('male', 'female')#
+plot(ldat$male~ldat$female)#
+ldat$diff = ldat$male - ldat$female#
+plot(density(ldat$diff))#
+#
+#merge with expression data#
+ldat$geneId = rownames(ldat)#
+ddat = merge(gdat, ldat, by = 'geneId')
+head(ldat)
+plot(density(ldat$diff))
+plot(density(ldat$diff, na.rm=T))
+plot(density(ldat$diff, na.rm=T));abline(v=0)
+plot(ldat$male~ldat$female)
+plot(density(m.r$log2FoldChange))
+plot(density(m.r$log2FoldChange, na.rm=T))
+head(gdat)
+head(m.r)
+mr.df = data.frame(m.r)
+mr.df$geneId = rownames(mr.df)
+gmr = merge(mr.df, gdat, by = 'geneId')
+head(gmr)
+g.mr = merge(mr.df, gdat, by = 'geneId')
+sdr.mr = g.mr[g.mr$type==3,]
+plot(density(sdr.mr$log2FoldChange, na.rm=T))
+plot(density(sdr.mr$log2FoldChange, na.rm=T));abline(v=0)
+save(m.r, f.r, counts, coldata, gdat, ddat, sdr.mr, file='pungitiusAncCompare.Rdata')
+fr.df = data.frame(f.r)
+head(fr.df)
+fr.df$geneId = rownames(fr.df)
+g.fr = merge(fr.df, gdat, by = 'geneId')
+head(g.fr)
+sdr.fr = g.fr[g.fr$type==3,]
+head(sdr.fr)
+plot(density(sdr.fr$log2FoldChange, na.rm=T));abline(v=0)
+head(ddat)
+sdr.ddat = ddat[ddat$type==3,]
+plot(density(sdr.ddat$diff))
+head(ldat)
+plot(ldat$male~ldat$female)
+plot(sdr.ddat$male~sdr.ddat$female)
+plot(sdr.ddat$male~sdr.ddat$female, ylab='Male Change', xlab='Female Change')
+save(m.r, f.r, counts, coldata, gdat, ddat, sdr.mr, file='pungitiusAncCompare.Rdata')
+#boxplots for directional variation#
+par(mfrow=c(1,1))#
+boxplot(ddat$diff~ddat$type, main = 'log2(Male) - log2(Female)', outline=F, axes=F, ylab='log2(Male) - log2(Female)')#
+axis(1, at=1:4, labels=c('autosomes', 'PAR', 'inversion', 'low.recomb'))#
+axis(2)#
+abline(h=0, lty=2)#
+i=ddat$diff[ddat$type=='3']#
+a=ddat$diff[ddat$type=='1']#
+t.test(x=i, y=a, alternative='less')#
+i.lab = rep("inversion", length(i))#
+a.lab = rep("autosome", length(a))#
+d = c(i,a)#
+d.lab = c(i.lab, a.lab)#
+x = data.frame(d,d.lab)#
+wilcox.test(d ~ d.lab, data=x) #
+#
+#boxplots for absolute variation#
+par(mfrow=c(1,1))#
+head(ddat)#
+ddat$type2 = ddat$type#
+ddat$type2[ddat$type2==4]<-3#
+ddat$absDiff = abs(ddat$diff)#
+boxplot(ddat$absDiff~ddat$type2, main = 'log2(Male) - log2(Female)', outline=F, axes=F, ylab='log2(Male) - log2(Female)')#
+axis(1, at=1:3, labels=c('autosomes', 'PAR', 'SDR'))#
+axis(2)#
+abline(h=0, lty=2)#
+#
+x=ddat[ddat$type2 %in% c(1, 3),]#
+t.test(x$absDiff~x$type2)#
+x=ddat[ddat$type2 %in% c(2, 3),]#
+t.test(x$absDiff~x$type2)#
+x=ddat[ddat$type2 %in% c(1, 2),]#
+t.test(x$absDiff~x$type2)#
+#
+#not in correct direction. Mean inflated by a few really high values. Upregulated genes on Y?#
+#plot scatterplots#
+sectionScatter = function(num, chr.type){#
+	cx = -10:10#
+	cy = -10:10#
+	lmCnt = lm(cy~cx)#
+	sub=ddat[ddat$type== num,]#
+	plot(male~female, data=sub, main= chr.type)#
+	abline(lmCnt, lwd=0.5)#
+}#
+#
+par(mfrow=c(2,2))#
+sectionScatter('1', 'autosomes')#
+sectionScatter('2', 'PAR')#
+sectionScatter('3', 'inversion')#
+sectionScatter('4', 'low.recomb')#
+#---- ENRICHMENT
+#SUBSET THE DATA FOR JUST THE SPECIES OF INTEREST#
+head(counts)#
+head(coldata)#
+scounts = counts[,grep('DRR', colnames(counts))]#
+sdata = coldata[grep('DRR', coldata$sample),]
+dim(scounts)
+head(scounts)
+sdata
+#RUN DESEQ#
+s=DESeqDataSetFromMatrix(scounts,#
+	colData = sdata, #
+	design = formula(~ sex))#
+#
+#run#
+s<-DESeq(s)#
+#
+#get results#
+s.r = results(s, contrast=c('sex', 'M', 'F'), independentFiltering=F)#
+rld = rlog(s)
+#VOLCANO PLOT#
+library(ggplot2)#
+library(cowplot)#
+sdf = na.omit(data.frame(s.r))#
+sdf$sig = sdf$padj < 0.1#
+g=ggplot(data=sdf, aes(x=log2FoldChange, y=-log(pvalue, 10), color=sig)) +#
+	geom_point()#
+plot(g)
+#GET GENE LOCATIONS#
+#
+head(gdat)#
+sdf$geneId = rownames(sdf)#
+gsdf = merge(gdat, sdf, by = 'geneId')#
+#LOOK AT DEGREE OF DIFF EXPRESSION ACCROSS REGIONS#
+#
+#boxplot by type#
+par(mfrow=c(1,1))#
+boxplot(gsdf$log2FoldChange~gsdf$type, main="Male:Female Log2 Difference")#
+abline(h=0, lty=2)#
+#
+#boxplot for selected chromosome#
+select = 'chrXII'#
+chrs = gsdf$chr#
+chrs[chrs!=select]<-'genome'#
+gsdf$abslog2 = abs(gsdf$log2FoldChange)#
+gsdf$chrType = chrs#
+boxplot(gsdf$log2FoldChange~chrs)#
+boxplot(gsdf$abslog2~chrs, outline=F, ylab="Abs(M:F log2 difference)", axes=F, ylim=c(0,2.2))#
+axis(1, at = c(1,2), labels = c("chrXII", "Autosomes"))#
+axis(2)#
+t.test(gsdf$abslog2~chrs, alternative='greater')#
+#look at frequency of significant differential expression#
+sig=gsdf[gsdf$sig,]#
+t=table(gsdf$chr)#
+barplot(t)#
+#
+#----- SAVE/LOAD -----##
+save(s.r, rld, gdat, gsdf, file="maleVfemalePungitius.Rdata")
+t.test(gsdf$abslog2~chrs, alternative='greater')
+rm(list=ls())
+#-------- MORE DIFFERENTIAL EXPRESSION ON 12 --------##
+#
+#load the ancestral comparison (white)#
+ll=load('~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/pungitiusAncCompare.Rdata')#
+#ddat = assembly of male:female differences with chromosomal region labeled #
+ddat$absDiff = abs(ddat$diff)  #absolute M:F variation#
+ddat$type2=ddat$type            #set up region with rest of chr12 (not PAR)#
+ddat$type2[ddat$type==4]<-3    ##
+head(ddat)#
+ddat$sex.chrom = ddat$chr#
+ddat$sex.chrom[ddat$sex.chrom!='chrXII']<-'autosomes'#
+ddat$sex.chrom<-factor(ddat$sex.chrom, levels=c('chrXII', 'autosomes'), ordered=TRUE)#
+#
+mfChrom = ggplot(data=ddat) +#
+	geom_boxplot(aes(x= sex.chrom, y=absDiff), outlier.shape=26) + #
+	lims(y=c(0,0.75)) +#
+	labs(x='', y="abs(M:F)")#
+plot(mfChrom)#
+#
+mfViolin = ggplot(ddat) + #
+	geom_violin(aes(x= sex.chrom, y=diff))#
+plot(mfViolin)#
+#
+sdr = ddat[ddat$type==3,]#
+#
+den=density(sdr$diff)#
+den.df = data.frame(x=den$x, y=den$y)#
+male.df = den.df[den.df$x >=max(den.df$x[den.df$x<0]),]#
+female.df = den.df[den.df$x <= 0,]#
+male.df$df = 'up in males'#
+female.df$df = 'up in females'#
+male.col = 'dodgerblue'#
+female.col = 'firebrick'
+ll
+#load m:f fold differences DNA#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/maleVfemale_DNA.Rdata")#
+ll
+#load differential expression by sex (white)#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/maleVfemalePungitius.Rdata")
+ll
+denRep=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	scale_color_manual(values=c(female.col, male.col)) +#
+	scale_fill_manual(values=c(female.col, male.col)) +#
+	theme(legend.position=c(0.4, 0.85),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"Sex:Ancestral"), y="density")#
+plot(denRep)
+ll=load("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/maleVfemalePungitius.Rdata")#
+ll
+head(sdr.mr)
+plot(density(sdr.mr$log2FoldChange))
+ll=load("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/maleVfemalePungitius.Rdata")
+ll
+head(gsdf)
+sdr = gsdf[gsdf$type==3,]
+den=density(sdr$log2FoldChange)
+den.df = data.frame(x=den$x, y=den$y)#
+male.df = den.df[den.df$x >=max(den.df$x[den.df$x<0]),]#
+female.df = den.df[den.df$x <= 0,]#
+male.df$df = 'up in males'#
+female.df$df = 'up in females'#
+male.col = 'dodgerblue'#
+female.col = 'firebrick'
+denRepFM=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	scale_color_manual(values=c(female.col, male.col)) +#
+	scale_fill_manual(values=c(female.col, male.col)) +#
+	theme(legend.position=c(0.4, 0.85),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"Sex:Ancestral"), y="density")#
+plot(denRepFM)
+quartz()
+plot(denRepFM)
+denRepFM=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	scale_color_manual(values=c(female.col, male.col)) +#
+	scale_fill_manual(values=c(female.col, male.col)) +#
+	theme(legend.position=c(0.45, 0.85),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"Sex:Ancestral"), y="density")#
+plot(denRepFM)
+denRepFM=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	scale_color_manual(values=c(female.col, male.col)) +#
+	scale_fill_manual(values=c(female.col, male.col)) +#
+	theme(legend.position=c(0.45, 0.85),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F"), y="density")#
+plot(denRepFM)
+#look for degeneration of transcription from Y as preferential loss in male pun expression#
+head(sdr.mr)#
+plot(density(sdr.mr$log2FoldChange))#
+#-------- DISTRIBUTIONS IN M:F FOLD COVERAGE --------##
+#
+#load m:f fold differences DNA#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/maleVfemale_DNA.Rdata")#
+ll#
+dsr = data.frame(dna.sr$log2FoldChange)#
+colnames(dsr) = c('fc')#
+dsr$dset = 'dna'#
+dsr$geneId = rownames(dna.sr)#
+head(dsr)#
+#load differential expression by sex (von Hippel)#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/maleVfemale_vonHippel.Rdata")#
+vsr = data.frame(s.r$log2FoldChange)#
+colnames(vsr) = c('fc')#
+vsr$dset = 'pelvic'#
+vsr$geneId = rownames(s.r)#
+head(vsr)#
+#
+#load differential expression by sex (white)#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/maleVfemalePungitius.Rdata")#
+wsr = data.frame(s.r$log2FoldChange)#
+colnames(wsr) = c('fc')#
+wsr$dset = 'brain'#
+wsr$geneId = rownames(s.r)#
+head(wsr)#
+#
+#load differential expression by sex in 3-spine (white)#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/maleVfemale3spine.Rdata")#
+tsr = data.frame(s.r$log2FoldChange)#
+colnames(tsr) = c('fc')#
+tsr$dset = 'acu'#
+tsr$geneId = rownames(s.r)#
+head(tsr)#
+#CONTROL FOR MAPPING EFFICIENCY PEVLIC DATA#
+#to control for changes in mapping efficiency, substract#
+#the DNA fold differences from the RNA fold differences#
+dd = merge(vsr, dsr, by = 'geneId')#
+dd$fc = dd$fc.x - dd$fc.y#
+dd$dset = 'pelvic-dna'#
+pdsr=dd[,c('fc', 'dset', 'geneId')]#
+head(pdsr)#
+#
+# see if the dna fold differences predict the RNA differences#
+ddg=merge(dd, gdat, by = 'geneId')#
+#
+#for sdr#
+ddsdr = ddg[ddg$type==3,]#
+plot(ddsdr$fc.x~ddsdr$fc.y)#
+lm1=lm(ddsdr$fc.x~ddsdr$fc.y)#
+abline(lm1, col='red')#
+summary(lm1)#
+#
+#for autosomes#
+ddauto = ddg[ddg$type==1,]#
+plot(ddauto$fc.x~ ddauto$fc.y)#
+lm2=lm(ddauto$fc.x~ ddauto$fc.y)#
+abline(lm2, col='red')#
+summary(lm2)#
+#CONTROL FOR MAPPING EFFICIENCY brain DATA#
+dd = merge(wsr, dsr, by = 'geneId')#
+dd$fc = dd$fc.x - dd$fc.y#
+dd$dset = 'brain-dna'#
+ddsr=dd[,c('fc', 'dset', 'geneId')]#
+head(ddsr)#
+#
+# see if the dna fold differences predict the RNA differences#
+ddg=merge(dd, gdat, by = 'geneId')#
+#
+#for sdr#
+ddsdr = ddg[ddg$type==3,]#
+plot(ddsdr$fc.x~ddsdr$fc.y)#
+lm1=lm(ddsdr$fc.x~ddsdr$fc.y)#
+abline(lm1, col='red')#
+summary(lm1)#
+#
+#for autosomes#
+ddauto = ddg[ddg$type==1,]#
+plot(ddauto$fc.x~ ddauto$fc.y)#
+lm2=lm(ddauto$fc.x~ ddauto$fc.y)#
+abline(lm2, col='red')#
+summary(lm2)#
+#ASSEMBLE ALL THE MALE:FEMALE DATA TOGETHER#
+sr = rbind(dsr, vsr, wsr, tsr, ddsr, pdsr)#
+head(sr)#
+#add genomic locations#
+head(gdat)#
+#
+msr = merge(sr, gdat, by='geneId', all.x=T)#
+msr$sex = 'auto'#
+# # msr$sex[msr$chr=='chrXII']<-'chrXII' #to use full chrXII#
+msr$sex[msr$type==3]<-'SDR' #to use SDR#
+msr$sex = factor(msr$sex, levels=c('SDR', 'auto'), ordered=T)#
+msr$sexdf = paste(msr$sex, msr$dset, sep="_")#
+msr$absDiff = abs(msr$fc)#
+msr$sexdf = factor(msr$sexdf, levels=c('SDR_brain', 'auto_brain', 'SDR_acu', 'auto_acu', 'SDR_pelvic', 'auto_pelvic', 'SDR_dna', 'auto_dna', 'SDR_brain-dna', 'auto_brain-dna', 'SDR_pelvic-dna', 'auto_pelvic-dna'), ordered=T)#
+boxplot(msr$absDiff~msr$sexdf, outline=F)#
+#subset#
+keep = c('SDR_pelvic-dna', 'auto_pelvic-dna', 'SDR_brain-dna', 'auto_brain-dna', 'SDR_acu', 'auto_acu')#
+ssr = msr[msr$sexdf %in% keep,]#
+ssr$sexdf = factor(ssr$sexdf, levels=keep, ordered=T)#
+smeds = tapply(ssr$absDiff, INDEX=ssr$sexdf, function(x) median(x, na.rm=T))#
+meddf = data.frame(y=smeds)#
+meddf$sexdf = names(smeds)#
+lineLen = 0.3#
+meddf$x1 = 1:6 - lineLen#
+meddf$x2 = 1:6 + lineLen#
+absBox = ggplot(data=ssr) +#
+	geom_boxplot(aes(x=sexdf, y=absDiff, fill=sex), outlier.shape=26, lwd=0.75) +#
+	lims(y=c(-.1, 2)) + #
+	labs(x='', y='abs(M:F)') +#
+	theme(axis.text.x = element_blank(), #
+		axis.ticks.x = element_line(size=0), #
+		legend.title=element_blank(),#
+		legend.position=c(0.7, 0.8))#
+plot(absBox)#
+#
+do.wilcox = function(sp1, sp2, df, col, stat){#
+	stat1 = df[df[,col] == sp1, stat]#
+	stat2 = df[df[,col] == sp2, stat]#
+	sub = df[df[,col] %in% c(sp1, sp2),]#
+	w=wilcox.test(x=stat1, y=stat2)#
+	boxplot(sub[,stat]~sub[,col], outline=F, main=paste("p =",w$p.value))#
+	return(w)#
+}#
+do.wilcox('SDR_brain-dna', 'auto_brain-dna', ssr, 'sexdf', 'absDiff')#
+do.wilcox('SDR_pelvic-dna', 'auto_pelvic-dna', ssr, 'sexdf', 'absDiff')#
+do.wilcox('SDR_acu', 'auto_acu', ssr, 'sexdf', 'absDiff')#
+#
+brainp = do.wilcox('SDR_brain-dna', 'auto_brain-dna', ssr, 'sexdf', 'absDiff')$p.value#
+pelvicp = do.wilcox('SDR_pelvic-dna', 'auto_pelvic-dna', ssr, 'sexdf', 'absDiff')$p.value#
+acup = do.wilcox('SDR_acu', 'auto_acu', ssr, 'sexdf', 'absDiff')$p.value#
+#
+pvals = c(brainp, pelvicp, acup)#
+#
+absViolin = ggplot(data=ssr) +#
+	geom_violin(aes(x=sexdf, y=absDiff, fill=sex, col=sex), na.rm=T) +#
+	geom_segment(data=meddf, aes(x=x1, y=y, xend=x2, yend=y), lwd=1.5) +#
+	lims(y=c(-.1, 2)) + #
+	labs(x='', y='abs(M:F)') + #
+	theme(axis.text.x = element_blank(), axis.ticks.x = element_line(size=0))#
+plot(absViolin)#
+#
+#---------- ALLELE-SPECIFIC EXPRESSION DATA ----------##
+#
+#load xy expression white#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/allele_specific_expression/xy_white.Rdata")#
+#m.w = merged dataset with sex differences and XY within male differences for white dataset#
+ll#
+#
+xyscatter.w = ggplot(data=m.w) +  #
+	geom_smooth(data= m.w, aes(log2FoldChange.x,log2FoldChange.y), method='lm', formula=y~x, se=T) +#
+	geom_point(aes(x=log2FoldChange.x, y= log2FoldChange.y), alpha=1) +#
+	lims(y=c(-2, 1.5)) +#
+	labs(x=bquote(log[2]~"Y:X in males"), y=bquote(log[2]~"M:F") )#
+plot(xyscatter.w)#
+lmw=lm(m.w$log2FoldChange.y~m.w$log2FoldChange.x)#
+summary(lmw)#
+#load xy expression von Hippel#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/allele_specific_expression/xy_vonHippel.Rdata")#
+#m.vh = merged dataset with sex differences and XY within male differences for von Hippel dataset#
+ll#
+#
+xyscatter.vh = ggplot(data=m.vh) +  #
+	geom_smooth(data= m.vh, aes(log2FoldChange.x,log2FoldChange.y), method='lm', formula=y~x, se=T) +#
+	geom_point(aes(x=log2FoldChange.x, y= log2FoldChange.y), alpha=1) +#
+	lims(y=c(-2, 1.5)) +#
+	labs(x=bquote(log[2]~"Y:X in males"), y=bquote(log[2]~"M:F") )#
+plot(xyscatter.vh)#
+head(m.vh)#
+lmvh=lm(m.vh$log2FoldChange.y~m.vh$log2FoldChange.x)#
+summary(lmvh)#
+#---------- PLOT ALL TOGETHER ----------##
+plot(denRep)#
+plot(absBox)#
+plot_grid(xyscatter.w, xyscatter.vh)#
+#
+plotList = list(absBox, denRep, xyscatter.w, xyscatter.vh)#
+rw = c(5,4,3,3)#
+rh = c(1,1,1,1)#
+plot_grid(plotlist=plotList, rel_widths=rw, rel_heights=rh, ncol=4, labels=LETTERS[1:4], label_size =16, axis='b')
+denRepFM=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	scale_color_manual(values=c(female.col, male.col)) +#
+	scale_fill_manual(values=c(female.col, male.col)) +#
+	theme(legend.position='right',#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F"), y="density")
+plot_grid(plotlist=plotList, rel_widths=rw, rel_heights=rh, ncol=4, labels=LETTERS[1:4], label_size =16, axis='b')
+denRepFM=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	scale_color_manual(values=c(female.col, male.col)) +#
+	scale_fill_manual(values=c(female.col, male.col)) +#
+	theme(legend.position='right',#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F"), y="density")
+plotList = list(absBox, denRepFM, xyscatter.w, xyscatter.vh)
+plot_grid(plotlist=plotList, rel_widths=rw, rel_heights=rh, ncol=4, labels=LETTERS[1:4], label_size =16, axis='b')
+denRepFM=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	scale_color_manual(values=c(female.col, male.col)) +#
+	scale_fill_manual(values=c(female.col, male.col)) +#
+	theme(legend.position=c(0.45, 0.85),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F"), y="density")#
+plot(denRepFM)#
+plotList = list(absBox, denRepFM, xyscatter.w, xyscatter.vh)#
+plot_grid(plotlist=plotList, rel_widths=rw, rel_heights=rh, ncol=4, labels=LETTERS[1:4], label_size =16, axis='b')
+denRepFM=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	scale_color_manual(values=c(female.col, male.col)) +#
+	scale_fill_manual(values=c(female.col, male.col)) +#
+	theme(legend.position=c(0.45, 0.8),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F"), y="density")
+plot_grid(plotlist=plotList, rel_widths=rw, rel_heights=rh, ncol=4, labels=LETTERS[1:4], label_size =16, axis='b')
+denRepFM=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	scale_color_manual(values=c(female.col, male.col)) +#
+	scale_fill_manual(values=c(female.col, male.col)) +#
+	theme(legend.position=c(0.45, 0.75),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F"), y="density")
+plotList = list(absBox, denRepFM, xyscatter.w, xyscatter.vh)#
+plot_grid(plotlist=plotList, rel_widths=rw, rel_heights=rh, ncol=4, labels=LETTERS[1:4], label_size =16, axis='b')
+denRepFM=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	scale_color_manual(values=c(female.col, male.col)) +#
+	scale_fill_manual(values=c(female.col, male.col)) +#
+	theme(legend.position=c(0.45, 0.8),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F"), y="density")
+plotList = list(absBox, denRepFM, xyscatter.w, xyscatter.vh)#
+plot_grid(plotlist=plotList, rel_widths=rw, rel_heights=rh, ncol=4, labels=LETTERS[1:4], label_size =16, axis='b')
+#initialize_basicAlignment_counts.R#
+#
+library('DESeq2')#
+setwd("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression")#
+#
+#upload read counts#
+counts = read.table("pungitius_rnaseq_baseline_counts.tsv", header = T, row.names='geneID')#
+colnames(counts) = sub(".counts.txt", "", colnames(counts))#
+counts=counts[, !grepl("SRR297", colnames(counts))]#
+counts=counts[, !grepl("LS_2158", colnames(counts))]#
+head(counts)
+.2*11
+.2*13
+#chrom_window_figures.R#
+library(plotrix)#
+library(ggplot2)#
+library(gridExtra)#
+library(cowplot)
+rm(list=ls())
+#chrom_window_figures.R#
+library(plotrix)#
+library(ggplot2)#
+library(gridExtra)#
+library(cowplot)
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+resDir = "results/window_stats/100_kb_maf1/"#
+chromsToIgnore = c("chrUn", "chrM")#
+male.color = 'dodgerblue'#
+female.color = 'firebrick'
+spp="pun"
+resDir = "results/window_stats/dna_100Kkb_window_results/"
+spp="pun"
+#upload the VCF wrapper results#
+wrapFile = paste(paste(resDir, spp, sep = ""), "allWindows.tsv", sep="_")#
+dat = read.table(wrapFile, header=T, sep="\t", na.strings = c("NA", "no_snps_in_this_window"))#
+dat=dat[!dat$CHROM %in% chromsToIgnore,]#
+dat$mb = dat$BIN_START / 1e6
+wrapFile
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+resDir = "dna_100Kb_window_results/"#
+chromsToIgnore = c("chrUn", "chrM")#
+male.color = 'dodgerblue'#
+female.color = 'firebrick'#
+#choose focal species#
+spp="pun"
+wrapFile = paste(paste(resDir, spp, sep = ""), "allWindows.tsv", sep="_")
+wrapFile
+dat = read.table(wrapFile, header=T, sep="\t", na.strings = c("NA", "no_snps_in_this_window"))
+dat=dat[!dat$CHROM %in% chromsToIgnore,]#
+dat$mb = dat$BIN_START / 1e6#
+head(dat)#
+dim(dat)#
+dat$chr_pos = paste(dat$CHROM, dat$BIN_START, sep="_")#
+dat$mfPi = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmPi = log( (dat$PI_female/dat$PI_male), 2)#
+dat$mfDens = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmDens = log( (dat$SNP_COUNT_female/dat$SNP_COUNT_male), 2)#
+dat$pctFemaleSpecific = dat$pFemaleSpecific*100#
+dat$pctMaleSpecific = dat$pMaleSpecific*100
+chroms = unique(as.character(dat$CHROM))#
+chroms = chroms[!chroms %in% c("chrM", "chrUn")]#
+chroms = chroms[order(chroms)]#
+nums = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+cdat = data.frame(chroms, nums)#
+cdat=cdat[order(cdat$nums),]#
+print(cdat)#
+chromlist = as.character(cdat$chroms)#
+save(cdat, file="metadata/chromList.Rdata")
+chroms = unique(as.character(dat$CHROM))
+#set up numbered chromosomes#
+chroms = unique(as.character(dat$CHROM))#
+chroms = chroms[!chroms %in% c("chrM", "chrUn")]#
+chroms = chroms[order(chroms)]#
+nums = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+cdat = data.frame(chroms, nums)#
+cdat=cdat[order(cdat$nums),]#
+print(cdat)#
+chromlist = as.character(cdat$chroms)#
+save(cdat, file="~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")
+#ADD NORMALIZED X VALUES#
+head(dat)#
+dat$norm.x = dat$BIN_START#
+for (chr in chromlist){#
+	len = max(dat$BIN_START[dat$CHROM==chr])#
+	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
+}#
+head(dat)
+depthFile = paste(resDir, paste(spp, 'MvsF_foldDiff.Rdata', sep="_"), sep="")
+RM(LIST=LS())
+rm(list=ls())
+setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons")
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")
+##########################
+library('DESeq2')#
+SPP="Pun"; spp='pun'
+SPP="Pun"; spp='pun'
+ddat = read.table("dna_100Kb_window_results/all_depth.tsv", header = T, stringsAsFactors=F)
+windows = paste(paste(ddat$chr,ddat$start,sep="_"), ddat$end, sep="_")
+ddat = read.table("dna_100Kb_window_results/all_depth.tsv", header = T, stringsAsFactors=F)
+windows = paste(paste(ddat$chr,ddat$start,sep="_"), ddat$end, sep="_")#
+wdat = ddat[,1:3]#
+chroms=wdat$chr#
+mids=apply(wdat[,2:3], 1, mean)#
+chrList = unique(chroms)#
+chrList = chrList[!chrList %in% c('chrM', 'chrUn')]#
+chrNum = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+chr.df = data.frame(chrList, chrNum)#
+chr.df=chr.df[order(chr.df$chrNum),]#
+chrList=as.character(chr.df$chrList)
+chrList=as.character(chr.df$chrList)
+#now subset the counts#
+counts=ddat[, grep(SPP, colnames(ddat))]#
+colnames(counts) = sub("_chrI.bam", "", colnames(counts))#
+head(counts)#
+dim(counts)
+head(counts)
+t = read.table("~/gitreps/pungitius_sex_chromosome/metadata/po_sex.txt")
+colnames(t) = c('sample', 'sex')
+t=t[grep('DRS', t$sample),]
+counts=ddat[,colnames(ddat) %in% t$sample]
+dim(counts)
+coldata=t
+t = read.table("~/gitreps/pungitius_sex_chromosome/metadata/multispecies_fish_info.tsv", header = T, sep="\t", row.names='sample')
+coldata = t[colnames(counts),]#
+head(coldata)
+head(coldata)#
+dim(coldata)
+sum(rownames(coldata) == colnames(counts)) == ncol(counts)
+#-------------- FPM WAY ----------------##
+m = apply(counts, 2, sum) / 1e6#
+fpm = sweep(counts, MARGIN=2, FUN='/', STATS=m)#
+head(fpm)#
+male.samples = rownames(coldata)[coldata$sex=='M']#
+female.samples = rownames(coldata)[coldata$sex=='F']#
+m.fpm = fpm[,male.samples]#
+f.fpm = fpm[,female.samples]#
+m.mn = apply(m.fpm, 1, mean)#
+f.mn = apply(f.fpm, 1, mean)
+res=data.frame(chr=ddat$chr, start=ddat$start, end=ddat$end, m.fpm=m.mn, f.fpm=f.mn)#
+res$ratio=res$m.fpm/res$f.fpm#
+res$logmf = log(res$ratio, 2)
+select = res[res$chr=='chrXIX',]
+plot(select$logmf~ select$start, ylim=c(-1,1))
+plot(select$logmf~ select$start, ylim=c(-1,1))
+#-------------- DESEQ WAY ----------------##
+#run DESeq#
+ddsHTSeq<-DESeqDataSetFromMatrix(counts,#
+	colData = coldata,#
+	design = formula(~sex))#
+dds = DESeq(ddsHTSeq, fitType='mean')#
+resultsNames(dds)#
+res=results(dds, contrast = c('sex', 'M', 'F'))#
+head(res)#
+rld=rlog(ddsHTSeq, fitType='mean')#
+colnames(rld) = colnames(counts)#
+rld.df = assay(rld)#
+#organize the results#
+res.df=cbind(wdat, data.frame(res))#
+#plot log2 fold diff female vs male#
+par(mfrow=c(5,5))#
+for (chr in chrList){#
+	cres = res.df[res.df$chr==chr,]#
+	plot(cres$log2FoldChange~cres$start, cex=0.5, main=chr, ylab = "M:F Log2 Ratio", xlab="Position (kb)")#
+	loess_fit <- loess(cres$log2FoldChange~cres$start, span = 0.2)#
+	lines(cres$start, predict(loess_fit), col='red', lwd=2)#
+	abline(h=0,lty=2, col='grey')#
+}
+head(res.df)#
+outName=paste(spp, 'MvsF_foldDiff.Rdata', sep="_")
+paste("results/all_window_results/", paste(spp, 'MvsF_foldDiff.Rdata', sep="_"), sep="")
+getwd()
+setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons/dna_100Kb_window_results")
+ddat = read.table("all_depth.tsv", header = T, stringsAsFactors=F)
+rm(list=ls())
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons/dna_100Kb_window_results")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#
+################################
+####### WINDOW DEPTH
+SPP="po"; spp="po"
+#upload and format data#
+ddat = read.table("all_depth.tsv", header = T, stringsAsFactors=F)#
+windows = paste(paste(ddat$chr,ddat$start,sep="_"), ddat$end, sep="_")#
+wdat = ddat[,1:3]#
+chroms=wdat$chr#
+mids=apply(wdat[,2:3], 1, mean)#
+chrList = unique(chroms)#
+chrList = chrList[!chrList %in% c('chrM', 'chrUn')]#
+chrNum = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+chr.df = data.frame(chrList, chrNum)#
+chr.df=chr.df[order(chr.df$chrNum),]#
+chrList=as.character(chr.df$chrList)
+#now subset the counts#
+counts=ddat[, grep(SPP, colnames(ddat))]#
+colnames(counts) = sub("_chrI.bam", "", colnames(counts))#
+head(counts)#
+dim(counts)
+ddat = read.table("all_depth.tsv", header = T, stringsAsFactors=F)
+windows = paste(paste(ddat$chr,ddat$start,sep="_"), ddat$end, sep="_")#
+wdat = ddat[,1:3]#
+chroms=wdat$chr#
+mids=apply(wdat[,2:3], 1, mean)#
+chrList = unique(chroms)#
+chrList = chrList[!chrList %in% c('chrM', 'chrUn')]#
+chrNum = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+chr.df = data.frame(chrList, chrNum)#
+chr.df=chr.df[order(chr.df$chrNum),]#
+chrList=as.character(chr.df$chrList)
+#optionally uncomment for pacific ocean samples#
+t = read.table("~/gitreps/pungitius_sex_chromosome/metadata/po_sex.txt")#
+colnames(t) = c('sample', 'sex')#
+t=t[grep('DRS', t$sample),]#
+counts=ddat[,colnames(ddat) %in% t$sample]#
+dim(counts)#
+coldata=t
+#set up trait data (double-check you have all samples still)#
+t = read.table("~/gitreps/pungitius_sex_chromosome/metadata/multispecies_fish_info.tsv", header = T, sep="\t", row.names='sample')#
+coldata = t[colnames(counts),]#
+head(coldata)#
+dim(coldata)#
+#
+#double-check names align#
+sum(rownames(coldata) == colnames(counts)) == ncol(counts)
+#-------------- FPM WAY ----------------##
+m = apply(counts, 2, sum) / 1e6#
+fpm = sweep(counts, MARGIN=2, FUN='/', STATS=m)#
+head(fpm)#
+male.samples = rownames(coldata)[coldata$sex=='M']#
+female.samples = rownames(coldata)[coldata$sex=='F']#
+m.fpm = fpm[,male.samples]#
+f.fpm = fpm[,female.samples]#
+m.mn = apply(m.fpm, 1, mean)#
+f.mn = apply(f.fpm, 1, mean)#
+res=data.frame(chr=ddat$chr, start=ddat$start, end=ddat$end, m.fpm=m.mn, f.fpm=f.mn)#
+res$ratio=res$m.fpm/res$f.fpm#
+res$logmf = log(res$ratio, 2)#
+#
+select = res[res$chr=='chrXII',]#
+select = res[res$chr=='chrXIX',]#
+plot(select$logmf~ select$start, ylim=c(-1,1))
+#-------------- DESEQ WAY ----------------##
+#run DESeq#
+ddsHTSeq<-DESeqDataSetFromMatrix(counts,#
+	colData = coldata,#
+	design = formula(~sex))#
+dds = DESeq(ddsHTSeq, fitType='mean')#
+resultsNames(dds)#
+res=results(dds, contrast = c('sex', 'M', 'F'))#
+head(res)#
+rld=rlog(ddsHTSeq, fitType='mean')#
+colnames(rld) = colnames(counts)#
+rld.df = assay(rld)#
+#organize the results#
+res.df=cbind(wdat, data.frame(res))#
+#plot log2 fold diff female vs male#
+par(mfrow=c(5,5))#
+for (chr in chrList){#
+	cres = res.df[res.df$chr==chr,]#
+	plot(cres$log2FoldChange~cres$start, cex=0.5, main=chr, ylab = "M:F Log2 Ratio", xlab="Position (kb)")#
+	loess_fit <- loess(cres$log2FoldChange~cres$start, span = 0.2)#
+	lines(cres$start, predict(loess_fit), col='red', lwd=2)#
+	abline(h=0,lty=2, col='grey')#
+}#
+#write out the depth results#
+head(res.df)
+paste(spp, 'MvsF_foldDiff.Rdata', sep="_"), sep="")
+paste("/all_window_results/", paste(spp, 'MvsF_foldDiff.Rdata', sep="_"), sep="")
+outName
+outName=paste(spp, 'MvsF_foldDiff.Rdata', sep="_")
+outName
+save(res.df, file=outName)
+spp
+RM(LIST=LS())
+rm(list=ls())
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons/dna_100Kb_window_results")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#
+################################
+####### WINDOW DEPTH ###########
+################################
+library('DESeq2')#
+SPP="Pun"; spp='pun'
+#upload and format data#
+ddat = read.table("all_depth.tsv", header = T, stringsAsFactors=F)#
+windows = paste(paste(ddat$chr,ddat$start,sep="_"), ddat$end, sep="_")#
+wdat = ddat[,1:3]#
+chroms=wdat$chr#
+mids=apply(wdat[,2:3], 1, mean)#
+chrList = unique(chroms)#
+chrList = chrList[!chrList %in% c('chrM', 'chrUn')]#
+chrNum = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+chr.df = data.frame(chrList, chrNum)#
+chr.df=chr.df[order(chr.df$chrNum),]#
+chrList=as.character(chr.df$chrList)
+counts=ddat[, grep(SPP, colnames(ddat))]#
+colnames(counts) = sub("_chrI.bam", "", colnames(counts))#
+head(counts)#
+dim(counts)
+#set up trait data (double-check you have all samples still)#
+t = read.table("~/gitreps/pungitius_sex_chromosome/metadata/multispecies_fish_info.tsv", header = T, sep="\t", row.names='sample')#
+coldata = t[colnames(counts),]#
+head(coldata)#
+dim(coldata)
+sum(rownames(coldata) == colnames(counts)) == ncol(counts)
+#-------------- FPM WAY ----------------##
+m = apply(counts, 2, sum) / 1e6#
+fpm = sweep(counts, MARGIN=2, FUN='/', STATS=m)#
+head(fpm)#
+male.samples = rownames(coldata)[coldata$sex=='M']#
+female.samples = rownames(coldata)[coldata$sex=='F']#
+m.fpm = fpm[,male.samples]#
+f.fpm = fpm[,female.samples]#
+m.mn = apply(m.fpm, 1, mean)#
+f.mn = apply(f.fpm, 1, mean)#
+res=data.frame(chr=ddat$chr, start=ddat$start, end=ddat$end, m.fpm=m.mn, f.fpm=f.mn)#
+res$ratio=res$m.fpm/res$f.fpm#
+res$logmf = log(res$ratio, 2)#
+#
+select = res[res$chr=='chrXII',]
+plot(select$logmf~ select$start, ylim=c(-1,1))
+plot(select$logmf~ select$start, ylim=c(-1,1))
+#-------------- DESEQ WAY ----------------##
+#run DESeq#
+ddsHTSeq<-DESeqDataSetFromMatrix(counts,#
+	colData = coldata,#
+	design = formula(~sex))#
+dds = DESeq(ddsHTSeq, fitType='mean')#
+resultsNames(dds)#
+res=results(dds, contrast = c('sex', 'M', 'F'))#
+head(res)#
+rld=rlog(ddsHTSeq, fitType='mean')#
+colnames(rld) = colnames(counts)#
+rld.df = assay(rld)
+#organize the results#
+res.df=cbind(wdat, data.frame(res))#
+#plot log2 fold diff female vs male#
+par(mfrow=c(5,5))#
+for (chr in chrList){#
+	cres = res.df[res.df$chr==chr,]#
+	plot(cres$log2FoldChange~cres$start, cex=0.5, main=chr, ylab = "M:F Log2 Ratio", xlab="Position (kb)")#
+	loess_fit <- loess(cres$log2FoldChange~cres$start, span = 0.2)#
+	lines(cres$start, predict(loess_fit), col='red', lwd=2)#
+	abline(h=0,lty=2, col='grey')#
+}#
+#write out the depth results#
+head(res.df)#
+outName=paste(spp, 'MvsF_foldDiff.Rdata', sep="_")
+outName
+genomeSizeFactors = sizeFactors(dds)
+save(genomeSizeFactors, file="~/gitreps/pungitius_sex_chromosome/metadata/genomeSizeFactors.Rdata") ## saved for other analyses
+rm(list=ls())
+#This script compares fold coverages from bedtools#
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons/dna_100Kb_window_results")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#
+################################
+####### WINDOW DEPTH ###########
+################################
+library('DESeq2')
+SPP="Tym"; spp='tym'
+#upload and format data#
+ddat = read.table("all_depth.tsv", header = T, stringsAsFactors=F)#
+windows = paste(paste(ddat$chr,ddat$start,sep="_"), ddat$end, sep="_")#
+wdat = ddat[,1:3]#
+chroms=wdat$chr#
+mids=apply(wdat[,2:3], 1, mean)#
+chrList = unique(chroms)#
+chrList = chrList[!chrList %in% c('chrM', 'chrUn')]#
+chrNum = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+chr.df = data.frame(chrList, chrNum)#
+chr.df=chr.df[order(chr.df$chrNum),]#
+chrList=as.character(chr.df$chrList)#
+#now subset the counts
+#USE THIS FOR PUN, SIN, AND TYM#
+#UNCOMMENT CHUNK BELOW FOR PACIFIC OCEAN 3-SPINE#
+#
+counts=ddat[, grep(SPP, colnames(ddat))]#
+colnames(counts) = sub("_chrI.bam", "", colnames(counts))#
+head(counts)#
+dim(counts)#
+# # #optionally uncomment for pacific ocean samples#
+# t = read.table("~/gitreps/pungitius_sex_chromosome/metadata/po_sex.txt")#
+# colnames(t) = c('sample', 'sex')#
+# t=t[grep('DRS', t$sample),]#
+# counts=ddat[,colnames(ddat) %in% t$sample]#
+# dim(counts)#
+# coldata=t#
+#set up trait data (double-check you have all samples still)#
+t = read.table("~/gitreps/pungitius_sex_chromosome/metadata/multispecies_fish_info.tsv", header = T, sep="\t", row.names='sample')#
+coldata = t[colnames(counts),]#
+head(coldata)#
+dim(coldata)
+#double-check names align#
+sum(rownames(coldata) == colnames(counts)) == ncol(counts)
+#-------------- FPM WAY ----------------##
+m = apply(counts, 2, sum) / 1e6#
+fpm = sweep(counts, MARGIN=2, FUN='/', STATS=m)#
+head(fpm)#
+male.samples = rownames(coldata)[coldata$sex=='M']#
+female.samples = rownames(coldata)[coldata$sex=='F']#
+m.fpm = fpm[,male.samples]#
+f.fpm = fpm[,female.samples]#
+m.mn = apply(m.fpm, 1, mean)#
+f.mn = apply(f.fpm, 1, mean)#
+res=data.frame(chr=ddat$chr, start=ddat$start, end=ddat$end, m.fpm=m.mn, f.fpm=f.mn)#
+res$ratio=res$m.fpm/res$f.fpm#
+res$logmf = log(res$ratio, 2)#
+#
+select = res[res$chr=='chrXII',]#
+# # select = res[res$chr=='chrXIX',] #use for 3-spine#
+plot(select$logmf~ select$start, ylim=c(-1,1))
+plot(select$logmf~ select$start, ylim=c(-1,1))
+plot(select$logmf~ select$start, ylim=c(-1,1))
+#-------------- DESEQ WAY ----------------##
+#run DESeq#
+ddsHTSeq<-DESeqDataSetFromMatrix(counts,#
+	colData = coldata,#
+	design = formula(~sex))#
+dds = DESeq(ddsHTSeq, fitType='mean')#
+resultsNames(dds)#
+res=results(dds, contrast = c('sex', 'M', 'F'))#
+head(res)#
+rld=rlog(ddsHTSeq, fitType='mean')#
+colnames(rld) = colnames(counts)#
+rld.df = assay(rld)
+#organize the results#
+res.df=cbind(wdat, data.frame(res))#
+#plot log2 fold diff female vs male#
+par(mfrow=c(5,5))#
+for (chr in chrList){#
+	cres = res.df[res.df$chr==chr,]#
+	plot(cres$log2FoldChange~cres$start, cex=0.5, main=chr, ylab = "M:F Log2 Ratio", xlab="Position (kb)")#
+	loess_fit <- loess(cres$log2FoldChange~cres$start, span = 0.2)#
+	lines(cres$start, predict(loess_fit), col='red', lwd=2)#
+	abline(h=0,lty=2, col='grey')#
+}
+#write out the depth results#
+head(res.df)#
+outName=paste(spp, 'MvsF_foldDiff.Rdata', sep="_")
+outName
+save(res.df, file=outName)
+rm(list=ls())
+#This script compares fold coverages from bedtools#
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons/dna_100Kb_window_results")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#
+################################
+####### WINDOW DEPTH ###########
+################################
+library('DESeq2')#
+SPP="Pun"; spp='pun'#
+SPP="Tym"; spp='tym'#
+SPP="Sin"; spp='sin'
+SPP
+#upload and format data#
+ddat = read.table("all_depth.tsv", header = T, stringsAsFactors=F)#
+windows = paste(paste(ddat$chr,ddat$start,sep="_"), ddat$end, sep="_")#
+wdat = ddat[,1:3]#
+chroms=wdat$chr#
+mids=apply(wdat[,2:3], 1, mean)#
+chrList = unique(chroms)#
+chrList = chrList[!chrList %in% c('chrM', 'chrUn')]#
+chrNum = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+chr.df = data.frame(chrList, chrNum)#
+chr.df=chr.df[order(chr.df$chrNum),]#
+chrList=as.character(chr.df$chrList)
+counts=ddat[, grep(SPP, colnames(ddat))]#
+colnames(counts) = sub("_chrI.bam", "", colnames(counts))#
+head(counts)#
+dim(counts)#
+# # #optionally uncomment for pacific ocean samples#
+# t = read.table("~/gitreps/pungitius_sex_chromosome/metadata/po_sex.txt")#
+# colnames(t) = c('sample', 'sex')#
+# t=t[grep('DRS', t$sample),]#
+# counts=ddat[,colnames(ddat) %in% t$sample]#
+# dim(counts)#
+# coldata=t#
+#set up trait data (double-check you have all samples still)#
+t = read.table("~/gitreps/pungitius_sex_chromosome/metadata/multispecies_fish_info.tsv", header = T, sep="\t", row.names='sample')#
+coldata = t[colnames(counts),]#
+head(coldata)#
+dim(coldata)#
+#
+#double-check names align#
+sum(rownames(coldata) == colnames(counts)) == ncol(counts)
+#-------------- FPM WAY ----------------##
+m = apply(counts, 2, sum) / 1e6#
+fpm = sweep(counts, MARGIN=2, FUN='/', STATS=m)#
+head(fpm)#
+male.samples = rownames(coldata)[coldata$sex=='M']#
+female.samples = rownames(coldata)[coldata$sex=='F']#
+m.fpm = fpm[,male.samples]#
+f.fpm = fpm[,female.samples]#
+m.mn = apply(m.fpm, 1, mean)#
+f.mn = apply(f.fpm, 1, mean)#
+res=data.frame(chr=ddat$chr, start=ddat$start, end=ddat$end, m.fpm=m.mn, f.fpm=f.mn)#
+res$ratio=res$m.fpm/res$f.fpm#
+res$logmf = log(res$ratio, 2)#
+#
+select = res[res$chr=='chrXII',]#
+# # select = res[res$chr=='chrXIX',] #use for 3-spine#
+plot(select$logmf~ select$start, ylim=c(-1,1))
+#-------------- DESEQ WAY ----------------##
+#run DESeq#
+ddsHTSeq<-DESeqDataSetFromMatrix(counts,#
+	colData = coldata,#
+	design = formula(~sex))#
+dds = DESeq(ddsHTSeq, fitType='mean')#
+resultsNames(dds)#
+res=results(dds, contrast = c('sex', 'M', 'F'))#
+head(res)#
+rld=rlog(ddsHTSeq, fitType='mean')#
+colnames(rld) = colnames(counts)#
+rld.df = assay(rld)#
+#organize the results#
+res.df=cbind(wdat, data.frame(res))#
+#plot log2 fold diff female vs male#
+par(mfrow=c(5,5))#
+for (chr in chrList){#
+	cres = res.df[res.df$chr==chr,]#
+	plot(cres$log2FoldChange~cres$start, cex=0.5, main=chr, ylab = "M:F Log2 Ratio", xlab="Position (kb)")#
+	loess_fit <- loess(cres$log2FoldChange~cres$start, span = 0.2)#
+	lines(cres$start, predict(loess_fit), col='red', lwd=2)#
+	abline(h=0,lty=2, col='grey')#
+}#
+#write out the depth results#
+head(res.df)#
+outName=paste(spp, 'MvsF_foldDiff.Rdata', sep="_")#
+save(res.df, file=outName)
