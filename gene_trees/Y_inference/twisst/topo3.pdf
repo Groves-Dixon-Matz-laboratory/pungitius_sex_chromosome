@@ -1,0 +1,116 @@
+%PDF-1.4
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+2 0 obj
+<<
+/Type /Pages
+/Kids [3 0 R]
+/Count 1
+>>
+endobj
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/MediaBox [0 0 7508.976377952757 6284.409448818898]
+/Contents 4 0 R
+/Resources 5 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 937
+>>
+stream
+q
+1 1 1 rg 1 1 1 RG
+2.834645669291339 0 0 -2.834645669291339 0 6284.409448818898 cm
+/Fnt0 12.0 Tf
+q
+0 J
+0 0 m 2649 0 l 2649 2217 l 0 2217 l 0 0 l h f
+Q
+q
+0 0 0 rg 0 0 0 RG
+/Fnt1 11.0 Tf
+1006 977 m 820 977 l S
+Q
+q
+0 0 0 rg 0 0 0 RG
+/Fnt2 23.0 Tf
+q 1 0 0 -1 762.0 988.0 cm BT (punY) Tj ET Q
+1006 977 m 1193 977 l S
+1193 977 m 1193 604 l S
+q 1 0 0 -1 1178.0 600.0 cm BT (sin) Tj ET Q
+1193 977 m 1456 1240 l S
+1456 1240 m 1829 1240 l S
+q 1 0 0 -1 1833.0 1251.0 cm BT (tym) Tj ET Q
+1456 1240 m 1456 1613 l S
+q 1 0 0 -1 1429.0 1640.0 cm BT (punX) Tj ET Q
+Q
+q
+0.5019607843137255 0.5019607843137255 0.5019607843137255 rg 0.5019607843137255 0.5019607843137255 0.5019607843137255 RG
+/Fnt2 23.0 Tf
+532 531 m 570 531 l S
+Q
+q
+0.5019607843137255 0.5019607843137255 0.5019607843137255 rg 0.5019607843137255 0.5019607843137255 0.5019607843137255 RG
+/Fnt3 10.0 Tf
+532 528 m 532 534 l S
+570 528 m 570 534 l S
+q 1 0 0 -1 572.0 537.0 cm BT (0.1) Tj ET Q
+Q
+Q
+endstream
+endobj
+5 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/Fnt1 <<
+/Type /Font
+/Subtype /TrueType
+/Encoding /WinAnsiEncoding
+/BaseFont /Helvetica
+>>
+/Fnt0 <<
+/Type /Font
+/Subtype /TrueType
+/Encoding /WinAnsiEncoding
+/BaseFont /LucidaGrande
+>>
+/Fnt3 <<
+/Type /Font
+/Subtype /TrueType
+/Encoding /WinAnsiEncoding
+/BaseFont /Helvetica-Oblique
+>>
+/Fnt2 <<
+/Type /Font
+/Subtype /TrueType
+/Encoding /WinAnsiEncoding
+/BaseFont /Helvetica
+>>
+>>
+>>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000247 00000 n 
+0000001235 00000 n 
+trailer
+<<
+/Size 6
+/Root 1 0 R
+>>
+startxref
+1689
+%%EOF

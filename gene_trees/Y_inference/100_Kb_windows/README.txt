@@ -1,0 +1,1 @@
+All 100Kb windows from chrXII with Y chromosomes labeled

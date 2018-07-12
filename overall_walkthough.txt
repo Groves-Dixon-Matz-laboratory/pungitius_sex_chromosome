@@ -18,3 +18,13 @@ Prepare and explore all window data using window_figures.R
 #--- pre_Y_inference ---#
 
 Follow data processing steps in gene_trees_walkthough.txt
+
+use y_consistent_trees.R to assess if gene trees are consistent with sex chromosomes
+
+#----- Y_inference -----#
+
+Follow data processing steps in y_assignment_trees.txt
+	major product is a new vcf chrXII_pun_Ylabeled.vcf, with Y haplotypes labeled for males
+	merge this back together with other phased data for downstream analyses with Y haplotypes
+
+

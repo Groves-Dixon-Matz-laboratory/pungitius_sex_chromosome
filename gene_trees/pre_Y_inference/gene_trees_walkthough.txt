@@ -189,9 +189,9 @@ done < chromList.txt
 ls all_*_trees.newick | wc -l
 
 
-######################################################
-########### BUILD TREES WITH FastTree ################
-######################################################
+#######################################################
+######## ASSEMBLE TREES INTO SINGLE FILES #############
+#######################################################
 
 
 #SET SPECIES
@@ -253,4 +253,35 @@ ls *SUB*.fasta | wc -l
 cat ${SPP}_${SEX}_allBiggestMonoRes.tsv | wc -l
 
 #This can be easily repeated for either sex
+
+
+#######################################################
+#################### RUN TWISST #######################
+#######################################################
+chr=chrXII
+TGROUP=groups.txt
+TREES=all_chrXII_trees.newick
+
+
+#set up the -g arguments for the command
+tgroups=$(cut -f 2 $TGROUP | sort | uniq | awk 'BEGIN {ORS=" "}{print "-g "$1}')
+
+
+#print out the command
+echo -e "\n\ntwisst.py -t $TREES -w weights0_${chr}.csv $tgroups --method threshold  --thresholdTable ~/gitreps/twisst/threshold_tables/binom_threshold_wilson_CI95_0.1.tsv --groupsFile $TGROUP\n\n" > twisstCall;cat twisstCall
+
+
+#now format the results
+grep -v "^#" weights0_${chr}.csv > weights_${chr}.csv
+grep "^#" weights0_${chr}.csv > topos_${chr}.csv
+
+
+#SEND TO MAC
+#EDIT weights0 file to remove the commented toplogies and save them as text file topos.txt
+#output as .csv and plot with plot_male_twisst.R or plot_Y_labeled_twisst.R
+
+
+
+#sex-group command
+twisst.py -t ${chr}_trees.newick -w weights0_${chr}.csv -g female_pun -g sin -g tym -g male_pun --method threshold  --thresholdTable ~/gitreps/twisst/threshold_tables/binom_threshold_wilson_CI95_0.1.tsv --groupsFile twisst_species_groups.txt 
 

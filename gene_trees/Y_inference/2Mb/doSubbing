@@ -1,0 +1,10 @@
+subset_fasta.py chrXII_MASTER_w0.fasta chromsToKeep.txt > chrXII_SUB_w0.fasta
+subset_fasta.py chrXII_MASTER_w1.fasta chromsToKeep.txt > chrXII_SUB_w1.fasta
+subset_fasta.py chrXII_MASTER_w2.fasta chromsToKeep.txt > chrXII_SUB_w2.fasta
+subset_fasta.py chrXII_MASTER_w3.fasta chromsToKeep.txt > chrXII_SUB_w3.fasta
+subset_fasta.py chrXII_MASTER_w4.fasta chromsToKeep.txt > chrXII_SUB_w4.fasta
+subset_fasta.py chrXII_MASTER_w5.fasta chromsToKeep.txt > chrXII_SUB_w5.fasta
+subset_fasta.py chrXII_MASTER_w6.fasta chromsToKeep.txt > chrXII_SUB_w6.fasta
+subset_fasta.py chrXII_MASTER_w7.fasta chromsToKeep.txt > chrXII_SUB_w7.fasta
+subset_fasta.py chrXII_MASTER_w8.fasta chromsToKeep.txt > chrXII_SUB_w8.fasta
+subset_fasta.py chrXII_MASTER_w9.fasta chromsToKeep.txt > chrXII_SUB_w9.fasta

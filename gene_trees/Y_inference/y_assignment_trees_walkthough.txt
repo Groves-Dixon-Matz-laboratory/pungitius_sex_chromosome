@@ -1,0 +1,310 @@
+#y_assignment_trees.txt
+#last updated 7-11-18
+#Instructions for phasing a sex chromosome and identifying the Y chromosome by building gene trees
+
+
+##########################################################
+################# BEAGLE ON CALLED GENOTYPES #############
+##########################################################
+#(if you have not already)
+#move the files for each species into their own directory then
+#rename them so these commands will be consistent
+
+
+NTHREAD=48
+NITERATIONS=25
+
+>runBeagle
+for file in *.vcf
+do CHROM=$(echo $file | awk '{split($1, a, "_");print a[1]}')
+OUT_PHASED=${file/.vcf/}_PHASED
+OUT_CHROMS=${file/.vcf/_chroms.vcf}
+echo "java -jar /work/02260/grovesd/stampede2/beagle/beagle.08Jun17.d8b.jar gt=$file chrom=$CHROM out=$OUT_PHASED nthreads=$NTHREAD niterations=$NITERATIONS && gunzip ${OUT_PHASED}.vcf.gz && haploidize_phased_vcf.py -i ${OUT_PHASED}.vcf -o $OUT_CHROMS" >> runBeagle
+done
+
+launcher_creator.py -n runBeagle -j runBeagle -q normal -a $allok -t 24:00:00 -e $email
+sbatch runBeagle.slurm
+
+#Note it cannot allocate memory with wayness of 24
+
+
+#############################################################
+################# BUILD TREES AND ASSIGN YS #################
+#############################################################
+#goal here is the identify the Y-chromosome haplotypes accross all of chr12
+#this is necessary because beagle does no consistently place the Y-chromosome
+#haplotypes on the same chromosome (left or right of | in VCF; or 'A' and 'B" in the "haploidized vcfs").
+#Y-assignment is done by iterative tree building, and flagging the alleles that are
+#consistently placed in exclusively male monophyletic groups.
+
+#window widths and slide sizes (in number of SNPs, not bps) were chosen arbitrarily as:
+width:	slide:
+2000	500
+1000	250
+500		100
+100		25
+
+#set up sliding window commands
+sliding_window_tree_launcher.py -i chrXII_pun_filt3_chroms.vcf -wSNP 500 -s 500 -rTrees True
+
+#Repeated the above for several different window and slide sizes:
+
+
+
+#For each set of windows, assemble the best RAxML trees:
+
+	CHR=chrXII
+	windowData=chrXII_w2000_s500_windowData.tsv
+	midBits="Ys_filt4"
+
+	#assemble trees into single file
+	>all_${CHR}_trees.newick
+	>treeFileList_${CHR}.txt
+	while read windowLine
+	do w=$(echo $windowLine | awk '{print $1}')
+	echo "RAxML_bestTree.${CHR}_${midBits}_${w}" >> treeFileList_${CHR}.txt
+	cat RAxML_bestTree.${CHR}_${midBits}_${w} >> all_${CHR}_trees.newick
+	done < $windowData
+
+
+#use y_assigner.py to call Y-like clades from the assembled gene trees from the different window lengths
+#eg:
+y_assigner.py -trees all_chrXII_trees.newick -i male_pun.txt -vcf chrXII_pun_chroms.vcf -o junk.tsv -yout w2000_500_yres.tsv -w chrXII_w2000_s500_windowData.tsv
+
+
+
+#Once you have a few sets of Y-assignments, get the concensus using yassigner.R
+yassigner.R *yres.tsv
+
+#output is concensusY.tsv
+
+
+#then rewrite the VCF to reflect the Y-assignments
+
+#example
+grep "##" sample.vcf > sampleY.vcf
+grep "#CHROM" sample.vcf > sampleRin.vcf
+sed -i.bak 's/#CHROM/CHROM/' sampleRin.vcf
+grep -v "^#" sample.vcf >> sampleRin.vcf
+rewrite_ylab_vcf.R sampleRin.vcf sampleY.tsv sampleY0.vcf
+cat sampleY0.vcf >> sampleY.vcf
+
+
+
+#full dataset
+grep "##" chrXII_pun_chroms.vcf > chrXII_pun_Ylabeled.vcf
+grep "#CHROM" chrXII_pun_chroms.vcf > Rin.vcf
+sed -i.bak 's/#CHROM/CHROM/' Rin.vcf
+grep -v "^#" chrXII_pun_chroms.vcf >> Rin.vcf
+rewrite_ylab_vcf.R Rin.vcf concensusY.tsv y0.vcf
+cat y0.vcf >> chrXII_pun_Ylabeled.vcf
+
+
+#merge chrXII_pun_Ylabeled.vcf with other phased genotypes to make file genusPun_chr12_Ylab_chroms.vcf.gz
+#genusPun_chr12_Ylab_chroms.vcf.gz has each member of the Pungitius present with the X and Y labeled for male P. pungitius
+
+
+##################################################
+################### RUN TWISST ###################
+##################################################
+
+
+
+
+
+###################################################
+################ TESTING THE CALLS ################
+###################################################
+#test the calls by rebuilding trees. Should almost always get the Ys making monophyletic groups
+#once you have your VCFs assembled on pinetop:
+windowSize=500000
+sliding_window_tree_launcher.py -i chrXII_pun_Ylabeled.vcf -wBP $windowSize -s $windowSize -rTrees True
+
+
+
+
+
+
+####################################################
+######## MULTISPECIES TREE BUILDING WITH YS ########
+####################################################
+#download the phased species vcfs
+cp /corral-repl/utexas/Recombining-sex-chro/pungitius/vcfs/filt4_phased/chrXII_*.gz .
+gunzip *.gz
+
+#haploidize them
+for file in *PHASED.vcf 
+do echo "haploidize_phased_vcf.py -i $file -o ${file/PHASED.vcf/chroms.vcf}"
+done
+
+
+#double-check you have the same variants in the vcf files
+
+
+#repeat the walkthrough gene_treesV2.txt but use the Ylabeled vcf for P.pungitius
+
+#once you have your haploidized vcfs assembled:
+windowSize=2000000
+sliding_window_tree_launcher.py -i *_chroms.vcf -s $windowSize -wBP $windowSize -rTrees True
+launcher_creator.py -n slidingWindowTreeCommands.txt -j slidingWindowTreeCommands.txt -q normal -N 2 -w 48 -a tagmap -t 02:00:00 -e $email
+sbatch slidingWindowTreeCommands.txt.slurm
+
+
+#make sure you got all the fasta files
+ls windowFastas_w100000_s100000_bp/*.fasta | wc -l
+cat slidingWindowTreeCommands.txt | wc -l
+
+
+#make species list
+echo "js
+po
+wheat
+pun
+sin
+tym" > speciesList.txt
+
+#make chromosome list
+grep "^>" $stickleGenome | awk '{split($1, a, ">"); print a[2]}' > chromList.txt
+
+
+#make sure you have correct number files for each species
+while read spp; do count=$(ls chr*${spp}*.fasta | wc -l); echo -e "$spp\t$count";done<speciesList.txt
+
+
+#make master fasta files with all samples
+#This will make it easier to subset whichever samples you want later
+> catMaster
+for file in chr*_pun_*.fasta
+do ALL=${file/_pun_chroms/_*_chroms}
+echo $ALL | wc -w
+MASTER=${file/_pun_chroms/_MASTER}
+echo "cat $ALL > $MASTER" >> catMaster
+done
+
+
+#then subset
+> doSubbing
+for file in *MASTER*.fasta; do echo "subset_fasta.py $file chromsToKeep.txt > ${file/_MASTER_/_SUB_}" >> doSubbing
+done
+
+#check that its working
+
+launcher_creator.py -n doSubbing -j doSubbing -q normal -N 1 -w 48 -t 01:00:00 -a tagmap
+sbatch doSubbing.slurm
+
+#check they all have the right number of sequences
+for file in *SUB*; do grep "^>" $file | wc -l; done
+
+
+#############################################################
+########### BUILD SLIDING WINDOW TREES WITH RAxML ###########
+#############################################################
+
+#print outgroup names in comma delimited eg:
+cat chromsToKeep.txt | awk 'BEGIN {ORS = ","}{print $1}'
+
+#then make a variable for outgroup
+OUTGROUP="male_wheatlandi_A,female_wheatlandi_A,POF3_A,5_PO_F_A,DRS012299_A,DRS012297_A,7_JS_M_A,5_JS_M_A,DRS012292_A,DRS012287_A,male_wheatlandi_B,female_wheatlandi_B,POF3_B,5_PO_F_B,DRS012299_B,DRS012297_B,7_JS_M_B,5_JS_M_B,DRS012292_B,DRS012287_B"
+
+SPP=allPun
+>raxml_${SPP}
+for file in *_SUB_*.fasta; do echo "$RAXML -s $file -n ${file/.fasta/} -m GTRCAT -f d -p 12345 -T 12 -o $OUTGROUP" >>raxml_${SPP} ;done
+
+launcher_creator.py -n raxml_${SPP} -j raxml_${SPP} -q normal -N 4 -w 2 -t 8:00:00 -a tagmap
+
+##############################################################
+############## BUILD PAR / SDR TREES WITH RAxML ##############
+##############################################################
+#build trees from par and SDR using different phylogenetic methods
+
+#navigate to where you have the chroms files saved for each species
+#with the Y-labeled chroms for Ppungitius
+ls *.vcf
+		#chrXII_js_chroms.vcf  chrXII_po_chroms.vcf  chrXII_pun_Ylabeled.vcf  chrXII_sin_chroms.vcf  chrXII_tym_chroms.vcf  chrXII_wheat_chroms.vcf
+
+
+
+#merge the vcfs
+for file in *.vcf; do echo $file; bgzip $file && tabix -p ${file}.gz;done
+vcf-merge *.gz > chrXII_all_chroms.vcf
+bgzip chrXII_all_chroms.vcf
+tabix -p vcf chrXII_all_chroms.vcf
+vk phylo tree nj chrXII_all_chroms.vcf.gz chrXII:1-2000000 > par_nj.newick
+vk phylo tree upgma chrXII_all_chroms.vcf.gz chrXII:1-2000000 > par_upgma.newick
+vk phylo tree nj chrXII_all_chroms.vcf.gz chrXII:4000000-17000000 > sdr_nj.newick
+vk phylo tree upgma chrXII_all_chroms.vcf.gz chrXII:4000000-17000000 > sdr_upgma.newick
+
+#get upgma and neighborjoining trees
+vk phylo tree nj chrXII_all_chroms.vcf.gz chrXII:1-2000000 > par_nj.newick
+
+#separate the PAR and SDR
+>subParSdr
+for file in *.vcf.gz
+do echo "vcftools --gzvcf $file --from-bp 0 --to-bp 2000000 --chr chrXII --recode --out ${file/.vcf.gz}_PAR">>subParSdr
+echo "vcftools --gzvcf $file --from-bp 4000000 --to-bp 17000000 --chr chrXII --recode --out ${file/.vcf.gz}_SDR">>subParSdr
+done
+
+
+#output fastas
+for file in *.vcf; do echo "vk phylo fasta $file > ${file/.recode.vcf/}.fasta" >> getfa;done
+
+#cat together
+cat *PAR.fasta > chrXII_all_PAR.fasta
+cat *SDR.fasta > chrXII_all_SDR.fasta
+
+#build trees
+OUTGROUP="male_wheatlandi_A,female_wheatlandi_A,POF3_A,5_PO_F_A,DRS012299_A,DRS012297_A,7_JS_M_A,5_JS_M_A,DRS012292_A,DRS012287_A,male_wheatlandi_B,female_wheatlandi_B,POF3_B,5_PO_F_B,DRS012299_B,DRS012297_B,7_JS_M_B,5_JS_M_B,DRS012292_B,DRS012287_B"
+>sdrTrees
+echo "$RAXML -s chrXII_all_PAR.fasta -n par_gtrcat -m GTRCAT -f d -p 12345 -T 12" >> sdrTrees
+echo "$RAXML -s chrXII_all_SDR.fasta -n sdr_gtrcat -m GTRCAT -f d -p 12345 -T 12" >> sdrTrees
+echo "$RAXML -s chrXII_all_PAR.fasta -n par_gtrgamma -m GTRGAMMA -f d -p 12345 -T 12" >> sdrTrees
+echo "$RAXML -s chrXII_all_SDR.fasta -n sdr_gtrgamma -m GTRGAMMA -f d -p 12345 -T 12" >> sdrTrees
+echo "$RAXML -s chrXII_all_PAR.fasta -n par_HKY85 -m GTRCAT --HKY85 -f d -p 12345 -T 12" >> sdrTrees
+echo "$RAXML -s chrXII_all_SDR.fasta -n sdr_HKY85 -m GTRCAT --HKY85 -f d -p 12345 -T 12" >> sdrTrees
+echo "$RAXML -s chrXII_all_SDR.fasta -n par_noRateHet -m CAT -V -f d -p 12345 -T 12" >> sdrTrees
+echo "$RAXML -s chrXII_all_SDR.fasta -n sdr_noRateHet -m CAT -V -f d -p 12345 -T 12" >> sdrTrees
+
+####################################################
+################# ADD SEX TO TREES #################
+####################################################
+#note there seems to be something with different versions of sed. Maybe leave off '' after -i with some.
+
+while read ss
+do SAMPLE=$(echo $ss | awk '{print $1}')
+SEX=$(echo $ss | awk '{print $3}')
+echo -e "Replacing names for: ${SAMPLE}\t${SEX}"
+for file in RAxML_bestTree.*
+do sed -i '' "s/${SAMPLE}_A/${SAMPLE}_A_${SEX}/" $file
+sed -i '' "s/${SAMPLE}_B/${SAMPLE}_B_${SEX}/" $file
+done
+done < pun_pheno.txt
+
+
+
+for file in RAxML_bestTree
+
+sliding_window_tree_launcher.py -i chrXII_pun_chroms.recode.vcf -s 50 -wSNP 50 -qTrees True
+
+
+####################################################
+################ PCAS WITH Y LABELS ################
+####################################################
+#copy over the phased chroms from sin and tym and the y labeled  (all filt4)
+cp ../gene_trees/chrXII_tym_chroms.vcf .
+cp ../gene_trees/chrXII_sinchroms.vcf .
+cp /corral-repl/utexas/Recombining-sex-chro/pungitius/vcfs/filt4_phased/chrXII_pun_Ylabeled.vcf.gz .
+
+#doublecheck they are all the same size
+#then merge them
+vcf-merge chrXII_pun_Ylabeled.vcf.gz chrXII_sin_chroms.vcf.gz chrXII_tym_chroms.vcf.gz > genusPun_chr12_chroms.vcf
+
+#then subset for the PAR and SDR
+vcftools --vcf genusPun_chr12_chroms.vcf --from-bp 4000000 --to-bp 17000000 --chr chrXII --recode --out genusPun_chr12_SDR
+vcftools --vcf genusPun_chr12_chroms.vcf --from-bp 0 --to-bp 2000000 --chr chrXII --recode --out genusPun_chr12_PAR
+
+#then build PCAs
+basic_snp_pca.R genusPun_chr12_chroms.vcf 12
+basic_snp_pca.R genusPun_chr12_PAR.recode.vcf 12
+basic_snp_pca.R genusPun_chr12_SDR.recode.vcf 12
+
+

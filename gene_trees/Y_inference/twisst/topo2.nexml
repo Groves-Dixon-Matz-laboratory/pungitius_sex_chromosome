@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><nex:nexml xmlns:nex="http://www.nexml.org/2009" xmlns="http://www.nexml.org/2009" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generator="org.nexml.model.impl.DocumentImpl" version="0.9" xmlns:root="">
+  <otus id="otus1"/>
+  <trees id="trees2" otus="otus1">
+    <tree about="#tree3" id="tree3" label="Tree1" xsi:type="nex:FloatTree">
+      <meta content="node4" datatype="xsd:string" id="meta17" property="root" xsi:type="nex:LiteralMeta"/>
+      <node id="node4"/>
+      <node id="node5" label="punY"/>
+      <node id="node6"/>
+      <node id="node7"/>
+      <node id="node8" label="sin"/>
+      <node id="node9" label="punX"/>
+      <node id="node12" label="tym"/>
+      <edge id="edge10" length="1.0" source="node7" target="node8"/>
+      <edge id="edge11" length="1.0" source="node7" target="node9"/>
+      <edge id="edge13" length="1.0" source="node6" target="node7"/>
+      <edge id="edge14" length="1.0" source="node6" target="node12"/>
+      <edge id="edge15" length="0.5" source="node4" target="node5"/>
+      <edge id="edge16" length="0.5" source="node4" target="node6"/>
+    </tree>
+  </trees>
+</nex:nexml>

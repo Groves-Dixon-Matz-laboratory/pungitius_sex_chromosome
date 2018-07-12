@@ -1,0 +1,1 @@
+twisst.py -t all_chrXII_trees.newick -w weights0.csv --method threshold --thresholdTable ~/gitreps/twisst/threshold_tables/binom_threshold_wilson_CI95_0.1.tsv --groupsFile groups.txt -g sin -g tym -g punX -g punY -g Ga

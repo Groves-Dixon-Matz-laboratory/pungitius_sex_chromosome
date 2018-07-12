@@ -1,0 +1,3 @@
+(punY,((sin,tym),punX));
+(punY,((sin,punX),tym));
+(punY(sin,(tym,punX)));

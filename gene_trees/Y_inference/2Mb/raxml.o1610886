@@ -1,0 +1,1013 @@
+Launcher: Setup complete.
+
+------------- SUMMARY ---------------
+   Number of hosts:    5
+   Working directory:  /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only
+   Processes per host: 2
+   Total processes:    10
+   Total jobs:         10
+   Scheduling method:  dynamic
+
+-------------------------------------
+Launcher: Starting parallel tasks...
+Launcher: Task 0 running job 2 on nid00181 (/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w1.fasta -n chrXII_SUB_w1 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B)
+Launcher: Task 1 running job 1 on nid00181 (/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w0.fasta -n chrXII_SUB_w0 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B)
+Launcher: Task 6 running job 4 on nid00449 (/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w3.fasta -n chrXII_SUB_w3 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B)
+Launcher: Task 7 running job 3 on nid00449 (/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w2.fasta -n chrXII_SUB_w2 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B)
+Launcher: Task 3 running job 6 on nid00182 (/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w5.fasta -n chrXII_SUB_w5 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B)
+Launcher: Task 2 running job 5 on nid00182 (/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w4.fasta -n chrXII_SUB_w4 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B)
+Launcher: Task 8 running job 8 on nid00728 (/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w7.fasta -n chrXII_SUB_w7 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B)
+Launcher: Task 9 running job 7 on nid00728 (/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w6.fasta -n chrXII_SUB_w6 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B)
+
+RAxML can't, parse the alignment file as phylip file 
+it will now try to parse it as FASTA file
+
+
+
+Using BFGS method to optimize GTR rate parameters, to disable this specify "--no-bfgs" 
+
+
+This is the RAxML Master Pthread
+
+This is RAxML Worker Pthread Number: 1
+
+This is RAxML Worker Pthread Number: 4
+
+This is RAxML Worker Pthread Number: 2
+
+This is RAxML Worker Pthread Number: 3
+
+This is RAxML Worker Pthread Number: 5
+
+This is RAxML Worker Pthread Number: 6
+
+This is RAxML Worker Pthread Number: 7
+
+This is RAxML Worker Pthread Number: 8
+
+This is RAxML Worker Pthread Number: 9
+
+
+This is RAxML version 8.2.9 released by Alexandros Stamatakis on July 20 2016.
+
+
+RAxML can't, parse the alignment file as phylip file 
+it will now try to parse it as FASTA file
+
+
+
+Using BFGS method to optimize GTR rate parameters, to disable this specify "--no-bfgs" 
+
+
+This is the RAxML Master Pthread
+
+This is RAxML Worker Pthread Number: 1
+
+This is RAxML Worker Pthread Number: 3
+
+This is RAxML Worker Pthread Number: 2
+
+This is RAxML Worker Pthread Number: 4
+
+This is RAxML Worker Pthread Number: 5
+
+This is RAxML Worker Pthread Number: 6
+
+This is RAxML Worker Pthread Number: 7
+
+This is RAxML Worker Pthread Number: 8
+
+This is RAxML Worker Pthread Number: 9
+
+
+This is RAxML version 8.2.9 released by Alexandros Stamatakis on July 20 2016.
+
+With greatly appreciated code contributions by:
+Andre Aberer      (HITS)
+Simon Berger      (HITS)
+Alexey Kozlov     (HITS)
+Kassian Kobert    (HITS)
+David Dao         (KIT and HITS)
+Sarah Lutteropp   (KIT and HITS)
+Nick Pattengale   (Sandia)
+Wayne Pfeiffer    (SDSC)
+Akifumi S. Tanabe (NRIFS)
+Charlie Taylor    (UF)
+
+
+Alignment has 37298 distinct alignment patterns
+
+Proportion of gaps and completely undetermined characters in this alignment: 0.00%
+
+RAxML rapid hill-climbing mode
+
+Using 1 distinct models/data partitions with joint branch length optimization
+
+
+Executing 1 inferences on the original alignment using 1 distinct randomized MP trees
+
+All free model parameters will be estimated by RAxML
+ML estimate of 25 per site rate categories
+
+Likelihood of final tree will be evaluated and optimized under GAMMA
+
+GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
+
+Partition: 0
+Alignment Patterns: 37298
+Name: No Name Provided
+DataType: DNA
+Substitution Matrix: GTR
+
+
+
+
+RAxML was called as follows:
+
+/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w0.fasta -n chrXII_SUB_w0 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B 
+
+
+Partition: 0 with name: No Name Provided
+
+RAxML can't, parse the alignment file as phylip file 
+it will now try to parse it as FASTA file
+
+
+
+Using BFGS method to optimize GTR rate parameters, to disable this specify "--no-bfgs" 
+
+
+This is the RAxML Master Pthread
+
+This is RAxML Worker Pthread Number: 1
+
+This is RAxML Worker Pthread Number: 3
+
+This is RAxML Worker Pthread Number: 5
+
+This is RAxML Worker Pthread Number: 4
+
+This is RAxML Worker Pthread Number: 2
+
+This is RAxML Worker Pthread Number: 6
+
+This is RAxML Worker Pthread Number: 7
+
+This is RAxML Worker Pthread Number: 8
+
+This is RAxML Worker Pthread Number: 9
+
+
+This is RAxML version 8.2.9 released by Alexandros Stamatakis on July 20 2016.
+
+
+RAxML can't, parse the alignment file as phylip file 
+it will now try to parse it as FASTA file
+
+
+
+Using BFGS method to optimize GTR rate parameters, to disable this specify "--no-bfgs" 
+
+
+This is the RAxML Master Pthread
+
+This is RAxML Worker Pthread Number: 1
+
+This is RAxML Worker Pthread Number: 2
+
+This is RAxML Worker Pthread Number: 3
+
+This is RAxML Worker Pthread Number: 4
+
+This is RAxML Worker Pthread Number: 5
+
+This is RAxML Worker Pthread Number: 6
+
+This is RAxML Worker Pthread Number: 7
+
+This is RAxML Worker Pthread Number: 8
+
+This is RAxML Worker Pthread Number: 9
+
+
+This is RAxML version 8.2.9 released by Alexandros Stamatakis on July 20 2016.
+
+With greatly appreciated code contributions by:
+Andre Aberer      (HITS)
+Simon Berger      (HITS)
+Alexey Kozlov     (HITS)
+Kassian Kobert    (HITS)
+David Dao         (KIT and HITS)
+Sarah Lutteropp   (KIT and HITS)
+Nick Pattengale   (Sandia)
+Wayne Pfeiffer    (SDSC)
+Akifumi S. Tanabe (NRIFS)
+Charlie Taylor    (UF)
+
+
+Alignment has 48456 distinct alignment patterns
+
+Proportion of gaps and completely undetermined characters in this alignment: 0.00%
+
+RAxML rapid hill-climbing mode
+
+Using 1 distinct models/data partitions with joint branch length optimization
+
+
+Executing 1 inferences on the original alignment using 1 distinct randomized MP trees
+
+All free model parameters will be estimated by RAxML
+ML estimate of 25 per site rate categories
+
+Likelihood of final tree will be evaluated and optimized under GAMMA
+
+GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
+
+Partition: 0
+Alignment Patterns: 48456
+Name: No Name Provided
+DataType: DNA
+Substitution Matrix: GTR
+
+
+
+
+RAxML was called as follows:
+
+/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w1.fasta -n chrXII_SUB_w1 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B 
+
+
+Partition: 0 with name: No Name Provided
+
+RAxML can't, parse the alignment file as phylip file 
+it will now try to parse it as FASTA file
+
+
+
+Using BFGS method to optimize GTR rate parameters, to disable this specify "--no-bfgs" 
+
+
+This is the RAxML Master Pthread
+
+This is RAxML Worker Pthread Number: 8
+
+This is RAxML Worker Pthread Number: 4
+
+This is RAxML Worker Pthread Number: 9
+
+This is RAxML Worker Pthread Number: 7
+
+This is RAxML Worker Pthread Number: 2
+
+This is RAxML Worker Pthread Number: 6
+
+This is RAxML Worker Pthread Number: 3
+
+This is RAxML Worker Pthread Number: 1
+
+This is RAxML Worker Pthread Number: 5
+
+
+This is RAxML version 8.2.9 released by Alexandros Stamatakis on July 20 2016.
+
+
+RAxML can't, parse the alignment file as phylip file 
+it will now try to parse it as FASTA file
+
+
+
+Using BFGS method to optimize GTR rate parameters, to disable this specify "--no-bfgs" 
+
+
+This is the RAxML Master Pthread
+
+This is RAxML Worker Pthread Number: 1
+
+This is RAxML Worker Pthread Number: 3
+
+This is RAxML Worker Pthread Number: 4
+
+This is RAxML Worker Pthread Number: 2
+
+This is RAxML Worker Pthread Number: 5
+
+This is RAxML Worker Pthread Number: 6
+
+This is RAxML Worker Pthread Number: 7
+
+This is RAxML Worker Pthread Number: 8
+
+This is RAxML Worker Pthread Number: 9
+
+
+This is RAxML version 8.2.9 released by Alexandros Stamatakis on July 20 2016.
+
+
+RAxML can't, parse the alignment file as phylip file 
+it will now try to parse it as FASTA file
+
+
+
+Using BFGS method to optimize GTR rate parameters, to disable this specify "--no-bfgs" 
+
+
+This is the RAxML Master Pthread
+
+This is RAxML Worker Pthread Number: 1
+
+This is RAxML Worker Pthread Number: 3
+
+This is RAxML Worker Pthread Number: 4
+
+This is RAxML Worker Pthread Number: 2
+
+This is RAxML Worker Pthread Number: 5
+
+This is RAxML Worker Pthread Number: 6
+
+This is RAxML Worker Pthread Number: 7
+
+This is RAxML Worker Pthread Number: 8
+
+This is RAxML Worker Pthread Number: 9
+
+
+This is RAxML version 8.2.9 released by Alexandros Stamatakis on July 20 2016.
+
+
+RAxML can't, parse the alignment file as phylip file 
+it will now try to parse it as FASTA file
+
+
+
+Using BFGS method to optimize GTR rate parameters, to disable this specify "--no-bfgs" 
+
+
+This is the RAxML Master Pthread
+
+This is RAxML Worker Pthread Number: 1
+
+This is RAxML Worker Pthread Number: 3
+
+This is RAxML Worker Pthread Number: 4
+
+This is RAxML Worker Pthread Number: 2
+
+This is RAxML Worker Pthread Number: 5
+
+This is RAxML Worker Pthread Number: 6
+
+This is RAxML Worker Pthread Number: 7
+
+This is RAxML Worker Pthread Number: 8
+
+This is RAxML Worker Pthread Number: 9
+
+
+This is RAxML version 8.2.9 released by Alexandros Stamatakis on July 20 2016.
+
+With greatly appreciated code contributions by:
+Andre Aberer      (HITS)
+Simon Berger      (HITS)
+Alexey Kozlov     (HITS)
+Kassian Kobert    (HITS)
+David Dao         (KIT and HITS)
+Sarah Lutteropp   (KIT and HITS)
+Nick Pattengale   (Sandia)
+Wayne Pfeiffer    (SDSC)
+Akifumi S. Tanabe (NRIFS)
+Charlie Taylor    (UF)
+
+
+Alignment has 70336 distinct alignment patterns
+
+Proportion of gaps and completely undetermined characters in this alignment: 0.00%
+
+RAxML rapid hill-climbing mode
+
+Using 1 distinct models/data partitions with joint branch length optimization
+
+
+Executing 1 inferences on the original alignment using 1 distinct randomized MP trees
+
+All free model parameters will be estimated by RAxML
+ML estimate of 25 per site rate categories
+
+Likelihood of final tree will be evaluated and optimized under GAMMA
+
+GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
+
+Partition: 0
+Alignment Patterns: 70336
+Name: No Name Provided
+DataType: DNA
+Substitution Matrix: GTR
+
+
+
+
+RAxML was called as follows:
+
+/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w2.fasta -n chrXII_SUB_w2 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B 
+
+
+Partition: 0 with name: No Name Provided
+With greatly appreciated code contributions by:
+Andre Aberer      (HITS)
+Simon Berger      (HITS)
+Alexey Kozlov     (HITS)
+Kassian Kobert    (HITS)
+David Dao         (KIT and HITS)
+Sarah Lutteropp   (KIT and HITS)
+Nick Pattengale   (Sandia)
+Wayne Pfeiffer    (SDSC)
+Akifumi S. Tanabe (NRIFS)
+Charlie Taylor    (UF)
+
+
+Alignment has 71256 distinct alignment patterns
+
+Proportion of gaps and completely undetermined characters in this alignment: 0.00%
+
+RAxML rapid hill-climbing mode
+
+Using 1 distinct models/data partitions with joint branch length optimization
+
+
+Executing 1 inferences on the original alignment using 1 distinct randomized MP trees
+
+All free model parameters will be estimated by RAxML
+ML estimate of 25 per site rate categories
+
+Likelihood of final tree will be evaluated and optimized under GAMMA
+
+GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
+
+Partition: 0
+Alignment Patterns: 71256
+Name: No Name Provided
+DataType: DNA
+Substitution Matrix: GTR
+
+
+
+
+RAxML was called as follows:
+
+/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w3.fasta -n chrXII_SUB_w3 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B 
+
+
+Partition: 0 with name: No Name Provided
+With greatly appreciated code contributions by:
+Andre Aberer      (HITS)
+Simon Berger      (HITS)
+Alexey Kozlov     (HITS)
+Kassian Kobert    (HITS)
+David Dao         (KIT and HITS)
+Sarah Lutteropp   (KIT and HITS)
+Nick Pattengale   (Sandia)
+Wayne Pfeiffer    (SDSC)
+Akifumi S. Tanabe (NRIFS)
+Charlie Taylor    (UF)
+
+
+Alignment has 70861 distinct alignment patterns
+
+Proportion of gaps and completely undetermined characters in this alignment: 0.00%
+
+RAxML rapid hill-climbing mode
+
+Using 1 distinct models/data partitions with joint branch length optimization
+
+
+Executing 1 inferences on the original alignment using 1 distinct randomized MP trees
+
+All free model parameters will be estimated by RAxML
+ML estimate of 25 per site rate categories
+
+Likelihood of final tree will be evaluated and optimized under GAMMA
+
+GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
+
+Partition: 0
+Alignment Patterns: 70861
+Name: No Name Provided
+DataType: DNA
+Substitution Matrix: GTR
+
+
+
+
+RAxML was called as follows:
+
+/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w7.fasta -n chrXII_SUB_w7 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B 
+
+
+Partition: 0 with name: No Name Provided
+With greatly appreciated code contributions by:
+Andre Aberer      (HITS)
+Simon Berger      (HITS)
+Alexey Kozlov     (HITS)
+Kassian Kobert    (HITS)
+David Dao         (KIT and HITS)
+Sarah Lutteropp   (KIT and HITS)
+Nick Pattengale   (Sandia)
+Wayne Pfeiffer    (SDSC)
+Akifumi S. Tanabe (NRIFS)
+Charlie Taylor    (UF)
+
+
+Alignment has 78894 distinct alignment patterns
+
+Proportion of gaps and completely undetermined characters in this alignment: 0.00%
+
+RAxML rapid hill-climbing mode
+
+Using 1 distinct models/data partitions with joint branch length optimization
+
+
+Executing 1 inferences on the original alignment using 1 distinct randomized MP trees
+
+All free model parameters will be estimated by RAxML
+ML estimate of 25 per site rate categories
+
+Likelihood of final tree will be evaluated and optimized under GAMMA
+
+GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
+
+Partition: 0
+Alignment Patterns: 78894
+Name: No Name Provided
+DataType: DNA
+Substitution Matrix: GTR
+
+
+
+
+RAxML was called as follows:
+
+/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w6.fasta -n chrXII_SUB_w6 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B 
+
+
+Partition: 0 with name: No Name Provided
+With greatly appreciated code contributions by:
+Andre Aberer      (HITS)
+Simon Berger      (HITS)
+Alexey Kozlov     (HITS)
+Kassian Kobert    (HITS)
+David Dao         (KIT and HITS)
+Sarah Lutteropp   (KIT and HITS)
+Nick Pattengale   (Sandia)
+Wayne Pfeiffer    (SDSC)
+Akifumi S. Tanabe (NRIFS)
+Charlie Taylor    (UF)
+
+
+Alignment has 82210 distinct alignment patterns
+
+Proportion of gaps and completely undetermined characters in this alignment: 0.00%
+
+RAxML rapid hill-climbing mode
+
+Using 1 distinct models/data partitions with joint branch length optimization
+
+
+Executing 1 inferences on the original alignment using 1 distinct randomized MP trees
+
+All free model parameters will be estimated by RAxML
+ML estimate of 25 per site rate categories
+
+Likelihood of final tree will be evaluated and optimized under GAMMA
+
+GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
+
+Partition: 0
+Alignment Patterns: 82210
+Name: No Name Provided
+DataType: DNA
+Substitution Matrix: GTR
+
+
+
+
+RAxML was called as follows:
+
+/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w4.fasta -n chrXII_SUB_w4 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B 
+
+
+Partition: 0 with name: No Name Provided
+With greatly appreciated code contributions by:
+Andre Aberer      (HITS)
+Simon Berger      (HITS)
+Alexey Kozlov     (HITS)
+Kassian Kobert    (HITS)
+David Dao         (KIT and HITS)
+Sarah Lutteropp   (KIT and HITS)
+Nick Pattengale   (Sandia)
+Wayne Pfeiffer    (SDSC)
+Akifumi S. Tanabe (NRIFS)
+Charlie Taylor    (UF)
+
+
+Alignment has 84390 distinct alignment patterns
+
+Proportion of gaps and completely undetermined characters in this alignment: 0.00%
+
+RAxML rapid hill-climbing mode
+
+Using 1 distinct models/data partitions with joint branch length optimization
+
+
+Executing 1 inferences on the original alignment using 1 distinct randomized MP trees
+
+All free model parameters will be estimated by RAxML
+ML estimate of 25 per site rate categories
+
+Likelihood of final tree will be evaluated and optimized under GAMMA
+
+GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
+
+Partition: 0
+Alignment Patterns: 84390
+Name: No Name Provided
+DataType: DNA
+Substitution Matrix: GTR
+
+
+
+
+RAxML was called as follows:
+
+/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w5.fasta -n chrXII_SUB_w5 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B 
+
+
+Partition: 0 with name: No Name Provided
+Launcher: Task 4 running job 9 on nid00448 (/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w8.fasta -n chrXII_SUB_w8 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B)
+Launcher: Task 5 running job 10 on nid00448 (/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w9.fasta -n chrXII_SUB_w9 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B)
+
+RAxML can't, parse the alignment file as phylip file 
+it will now try to parse it as FASTA file
+
+
+
+Using BFGS method to optimize GTR rate parameters, to disable this specify "--no-bfgs" 
+
+
+This is the RAxML Master Pthread
+
+This is RAxML Worker Pthread Number: 1
+
+This is RAxML Worker Pthread Number: 2
+
+This is RAxML Worker Pthread Number: 4
+
+This is RAxML Worker Pthread Number: 3
+
+This is RAxML Worker Pthread Number: 5
+
+This is RAxML Worker Pthread Number: 6
+
+This is RAxML Worker Pthread Number: 7
+
+This is RAxML Worker Pthread Number: 8
+
+This is RAxML Worker Pthread Number: 9
+
+
+This is RAxML version 8.2.9 released by Alexandros Stamatakis on July 20 2016.
+
+
+RAxML can't, parse the alignment file as phylip file 
+it will now try to parse it as FASTA file
+
+
+
+Using BFGS method to optimize GTR rate parameters, to disable this specify "--no-bfgs" 
+
+
+This is the RAxML Master Pthread
+
+This is RAxML Worker Pthread Number: 9
+
+This is RAxML Worker Pthread Number: 8
+
+This is RAxML Worker Pthread Number: 6
+
+This is RAxML Worker Pthread Number: 2
+
+This is RAxML Worker Pthread Number: 7
+
+This is RAxML Worker Pthread Number: 4
+
+This is RAxML Worker Pthread Number: 1
+
+This is RAxML Worker Pthread Number: 3
+
+This is RAxML Worker Pthread Number: 5
+
+
+This is RAxML version 8.2.9 released by Alexandros Stamatakis on July 20 2016.
+
+With greatly appreciated code contributions by:
+Andre Aberer      (HITS)
+Simon Berger      (HITS)
+Alexey Kozlov     (HITS)
+Kassian Kobert    (HITS)
+David Dao         (KIT and HITS)
+Sarah Lutteropp   (KIT and HITS)
+Nick Pattengale   (Sandia)
+Wayne Pfeiffer    (SDSC)
+Akifumi S. Tanabe (NRIFS)
+Charlie Taylor    (UF)
+
+
+Alignment has 40743 distinct alignment patterns
+
+Proportion of gaps and completely undetermined characters in this alignment: 0.00%
+
+RAxML rapid hill-climbing mode
+
+Using 1 distinct models/data partitions with joint branch length optimization
+
+
+Executing 1 inferences on the original alignment using 1 distinct randomized MP trees
+
+All free model parameters will be estimated by RAxML
+ML estimate of 25 per site rate categories
+
+Likelihood of final tree will be evaluated and optimized under GAMMA
+
+GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
+
+Partition: 0
+Alignment Patterns: 40743
+Name: No Name Provided
+DataType: DNA
+Substitution Matrix: GTR
+
+
+
+
+RAxML was called as follows:
+
+/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w9.fasta -n chrXII_SUB_w9 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B 
+
+
+Partition: 0 with name: No Name Provided
+With greatly appreciated code contributions by:
+Andre Aberer      (HITS)
+Simon Berger      (HITS)
+Alexey Kozlov     (HITS)
+Kassian Kobert    (HITS)
+David Dao         (KIT and HITS)
+Sarah Lutteropp   (KIT and HITS)
+Nick Pattengale   (Sandia)
+Wayne Pfeiffer    (SDSC)
+Akifumi S. Tanabe (NRIFS)
+Charlie Taylor    (UF)
+
+
+Alignment has 59496 distinct alignment patterns
+
+Proportion of gaps and completely undetermined characters in this alignment: 0.00%
+
+RAxML rapid hill-climbing mode
+
+Using 1 distinct models/data partitions with joint branch length optimization
+
+
+Executing 1 inferences on the original alignment using 1 distinct randomized MP trees
+
+All free model parameters will be estimated by RAxML
+ML estimate of 25 per site rate categories
+
+Likelihood of final tree will be evaluated and optimized under GAMMA
+
+GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
+
+Partition: 0
+Alignment Patterns: 59496
+Name: No Name Provided
+DataType: DNA
+Substitution Matrix: GTR
+
+
+
+
+RAxML was called as follows:
+
+/work/02260/grovesd/lonestar/raxml/standard-RAxML-master/raxmlHPC-PTHREADS-SSE3 -s chrXII_SUB_w8.fasta -n chrXII_SUB_w8 -m GTRCAT -f d -p 12345 -T 10 -o DRS012287_A,DRS012287_B,DRS012292_A,DRS012292_B,DRS012293_A,DRS012293_B,DRS012294_A,DRS012294_B,DRS012295_A,DRS012295_B,DRS012296_A,DRS012296_B,DRS012302_A,DRS012302_B,DRS012303_A,DRS012303_B,DRS012304_A,DRS012304_B,DRS012305_A,DRS012305_B,DRS012306_A,DRS012306_B,DRS012288_A,DRS012288_B,DRS012289_A,DRS012289_B,DRS012290_A,DRS012290_B,DRS012291_A,DRS012291_B,DRS012297_A,DRS012297_B,DRS012298_A,DRS012298_B,DRS012299_A,DRS012299_B,DRS012300_A,DRS012300_B,DRS012301_A,DRS012301_B 
+
+
+Partition: 0 with name: No Name Provided
+Base frequencies: 0.248 0.248 0.250 0.254 
+
+Inference[0]: Time 588.770512 CAT-based likelihood -2840069.689665, best rearrangement setting 5
+Base frequencies: 0.254 0.247 0.250 0.249 
+
+Inference[0]: Time 600.857347 CAT-based likelihood -2144136.446220, best rearrangement setting 5
+
+
+Conducting final model optimizations on all 1 trees under GAMMA-based models ....
+
+Inference[0] final GAMMA-based Likelihood: -2927243.309995 tree written to file /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_result.chrXII_SUB_w1
+
+
+Conducting final model optimizations on all 1 trees under GAMMA-based models ....
+
+Inference[0] final GAMMA-based Likelihood: -2221717.244253 tree written to file /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_result.chrXII_SUB_w0
+Base frequencies: 0.238 0.263 0.259 0.241 
+
+Inference[0]: Time 855.906752 CAT-based likelihood -2521363.451126, best rearrangement setting 5
+Base frequencies: 0.246 0.254 0.251 0.249 
+
+Inference[0]: Time 858.978091 CAT-based likelihood -3426294.194482, best rearrangement setting 5
+
+
+Starting final GAMMA-based thorough Optimization on tree 0 likelihood -2221717.244253 .... 
+
+Final GAMMA-based Score of best tree -2221546.620656
+
+Program execution info written to /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_info.chrXII_SUB_w0
+Best-scoring ML tree written to: /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_bestTree.chrXII_SUB_w0
+
+Overall execution time: 870.473732 secs or 0.241798 hours or 0.010075 days
+
+Launcher: Job 1 completed in 870 seconds.
+Launcher: Task 1 done. Exiting.
+
+
+Conducting final model optimizations on all 1 trees under GAMMA-based models ....
+
+Inference[0] final GAMMA-based Likelihood: -2559243.233940 tree written to file /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_result.chrXII_SUB_w9
+
+
+Conducting final model optimizations on all 1 trees under GAMMA-based models ....
+
+Inference[0] final GAMMA-based Likelihood: -3539187.638808 tree written to file /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_result.chrXII_SUB_w8
+Base frequencies: 0.259 0.243 0.240 0.257 
+
+Inference[0]: Time 923.372607 CAT-based likelihood -4074046.454511, best rearrangement setting 10
+
+
+Starting final GAMMA-based thorough Optimization on tree 0 likelihood -2927243.309995 .... 
+
+Final GAMMA-based Score of best tree -2927177.579617
+
+Program execution info written to /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_info.chrXII_SUB_w1
+Best-scoring ML tree written to: /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_bestTree.chrXII_SUB_w1
+
+Overall execution time: 935.861336 secs or 0.259961 hours or 0.010832 days
+
+Launcher: Job 2 completed in 936 seconds.
+Launcher: Task 0 done. Exiting.
+
+
+Conducting final model optimizations on all 1 trees under GAMMA-based models ....
+
+Inference[0] final GAMMA-based Likelihood: -4135233.939550 tree written to file /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_result.chrXII_SUB_w3
+Base frequencies: 0.263 0.237 0.239 0.261 
+
+Inference[0]: Time 1135.691619 CAT-based likelihood -4399548.524081, best rearrangement setting 5
+
+
+Conducting final model optimizations on all 1 trees under GAMMA-based models ....
+
+Inference[0] final GAMMA-based Likelihood: -4536303.657894 tree written to file /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_result.chrXII_SUB_w6
+
+
+Starting final GAMMA-based thorough Optimization on tree 0 likelihood -2559243.233940 .... 
+
+Final GAMMA-based Score of best tree -2559025.619867
+
+Program execution info written to /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_info.chrXII_SUB_w9
+Best-scoring ML tree written to: /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_bestTree.chrXII_SUB_w9
+
+Overall execution time: 1201.232777 secs or 0.333676 hours or 0.013903 days
+
+Launcher: Job 10 completed in 1201 seconds.
+Launcher: Task 5 done. Exiting.
+
+
+Starting final GAMMA-based thorough Optimization on tree 0 likelihood -3539187.638808 .... 
+
+Final GAMMA-based Score of best tree -3539176.596699
+
+Program execution info written to /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_info.chrXII_SUB_w8
+Best-scoring ML tree written to: /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_bestTree.chrXII_SUB_w8
+
+Overall execution time: 1284.359675 secs or 0.356767 hours or 0.014865 days
+
+Launcher: Job 9 completed in 1284 seconds.
+Launcher: Task 4 done. Exiting.
+Base frequencies: 0.251 0.249 0.248 0.252 
+
+Inference[0]: Time 1306.400857 CAT-based likelihood -3972649.082001, best rearrangement setting 5
+
+
+Conducting final model optimizations on all 1 trees under GAMMA-based models ....
+
+Inference[0] final GAMMA-based Likelihood: -4106233.504184 tree written to file /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_result.chrXII_SUB_w2
+
+
+Starting final GAMMA-based thorough Optimization on tree 0 likelihood -4135233.939550 .... 
+
+Final GAMMA-based Score of best tree -4135050.564254
+
+Program execution info written to /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_info.chrXII_SUB_w3
+Best-scoring ML tree written to: /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_bestTree.chrXII_SUB_w3
+
+Overall execution time: 1440.895628 secs or 0.400249 hours or 0.016677 days
+
+Launcher: Job 4 completed in 1441 seconds.
+Launcher: Task 6 done. Exiting.
+Base frequencies: 0.264 0.238 0.236 0.261 
+
+Inference[0]: Time 1506.402190 CAT-based likelihood -4452160.279260, best rearrangement setting 10
+
+
+Conducting final model optimizations on all 1 trees under GAMMA-based models ....
+
+Inference[0] final GAMMA-based Likelihood: -4624083.683285 tree written to file /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_result.chrXII_SUB_w4
+Base frequencies: 0.262 0.236 0.236 0.265 
+
+Inference[0]: Time 1556.857898 CAT-based likelihood -4466737.402571, best rearrangement setting 5
+
+
+Conducting final model optimizations on all 1 trees under GAMMA-based models ....
+
+Inference[0] final GAMMA-based Likelihood: -4641098.280020 tree written to file /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_result.chrXII_SUB_w5
+
+
+Starting final GAMMA-based thorough Optimization on tree 0 likelihood -4536303.657894 .... 
+
+Final GAMMA-based Score of best tree -4536303.657894
+
+Program execution info written to /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_info.chrXII_SUB_w6
+Best-scoring ML tree written to: /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_bestTree.chrXII_SUB_w6
+
+Overall execution time: 1660.573410 secs or 0.461270 hours or 0.019220 days
+
+Launcher: Job 7 completed in 1661 seconds.
+Launcher: Task 9 done. Exiting.
+Base frequencies: 0.261 0.242 0.238 0.259 
+
+Inference[0]: Time 1701.101815 CAT-based likelihood -3941567.842762, best rearrangement setting 5
+
+
+Conducting final model optimizations on all 1 trees under GAMMA-based models ....
+
+Inference[0] final GAMMA-based Likelihood: -4067846.409483 tree written to file /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_result.chrXII_SUB_w7
+
+
+Starting final GAMMA-based thorough Optimization on tree 0 likelihood -4106233.504184 .... 
+
+Final GAMMA-based Score of best tree -4105787.209995
+
+Program execution info written to /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_info.chrXII_SUB_w2
+Best-scoring ML tree written to: /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_bestTree.chrXII_SUB_w2
+
+Overall execution time: 1784.524252 secs or 0.495701 hours or 0.020654 days
+
+Launcher: Job 3 completed in 1785 seconds.
+Launcher: Task 7 done. Exiting.
+
+
+Starting final GAMMA-based thorough Optimization on tree 0 likelihood -4624083.683285 .... 
+
+Final GAMMA-based Score of best tree -4624037.448166
+
+Program execution info written to /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_info.chrXII_SUB_w4
+Best-scoring ML tree written to: /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_bestTree.chrXII_SUB_w4
+
+Overall execution time: 2140.753025 secs or 0.594654 hours or 0.024777 days
+
+Launcher: Job 5 completed in 2141 seconds.
+Launcher: Task 2 done. Exiting.
+
+
+Starting final GAMMA-based thorough Optimization on tree 0 likelihood -4641098.280020 .... 
+
+Final GAMMA-based Score of best tree -4640852.216363
+
+Program execution info written to /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_info.chrXII_SUB_w5
+Best-scoring ML tree written to: /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_bestTree.chrXII_SUB_w5
+
+Overall execution time: 2182.836349 secs or 0.606343 hours or 0.025264 days
+
+Launcher: Job 6 completed in 2183 seconds.
+Launcher: Task 3 done. Exiting.
+
+
+Starting final GAMMA-based thorough Optimization on tree 0 likelihood -4067846.409483 .... 
+
+Final GAMMA-based Score of best tree -4067846.409483
+
+Program execution info written to /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_info.chrXII_SUB_w7
+Best-scoring ML tree written to: /scratch/02260/grovesd/sex_chrom_evo/geneTrees/vcfkit_way_ylab/2Mb_windows/2Mb_yoshida_only/RAxML_bestTree.chrXII_SUB_w7
+
+Overall execution time: 2190.397167 secs or 0.608444 hours or 0.025352 days
+
+Launcher: Job 8 completed in 2191 seconds.
+Launcher: Task 8 done. Exiting.
+Launcher: Done. Job exited without errors
