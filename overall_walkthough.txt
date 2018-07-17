@@ -67,9 +67,8 @@ analyze provean scores with plot_provean.R
 ######### gene expression #########
 ###################################
 
-follow gene_expression_walkthrough.txt
-
 #--- baseline expression
+get standard gene fold counts using bowtie --local by following gene_expression_walkthrough.txt
 
 clean and prep White data with intialize_basicAlignment_counts.R   
 
@@ -82,7 +81,42 @@ get DNA fold differences for controlling for mapping efficiency with deseqBaseli
 replicate 3-spine degeneration results with deseqBaseline_replicate_white_degeneration.R #(this was not included in paper)
 
 
+#--- calling Y-linked
+get VCFs from RNA data and run vcfwrapper by following gene_expression_walkthrough.txt
+
+use call_rna_ylinked0.R to estimate false discovery rates and pick optimal frequency/heterozygosity (picked 0 in females and 0.8 het in males)
+
+use call_rna_ylinked.R to output the files needed for SNPsplit
+
+use plot_RNA_vcfwrap.R to plot figure 1 equivalents from the RNA data
+
+
 #--- allele-specific expression
+run SNPsnplit by following gene_expression_walkthrough.txt
+
+compare X and Y counts for the White dataset with xy_white_deseq.R
+
+same for von Hippel with xy_vonHippel_deseq.R
+
+#--- synthesis
+
+to gather everything together, use figure7_exploratory.R
+
+
+
+
+###################################
+######### figure plotting #########
+###################################
+
+the main work is done with steps above
+
+these files are for convenient re-plotting
+
+
+
+
+
 
 
 

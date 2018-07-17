@@ -6,7 +6,7 @@
 library(ggplot2)
 library(cowplot)
 library(scales)
-source("~/gitreps/stickle_back_sex_chromosomes/scripts/twisst_plotting_functions.R")
+source("~/gitreps/pungitius_sex_chromosome/gene_trees/scripts/twisst_plotting_functions.R")
 setwd('~/gitreps/pungitius_sex_chromosome/gene_trees/Y_inference/twisst') #new one with just Yoshida (use this one)
 
 #SET FILE NAMES

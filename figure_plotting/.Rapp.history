@@ -1,1053 +1,890 @@
-dpath="~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference"
-dat = read.table('chrXII_biggest_monophyletic_results.tsv')
-dpath="~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference"
-dat = read.table('chrXII_biggest_monophyletic_results.tsv')
-dpath="~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference/"
-dat = read.table('chrXII_biggest_monophyletic_results.tsv')
-dpath="~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference/"
-getwd()
-setwd("~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference/")
-dat = read.table('chrXII_biggest_monophyletic_results.tsv')
-head(dat)
-dat = read.table('chrXII_biggest_monophyletic_results.tsv', header = T)
-dat = read.table('chrXII_biggest_monophyletic_results.tsv', header = T)
-head(dat)
-plot(as.numeric(dat$SDRbool) ~ dat$BIN_START)
-sex='male'
-spp = 'pun'
-setwd("~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference/")
-sex='male'
-spp = 'pun'
-infile = paste(paste(spp, sex, sep="_"), 'allBiggestMonoRes.tsv', sep="_")
-infile
-print(infile)
-dat = read.table(infile, header = T)
-head(dat)
-dat = read.table(infile, header = T)
-head(dat)
-#ADD NORMALIZED X VALUES#
-head(dat)#
-dat$norm.x = dat$BIN_START#
-for (chr in chromlist){#
-	len = max(dat$BIN_START[dat$CHROM==chr])#
-	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
-}#
-head(dat)
-ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")
-ll
-head(cdat)
-rm(list=ls())
-#chrom_window_figures.R#
-library(plotrix)#
-library(ggplot2)#
-library(gridExtra)#
-library(cowplot)#
-#
-#set global variables for script#
-setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons")#
-source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
-resDir = "dna_100Kb_window_results/"#
-chromsToIgnore = c("chrUn", "chrM")#
-male.color = 'dodgerblue'#
-female.color = 'firebrick'
-spp="pun"
-#upload the VCF wrapper results#
-wrapFile = paste(paste(resDir, spp, sep = ""), "allWindows.tsv", sep="_")#
-dat = read.table(wrapFile, header=T, sep="\t", na.strings = c("NA", "no_snps_in_this_window"))#
-dat=dat[!dat$CHROM %in% chromsToIgnore,]#
-dat$mb = dat$BIN_START / 1e6#
-head(dat)#
-dim(dat)#
-dat$chr_pos = paste(dat$CHROM, dat$BIN_START, sep="_")#
-dat$mfPi = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
-dat$fmPi = log( (dat$PI_female/dat$PI_male), 2)#
-dat$mfDens = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
-dat$fmDens = log( (dat$SNP_COUNT_female/dat$SNP_COUNT_male), 2)#
-dat$pctFemaleSpecific = dat$pFemaleSpecific*100#
-dat$pctMaleSpecific = dat$pMaleSpecific*100#
-#SET UP NUMBERED CHROMOSOMES#
-chroms = unique(as.character(dat$CHROM))#
-chroms = chroms[!chroms %in% c("chrM", "chrUn")]#
-chroms = chroms[order(chroms)]#
-nums = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
-cdat = data.frame(chroms, nums)#
-cdat=cdat[order(cdat$nums),]#
-print(cdat)#
-chromlist = as.character(cdat$chroms)#
-save(cdat, chromlist, file="~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")
-rm(list=ls())
-ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")
-ll
-head(dat)#
-dat$norm.x = dat$BIN_START#
-for (chr in chromlist){#
-	len = max(dat$BIN_START[dat$CHROM==chr])#
-	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
-}#
-head(dat)
-#y_consistent_trees.R#
-#examine phylogenetic results looking gene trees consistent with sex chromosomes#
-#
-setwd("~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference/")#
-source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
-#
-#MAKE SELECTIONS FOR WHICH SPECIES/SEX TO ANALYZE#
-#
-#pick the sex (male means looking for Ys, female for Ws)#
-sex='female'#
-sex='male'#
-#
-#pick the species you want to look at#
-spp = 'po'#
-spp = 'tym'#
-spp = 'sin'#
-spp = 'pun'#
-#
-infile = paste(paste(spp, sex, sep="_"), 'allBiggestMonoRes.tsv', sep="_")#
-print(infile)
-#examine phylogenetic results looking gene trees consistent with sex chromosomes#
-#
-setwd("~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference/")#
-source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
-#
-#MAKE SELECTIONS FOR WHICH SPECIES/SEX TO ANALYZE#
-#
-#pick the sex (male means looking for Ys, female for Ws)#
-sex='female'#
-sex='male'#
-#
-#pick the species you want to look at#
-spp = 'po'#
-spp = 'tym'#
-spp = 'sin'#
-spp = 'pun'#
-#
-#set up name#
-infile = paste(paste(spp, sex, sep="_"), 'allBiggestMonoRes.tsv', sep="_")#
-print(infile)#
-#
-#read in data#
-dat = read.table(infile, header = T)#
-head(dat)#
-#
-#add normalized X values#
-#
-ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
-head(dat)#
-dat$norm.x = dat$BIN_START#
-for (chr in chromlist){#
-	len = max(dat$BIN_START[dat$CHROM==chr])#
-	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
-}#
-head(dat)
-#--------------- plot multipanel scatterplots ---------------##
-x=dat$BIN_START#
-dat$BIN_START = x/1e6#
-CUT = 0.99#
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='biggestMonoPhyletic', float= CUT, xlab="Position", ylab='Density Male-specific')
-sex='female'
-#set up name#
-infile = paste(paste(spp, sex, sep="_"), 'allBiggestMonoRes.tsv', sep="_")#
-print(infile)#
-#
-#read in data#
-dat = read.table(infile, header = T)#
-head(dat)#
-#
-#add normalized X values#
-#
-ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
-head(dat)#
-dat$norm.x = dat$BIN_START#
-for (chr in chromlist){#
-	len = max(dat$BIN_START[dat$CHROM==chr])#
-	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
-}#
-head(dat)
-#--------------- plot multipanel scatterplots ---------------##
-x=dat$BIN_START#
-dat$BIN_START = x/1e6#
-CUT = 0.99#
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='biggestMonoPhyletic', float= CUT, xlab="Position", ylab='Density Male-specific')
-spp = 'tym'
-sex='female'
-#set up name#
-infile = paste(paste(spp, sex, sep="_"), 'allBiggestMonoRes.tsv', sep="_")#
-print(infile)#
-#
-#read in data#
-dat = read.table(infile, header = T)#
-head(dat)#
-#
-#add normalized X values#
-#
-ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
-head(dat)#
-dat$norm.x = dat$BIN_START#
-for (chr in chromlist){#
-	len = max(dat$BIN_START[dat$CHROM==chr])#
-	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
-}#
-head(dat)
-#--------------- plot multipanel scatterplots ---------------##
-x=dat$BIN_START#
-dat$BIN_START = x/1e6#
-CUT = 0.99#
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='biggestMonoPhyletic', float= CUT, xlab="Position", ylab='Density Male-specific')
-dat$sexCon = as.numeric(dat$SDRbool)
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='sexCon', float= CUT, xlab="Position", ylab='Density Male-specific')
-head(dat)
-sex='male'
-spp = 'pun'#
-#
-#set up name#
-infile = paste(paste(spp, sex, sep="_"), 'allBiggestMonoRes.tsv', sep="_")#
-print(infile)#
-#
-#read in data#
-dat = read.table(infile, header = T)#
-head(dat)#
-#
-#add normalized X values#
-#
-ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
-head(dat)#
-dat$norm.x = dat$BIN_START#
-for (chr in chromlist){#
-	len = max(dat$BIN_START[dat$CHROM==chr])#
-	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
-}#
-head(dat)#
-#
-#add numerics for sex chromosome consistent#
-dat$sexCon = as.numeric(dat$SDRbool)
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='sexCon', float= CUT, xlab="Position", ylab='Density Male-specific')
-spp = 'sin'
-sex='female'
-#set up name#
-infile = paste(paste(spp, sex, sep="_"), 'allBiggestMonoRes.tsv', sep="_")#
-print(infile)#
-#
-#read in data#
-dat = read.table(infile, header = T)#
-head(dat)#
-#
-#add normalized X values#
-#
-ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
-head(dat)#
-dat$norm.x = dat$BIN_START#
-for (chr in chromlist){#
-	len = max(dat$BIN_START[dat$CHROM==chr])#
-	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
-}#
-head(dat)#
-#
-#add numerics for sex chromosome consistent#
-dat$sexCon = as.numeric(dat$SDRbool)#
-#
-#--------------- plot multipanel scatterplots ---------------##
-x=dat$BIN_START#
-dat$BIN_START = x/1e6#
-CUT = 0.99#
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='biggestMonoPhyletic', float= CUT, xlab="Position", ylab='Density Male-specific')
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='sexCon', float= CUT, xlab="Position", ylab='Density Male-specific')
-spp
-outName = 'gitreps/pungitius_sex_chromosome/figure_plotting/pun_Ylike.Rdata'
-rm(list=ls())
-#examine phylogenetic results looking gene trees consistent with sex chromosomes#
-#
-setwd("~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference/")#
-source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
-#
-#MAKE SELECTIONS FOR WHICH SPECIES/SEX TO ANALYZE#
-#
-#pick the sex (male means looking for Ys, female for Ws)#
-sex='female'#
-sex='male'#
-#
-#pick the species you want to look at#
-spp = 'po'#
-spp = 'tym'#
-spp = 'sin'#
-spp = 'pun'#
-#
-#set up name#
-infile = paste(paste(spp, sex, sep="_"), 'allBiggestMonoRes.tsv', sep="_")#
-print(infile)#
-#
-#read in data#
-dat = read.table(infile, header = T)#
-head(dat)#
-#
-#add normalized X values#
-#
-ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
-head(dat)#
-dat$norm.x = dat$BIN_START#
-for (chr in chromlist){#
-	len = max(dat$BIN_START[dat$CHROM==chr])#
-	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
-}#
-head(dat)#
-#
-#add numerics for sex chromosome consistent#
-dat$sexCon = as.numeric(dat$SDRbool)#
-#--------------- plot multipanel scatterplots ---------------
-#SAVE THE RESULTS FOR PLOTTING MAIN FIGURE#
-outName = 'gitreps/pungitius_sex_chromosome/figure_plotting/pun_Ylike.Rdata'#
-if (spp='pun'){#
-	save(dat, file=outName)#
-}
-outName = 'gitreps/pungitius_sex_chromosome/figure_plotting/pun_Ylike.Rdata'
-if (spp='pun'){#
-	save(dat, file=outName)#
-}
-outName = '~/gitreps/pungitius_sex_chromosome/figure_plotting/pun_Ylike.Rdata'
-if (spp='pun'){#
-	save(dat, file=outName)#
-}
-if (spp=='pun'){#
-	save(dat, file=outName)#
-}
-if (spp=='pun'){#
-	save(dat, file=outName)#
-}
-rm(list=ls())
-setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting")
-source('~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R')
-#------------ plot gene tree figure ------------##
-#
-#PLOT SDR-LIKE BOOLEAN DATA#
-ll=load("pun_Ylike.Rdata");SEX.CHROM = 'chrXII' #set this up with chrom_window_figuresV4_wrapped.R
-bm = sdr_normalized(df=dat, xcol='norm.x', ycol='m.sdrBool', sex.chrom= SEX.CHROM, YLAB="Y-consistent", sex.col ='black', other.col ='grey',LWD=0.5,PT.SIZE = 2, SHAPE=3, SPAN=.2, draw.legend=T)
-head(dat)
-bm = sdr_normalized(df=dat, xcol='norm.x', ycol='SDRbool', sex.chrom= SEX.CHROM, YLAB="Y-consistent", sex.col ='black', other.col ='grey',LWD=0.5,PT.SIZE = 2, SHAPE=3, SPAN=.2, draw.legend=T)
-dat$mb = dat$BIN_START / 1e6
-bm = sdr_normalized(df=dat, xcol='norm.x', ycol='SDRbool', sex.chrom= SEX.CHROM, YLAB="Y-consistent", sex.col ='black', other.col ='grey',LWD=0.5,PT.SIZE = 2, SHAPE=3, SPAN=.2, draw.legend=T)
-#add breaktpoints#
-norm.breaks = c(3.5, 18.9) / tot.length#
-bm=bm + geom_vline(xintercept= norm.breaks[1], lty=2, lwd=0.5, color='green') + #
-	geom_vline(xintercept= norm.breaks[2], lty=2, lwd=0.5,color='green')
-tot.length = max(dat[dat$CHROM=='chrXII','mb'])
-norm.breaks = c(3.5, 18.9) / tot.length
-bm = sdr_normalized(df=dat, xcol='norm.x', ycol='SDRbool', sex.chrom= SEX.CHROM, YLAB="Y-consistent", sex.col ='black', other.col ='grey',LWD=0.5,PT.SIZE = 2, SHAPE=3, SPAN=.2, draw.legend=T)#
-tot.length = max(dat[dat$CHROM=='chrXII','mb'])#
-#
-#add breaktpoints#
-norm.breaks = c(3.5, 18.9) / tot.length#
-bm=bm + geom_vline(xintercept= norm.breaks[1], lty=2, lwd=0.5, color='green') + #
-	geom_vline(xintercept= norm.breaks[2], lty=2, lwd=0.5,color='green')
-#set up coordinates for example trees#
-mx=max(dat$mb[dat$CHROM=='chrXII'])#
-Y1=c(0,0,1,1)#
-Y2=c(0.05,0.05,0.95,0.95)#
-labY = c(0.15,0.15,0.85,0.85)#
-labX = c(0.8, 2, 6.6, 14.7)/mx#
-lefts = c(1.1, 2, 6.6, 14.7)/mx#
-rights = c(1.2, 2.1, 6.7, 14.8)/mx#
-tlabs = c("B", "C", "D", "E")#
-tree.segs = data.frame(x1=lefts, x2=rights, y1=Y2, y2=Y2, tlab=tlabs, labY=labY, labX=labX)#
-# bm = bm + geom_segment(data=tree.segs, aes(x = x1, y = y1, xend = x2, yend = y2), lwd=4) +#
-	# geom_text(data=tree.segs, aes(x = labX, y = labY, xend = x2, yend = labY, label=tlab), size=5)#
-plot(bm)#
-head(dat)
-g = ggplot(data=dat, aes(x=BIN_START, y=BIN_END)) +#
-	geom_point() +#
-	geom_segment(data= test.df, aes(x = x1, y = y1, xend = x2, yend = y2), lwd=5)#
-plot(g)
-test.df = data.frame(x1=1e7, x2=2e7, y1=1e7, y2=1e7)#
-g = ggplot(data=dat, aes(x=BIN_START, y=BIN_END)) +#
-	geom_point() +#
-	geom_segment(data= test.df, aes(x = x1, y = y1, xend = x2, yend = y2), lwd=5)#
-plot(g)
-bm = sdr_normalized(df=dat, xcol='norm.x', ycol='SDRbool', sex.chrom= SEX.CHROM, YLAB="Y-consistent", sex.col ='black', other.col ='grey',LWD=0.5,PT.SIZE = 2, SHAPE=3, SPAN=.2, draw.legend=T)#
-tot.length = max(dat[dat$CHROM=='chrXII','mb'])#
-#
-#add breaktpoints#
-norm.breaks = c(3.5, 18.9) / tot.length#
-bm=bm + geom_vline(xintercept= norm.breaks[1], lty=2, lwd=0.5, color='green') + #
-	geom_vline(xintercept= norm.breaks[2], lty=2, lwd=0.5,color='green')
-plot(bm)
-head(dat)
-rm(list=ls())
-#plot_fig2.R#
-#
-setwd("~/gitreps/stickle_back_sex_chromosomes")#
-source('scripts/pun_sex_chrom_functions.R')#
-source("~/gitreps/stickle_back_sex_chromosomes/scripts/twisst_plotting_functions.R")#
+setwd("~/gitreps/pungitius_sex_chromosome/gene_expression/")
+#plot_figure7_exploratory.R#
 library(ggplot2)#
 library(cowplot)#
-#------------ plot gene tree figure ------------##
+setwd("~/gitreps/pungitius_sex_chromosome/gene_expression/")#
+#-------- MORE DIFFERENTIAL EXPRESSION ON 12 --------##
 #
-#PLOT SDR-LIKE BOOLEAN DATA#
-ll=load("datasets/pun_Ylike.Rdata");SEX.CHROM = 'chrXII' #set this up with chrom_window_figuresV4_wrapped.R
-ll=load("datasets/pun_assembledWindowStats.Rdata");SEX.CHROM = 'chrXII' #set this up with chrom_window_figuresV4_wrapped.R
-ll
-head(dat)
-bm = sdr_normalized(df=dat, xcol='norm.x', ycol='m.sdrBool', sex.chrom= SEX.CHROM, YLAB="Y-consistent", sex.col ='black', other.col ='grey',LWD=0.5,PT.SIZE = 2, SHAPE=3, SPAN=.2, draw.legend=T)#
-tot.length = max(dat[dat$CHROM=='chrXII','mb'])
-#add breaktpoints#
-norm.breaks = c(3.5, 18.9) / tot.length#
-bm=bm + geom_vline(xintercept= norm.breaks[1], lty=2, lwd=0.5, color='green') + #
-	geom_vline(xintercept= norm.breaks[2], lty=2, lwd=0.5,color='green')
-#set up coordinates for example trees#
-mx=max(dat$mb[dat$CHROM=='chrXII'])#
-Y1=c(0,0,1,1)#
-Y2=c(0.05,0.05,0.95,0.95)#
-labY = c(0.15,0.15,0.85,0.85)#
-labX = c(0.8, 2, 6.6, 14.7)/mx#
-lefts = c(1.1, 2, 6.6, 14.7)/mx#
-rights = c(1.2, 2.1, 6.7, 14.8)/mx#
-tlabs = c("B", "C", "D", "E")#
-tree.segs = data.frame(x1=lefts, x2=rights, y1=Y2, y2=Y2, tlab=tlabs, labY=labY, labX=labX)#
-# bm = bm + geom_segment(data=tree.segs, aes(x = x1, y = y1, xend = x2, yend = y2), lwd=4) +#
-	# geom_text(data=tree.segs, aes(x = labX, y = labY, xend = x2, yend = labY, label=tlab), size=5)#
-plot(bm)
-library(ggplot2)#
-library(cowplot)#
-setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting")#
-source('~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R')#
-#------------ plot gene tree figure ------------##
+#load the ancestral comparison (white)#
+ll=load('~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/pungitiusAncCompare.Rdata')#
+#ddat = assembly of male:female differences with chromosomal region labeled #
+#sdr.mr = the pungitius male vs 3spine male differences within the SDR
+#format the data#
+ddat$absDiff = abs(ddat$diff)  #absolute M:F variation#
+ddat$type2=ddat$type            #set up region with rest of chr12 (not PAR)#
+ddat$type2[ddat$type==4]<-3    ##
+head(ddat)#
+ddat$sex.chrom = ddat$chr#
+ddat$sex.chrom[ddat$sex.chrom!='chrXII']<-'autosomes'#
+ddat$sex.chrom<-factor(ddat$sex.chrom, levels=c('chrXII', 'autosomes'), ordered=TRUE)
+mfChrom = ggplot(data=ddat) +#
+	geom_boxplot(aes(x= sex.chrom, y=absDiff), outlier.shape=26) + #
+	lims(y=c(0,0.75)) +#
+	labs(x='', y="abs(M:F)")#
+plot(mfChrom)
+#violin#
+mfViolin = ggplot(ddat) + #
+	geom_violin(aes(x= sex.chrom, y=diff))#
+plot(mfViolin)
+#UPLOAD THE MALE:FEMALE COMPARISON#
 #
-#PLOT SDR-LIKE BOOLEAN DATA#
-ll=load("pun_Ylike.Rdata");SEX.CHROM = 'chrXII' #set this up with chrom_window_figuresV4_wrapped.R#
-dat$mb = dat$BIN_START / 1e6#
-bm = sdr_normalized(df=dat, xcol='norm.x', ycol='SDRbool', sex.chrom= SEX.CHROM, YLAB="Y-consistent", sex.col ='black', other.col ='grey',LWD=0.5,PT.SIZE = 2, SHAPE=3, SPAN=.2, draw.legend=T)#
-tot.length = max(dat[dat$CHROM=='chrXII','mb'])
-head(dat)
-unique(dat$sexCon)
-dat$m.sdrBool = dat$sexCon - 1
-rm(list=ls())
-#examine phylogenetic results looking gene trees consistent with sex chromosomes#
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/maleVfemalePungitius.Rdata")#
+ll#
+#gsdf = the male vs female in pungitius differences with SDR labeled
+#format#
+sdr = gsdf[gsdf$type==3,]#
+den=density(sdr$log2FoldChange)#
+den.df = data.frame(x=den$x, y=den$y)#
+male.df = den.df[den.df$x >=max(den.df$x[den.df$x<0]),]#
+female.df = den.df[den.df$x <= 0,]#
+male.df$df = 'higher in males'#
+female.df$df = 'higher in females'#
+male.col = 'dodgerblue'#
+female.col = 'firebrick'
+denRepFM=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	scale_color_manual(values=c(female.col, male.col)) +#
+	scale_fill_manual(values=c(female.col, male.col)) +#
+	theme(legend.position=c(0.6, 0.75),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F pungitius"), y="density")#
+plot(denRepFM)
+#look for degeneration of transcription from Y as preferential loss in male pun expression#
+head(sdr.mr)#
+den=density(sdr.mr$log2FoldChange)#
+den.df = data.frame(x=den$x, y=den$y)#
+pun.df = den.df[den.df$x >=max(den.df$x[den.df$x<0]),]#
+gacu.df = den.df[den.df$x <= 0,]#
+pun.df$df = 'higher in pungitius males'#
+gacu.df$df = ' higher in G.aculeatus males'
+denRepMG=ggplot(data= pun.df) + #
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data= gacu.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data= gacu.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	theme(legend.position=c(0.6, 0.75),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~" pungitius male : G.aculeatus male"), y="density")#
+plot(denRepMG)
+#plot both#
+plot_grid(denRepFM, denRepMG, labels=c('A', 'B'), ncol=1, label_size =16)
+#load m:f fold differences DNA#
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/maleVfemale_DNA.Rdata")#
+ll#
+dsr = data.frame(dna.sr$log2FoldChange)#
+colnames(dsr) = c('fc')#
+dsr$dset = 'dna'#
+dsr$geneId = rownames(dna.sr)#
+head(dsr)
+#load differential expression by sex (von Hippel)#
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/maleVfemale_vonHippel.Rdata")#
+vsr = data.frame(s.r$log2FoldChange)#
+colnames(vsr) = c('fc')#
+vsr$dset = 'pelvic'#
+vsr$geneId = rownames(s.r)#
+head(vsr)#
 #
-setwd("~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference/")#
-source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#load differential expression by sex (white)#
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/maleVfemalePungitius.Rdata")#
+wsr = data.frame(s.r$log2FoldChange)#
+colnames(wsr) = c('fc')#
+wsr$dset = 'brain'#
+wsr$geneId = rownames(s.r)#
+head(wsr)#
 #
-#MAKE SELECTIONS FOR WHICH SPECIES/SEX TO ANALYZE#
+#load differential expression by sex in 3-spine (white)#
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/maleVfemale3spine.Rdata")#
+tsr = data.frame(s.r$log2FoldChange)#
+colnames(tsr) = c('fc')#
+tsr$dset = 'acu'#
+tsr$geneId = rownames(s.r)#
+head(tsr)
+#CONTROL FOR MAPPING EFFICIENCY PEVLIC DATA#
+#to control for changes in mapping efficiency, substract#
+#the DNA fold differences from the RNA fold differences#
+dd = merge(vsr, dsr, by = 'geneId')#
+dd$fc = dd$fc.x - dd$fc.y#
+dd$dset = 'pelvic-dna'#
+pdsr=dd[,c('fc', 'dset', 'geneId')]#
+head(pdsr)
+# see if the dna fold differences predict the RNA differences#
+ddg=merge(dd, gdat, by = 'geneId')#
 #
-#pick the sex (male means looking for Ys, female for Ws)#
-sex='female'#
-sex='male'#
+#for sdr#
+ddsdr = ddg[ddg$type==3,]#
+plot(ddsdr$fc.x~ddsdr$fc.y)#
+lm1=lm(ddsdr$fc.x~ddsdr$fc.y)#
+abline(lm1, col='red')#
+summary(lm1)#
 #
-#pick the species you want to look at#
-spp = 'po'#
-spp = 'tym'#
-spp = 'sin'#
-spp = 'pun'#
+#for autosomes#
+ddauto = ddg[ddg$type==1,]#
+plot(ddauto$fc.x~ ddauto$fc.y)#
+lm2=lm(ddauto$fc.x~ ddauto$fc.y)#
+abline(lm2, col='red')#
+summary(lm2)
+#CONTROL FOR MAPPING EFFICIENCY brain DATA#
+dd = merge(wsr, dsr, by = 'geneId')#
+dd$fc = dd$fc.x - dd$fc.y#
+dd$dset = 'brain-dna'#
+ddsr=dd[,c('fc', 'dset', 'geneId')]#
+head(ddsr)#
 #
-#set up name#
-infile = paste(paste(spp, sex, sep="_"), 'allBiggestMonoRes.tsv', sep="_")#
-print(infile)#
+# see if the dna fold differences predict the RNA differences#
+ddg=merge(dd, gdat, by = 'geneId')#
 #
-#read in data#
-dat = read.table(infile, header = T)#
-head(dat)#
+#for sdr#
+ddsdr = ddg[ddg$type==3,]#
+plot(ddsdr$fc.x~ddsdr$fc.y)#
+lm1=lm(ddsdr$fc.x~ddsdr$fc.y)#
+abline(lm1, col='red')#
+summary(lm1)#
 #
-#add normalized X values#
-#
-ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
-head(dat)#
-dat$norm.x = dat$BIN_START#
-for (chr in chromlist){#
-	len = max(dat$BIN_START[dat$CHROM==chr])#
-	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
+#for autosomes#
+ddauto = ddg[ddg$type==1,]#
+plot(ddauto$fc.x~ ddauto$fc.y)#
+lm2=lm(ddauto$fc.x~ ddauto$fc.y)#
+abline(lm2, col='red')#
+summary(lm2)
+#for sdr#
+ddsdr = ddg[ddg$type==3,]#
+plot(ddsdr$fc.x~ddsdr$fc.y)#
+lm1=lm(ddsdr$fc.x~ddsdr$fc.y)#
+abline(lm1, col='red')#
+summary(lm1)
+plot(ddauto$fc.x~ ddauto$fc.y)
+plot(ddsdr$fc.x~ddsdr$fc.y)
+#ASSEMBLE ALL THE MALE:FEMALE DATA TOGETHER#
+sr = rbind(dsr, vsr, wsr, tsr, ddsr, pdsr)#
+head(sr)#
+#add genomic locations#
+head(gdat)
+#add genomic locations#
+head(gdat)#
+msr = merge(sr, gdat, by='geneId', all.x=T)#
+msr$sex = 'auto'#
+# # msr$sex[msr$chr=='chrXII']<-'chrXII' #to use full chrXII#
+msr$sex[msr$type==3]<-'SDR' #to use SDR#
+msr$sex = factor(msr$sex, levels=c('SDR', 'auto'), ordered=T)#
+msr$sexdf = paste(msr$sex, msr$dset, sep="_")#
+msr$absDiff = abs(msr$fc)#
+msr$sexdf = factor(msr$sexdf, levels=c('SDR_brain', 'auto_brain', 'SDR_acu', 'auto_acu', 'SDR_pelvic', 'auto_pelvic', 'SDR_dna', 'auto_dna', 'SDR_brain-dna', 'auto_brain-dna', 'SDR_pelvic-dna', 'auto_pelvic-dna'), ordered=T)#
+boxplot(msr$absDiff~msr$sexdf, outline=F)
+#subset#
+keep = c('SDR_pelvic-dna', 'auto_pelvic-dna', 'SDR_brain-dna', 'auto_brain-dna', 'SDR_acu', 'auto_acu')#
+ssr = msr[msr$sexdf %in% keep,]#
+ssr$sexdf = factor(ssr$sexdf, levels=keep, ordered=T)#
+smeds = tapply(ssr$absDiff, INDEX=ssr$sexdf, function(x) median(x, na.rm=T))#
+meddf = data.frame(y=smeds)#
+meddf$sexdf = names(smeds)#
+lineLen = 0.3#
+meddf$x1 = 1:6 - lineLen#
+meddf$x2 = 1:6 + lineLen
+do.wilcox = function(sp1, sp2, df, col, stat){#
+	stat1 = df[df[,col] == sp1, stat]#
+	stat2 = df[df[,col] == sp2, stat]#
+	sub = df[df[,col] %in% c(sp1, sp2),]#
+	w=wilcox.test(x=stat1, y=stat2)#
+	boxplot(sub[,stat]~sub[,col], outline=F, main=paste("p =",w$p.value))#
+	return(w)#
 }#
-head(dat)#
+do.wilcox('SDR_brain-dna', 'auto_brain-dna', ssr, 'sexdf', 'absDiff')#
+do.wilcox('SDR_pelvic-dna', 'auto_pelvic-dna', ssr, 'sexdf', 'absDiff')#
+do.wilcox('SDR_acu', 'auto_acu', ssr, 'sexdf', 'absDiff')
+#build the same with violin#
+absViolin = ggplot(data=ssr) +#
+	geom_violin(aes(x=sexdf, y=absDiff, fill=sex, col=sex), na.rm=T) +#
+	geom_segment(data=meddf, aes(x=x1, y=y, xend=x2, yend=y), lwd=1.5) +#
+	lims(y=c(-.1, 2)) + #
+	labs(x='', y='abs(M:F)') + #
+	theme(axis.text.x = element_blank(), axis.ticks.x = element_line(size=0))#
+plot(absViolin)
+#---------- ALLELE-SPECIFIC EXPRESSION DATA ----------##
 #
-#add numerics for sex chromosome consistent#
-dat$sexCon = as.numeric(dat$SDRbool) - 1
-#SAVE THE RESULTS FOR PLOTTING MAIN FIGURE#
-outName = '~/gitreps/pungitius_sex_chromosome/figure_plotting/pun_Ylike.Rdata'#
-if (spp=='pun'){#
-	save(dat, file=outName)#
-}
+#load xy expression white#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/allele_specific_expression/xy_white.Rdata")#
+#m.w = merged dataset with sex differences and XY within male differences for white dataset#
+ll#
+#scatterplot for Y:X vs Male:Female#
+xyscatter.w = ggplot(data=m.w) +  #
+	geom_smooth(data= m.w, aes(log2FoldChange.x,log2FoldChange.y), method='lm', formula=y~x, se=T) +#
+	geom_point(aes(x=log2FoldChange.x, y= log2FoldChange.y), alpha=1) +#
+	lims(y=c(-2, 1.5)) +#
+	labs(x=bquote(log[2]~"Y:X in males"), y=bquote(log[2]~"M:F") )#
+plot(xyscatter.w)#
+lmw=lm(m.w$log2FoldChange.y~m.w$log2FoldChange.x)#
+summary(lmw)
+#repeat but with the DNA controlled values#
+dcont = ssr[ssr$dset=='brain-dna',]#
+xy = m.w[,c('Row.names', 'log2FoldChange.x')]#
+colnames(xy) = c('geneId', 'fcYX')#
+head(xy)#
+m=merge(dcont, xy, by = 'geneId')#
+head(m)#
+lmx = lm(m$fc~m$fcYX)#
+plot(m$fc~m$fcYX)
+#keep the dna controlled one#
+xyscatter.w2 = ggplot(m) +  #
+	geom_smooth(aes(x=fcYX, y=fc), method='lm', formula=y~x, se=T) +#
+	geom_point(aes(x=fcYX, y= fc), alpha=1) +#
+	lims(y=c(-2, 1.5)) +#
+	labs(x=bquote(log[2]~"Y:X in males"), y=bquote(log[2]~"M:F") )#
+plot(xyscatter.w2)#
+lmw=lm(m$fc~m$fcYX)#
+summary(lmw)
+#load xy expression von Hippel#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/allele_specific_expression/xy_vonHippel.Rdata")#
+#m.vh = merged dataset with sex differences and XY within male differences for von Hippel dataset#
+ll#
+#
+xyscatter.vh = ggplot(data=m.vh) +  #
+	geom_smooth(data= m.vh, aes(log2FoldChange.x,log2FoldChange.y), method='lm', formula=y~x, se=T) +#
+	geom_point(aes(x=log2FoldChange.x, y= log2FoldChange.y), alpha=1) +#
+	lims(y=c(-2, 1.5)) +#
+	labs(x=bquote(log[2]~"Y:X in males"), y=bquote(log[2]~"M:F") )#
+plot(xyscatter.vh)#
+head(m.vh)#
+lmvh=lm(m.vh$log2FoldChange.y~m.vh$log2FoldChange.x)#
+summary(lmvh)
+#save data for plotting#
+save(absBox, ssr, m, m.vh, denRepMG, denRepFM, file="~/gitreps/pungitius_sex_chromosome/figure_plotting/fig7_files.Rdata")#
+#
+ll=load("~/gitreps/pungitius_sex_chromosome/figure_plotting/fig7_files.Rdata")
+absBox
+absBox
+#plot main boxplot#
+absBox = ggplot(data=ssr) +#
+	geom_boxplot(aes(x=sexdf, y=absDiff, fill=sex), outlier.shape=26, lwd=0.75) +#
+	lims(y=c(-.1, 2)) + #
+	labs(x='', y=bquote("|"*log[2]~"M:F|")) +#
+	theme(axis.text.x = element_blank(),#
+		axis.line.x = element_line(size=0),#
+		axis.ticks.x = element_blank(), #
+		legend.title=element_blank(),#
+		legend.position=c(0.7, 0.8))#
+plot(absBox)
+absBox
+save(absBox, ssr, m, m.vh, denRepMG, denRepFM, file="~/gitreps/pungitius_sex_chromosome/figure_plotting/fig7_files.Rdata")
 rm(list=ls())
-#plot_fig2.R#
-#plot the Y-consistent gene trees figure#
+#That one has a lot more in case these break or aren't clear#
+setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting/")#
+ll=load("fig7_files.Rdata")#
+#---------- PLOT ALL TOGETHER ----------##
+#Figure 7:#
+quartz()#
+plot_grid(absBox, labels='')#
+quartz()#
+plot_grid(xyscatter.w, xyscatter.vh, ncol=2, label_size =16, axis='b')#
+#
+#supplemental showing its not degeneration#
+plot(denRepMG)#
+plot(denRepFM)#
+plot_grid(denRepFM, denRepMG, labels=c('A', 'B'), ncol=1, label_size =16)
+plot_grid(xyscatter.w, xyscatter.vh, ncol=2, label_size =16, axis='b')
+plot_grid(xyscatter.w, xyscatter.vh, ncol=2, label_size =16, axis='b')
+save(absBox, ssr, m, m.vh, xyscatter.w2, denRepMG, denRepFM, file="~/gitreps/pungitius_sex_chromosome/figure_plotting/fig7_files.Rdata")
+rm(list=ls())
+#plot_figure7_exploratory.R#
+#This is a messy version of the plotting script that explores different ways of looking at the results#
+#For final clean copy see ~/gitreps/pungitius_sex_chromosome/figure_plotting/plot_figure7_expression.R#
 #
 library(ggplot2)#
 library(cowplot)#
-setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting")#
-source('~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R')#
-#------------ plot gene tree figure ------------##
+setwd("~/gitreps/pungitius_sex_chromosome/gene_expression/")#
+#-------- MORE DIFFERENTIAL EXPRESSION ON 12 --------##
 #
-#PLOT SDR-LIKE BOOLEAN DATA#
-ll=load("pun_Ylike.Rdata");SEX.CHROM = 'chrXII' #set this up with chrom_window_figuresV4_wrapped.R#
-dat$mb = dat$BIN_START / 1e6#
-bm = sdr_normalized(df=dat, xcol='norm.x', ycol='SDRbool', sex.chrom= SEX.CHROM, YLAB="Y-consistent", sex.col ='black', other.col ='grey',LWD=0.5,PT.SIZE = 2, SHAPE=3, SPAN=.2, draw.legend=T)#
-tot.length = max(dat[dat$CHROM=='chrXII','mb'])
-head(dat)
-bm = sdr_normalized(df=dat, xcol='norm.x', ycol='sexCon', sex.chrom= SEX.CHROM, YLAB="Y-consistent", sex.col ='black', other.col ='grey',LWD=0.5,PT.SIZE = 2, SHAPE=3, SPAN=.2, draw.legend=T)
-#add breaktpoints#
-norm.breaks = c(3.5, 18.9) / tot.length#
-bm=bm + geom_vline(xintercept= norm.breaks[1], lty=2, lwd=0.5, color='green') + #
-	geom_vline(xintercept= norm.breaks[2], lty=2, lwd=0.5,color='green')
-#set up coordinates for example trees#
-mx=max(dat$mb[dat$CHROM=='chrXII'])#
-Y1=c(0,0,1,1)#
-Y2=c(0.05,0.05,0.95,0.95)#
-labY = c(0.15,0.15,0.85,0.85)#
-labX = c(0.8, 2, 6.6, 14.7)/mx#
-lefts = c(1.1, 2, 6.6, 14.7)/mx#
-rights = c(1.2, 2.1, 6.7, 14.8)/mx#
-tlabs = c("B", "C", "D", "E")#
-tree.segs = data.frame(x1=lefts, x2=rights, y1=Y2, y2=Y2, tlab=tlabs, labY=labY, labX=labX)#
-# bm = bm + geom_segment(data=tree.segs, aes(x = x1, y = y1, xend = x2, yend = y2), lwd=4) +#
-	# geom_text(data=tree.segs, aes(x = labX, y = labY, xend = x2, yend = labY, label=tlab), size=5)#
-plot(bm)
-head(dat)
-plot(dat$sexCon~dat$mb)
-plot(dat$sexCon~dat$norm.x)
-max(norm.x)
-max(dat$norm.x)
-rm(list=ls())
-#y_consistent_trees.R#
-#examine phylogenetic results looking gene trees consistent with sex chromosomes#
+#load the ancestral comparison (white)#
+ll=load('~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/pungitiusAncCompare.Rdata')#
+#ddat = assembly of male:female differences with chromosomal region labeled #
+#sdr.mr = the pungitius male vs 3spine male differences within the SDR#
+#format the data#
+ddat$absDiff = abs(ddat$diff)  #absolute M:F variation#
+ddat$type2=ddat$type            #set up region with rest of chr12 (not PAR)#
+ddat$type2[ddat$type==4]<-3    ##
+head(ddat)#
+ddat$sex.chrom = ddat$chr#
+ddat$sex.chrom[ddat$sex.chrom!='chrXII']<-'autosomes'#
+ddat$sex.chrom<-factor(ddat$sex.chrom, levels=c('chrXII', 'autosomes'), ordered=TRUE)#
 #
-setwd("~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference/")#
-source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#M:F DIFF IN SEX VS AUTOSOME#
 #
-#MAKE SELECTIONS FOR WHICH SPECIES/SEX TO ANALYZE#
+#boxplot#
+mfChrom = ggplot(data=ddat) +#
+	geom_boxplot(aes(x= sex.chrom, y=absDiff), outlier.shape=26) + #
+	lims(y=c(0,0.75)) +#
+	labs(x='', y="abs(M:F)")#
+plot(mfChrom)#
 #
-#pick the sex (male means looking for Ys, female for Ws)#
-sex='female'#
-sex='male'#
+#violin#
+mfViolin = ggplot(ddat) + #
+	geom_violin(aes(x= sex.chrom, y=diff))#
+plot(mfViolin)#
+#UPLOAD THE MALE:FEMALE COMPARISON#
 #
-#pick the species you want to look at#
-spp = 'po'#
-spp = 'tym'#
-spp = 'sin'#
-spp = 'pun'#
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/maleVfemalePungitius.Rdata")#
+ll#
+#gsdf = the male vs female in pungitius differences with SDR labeled#
+#format#
+sdr = gsdf[gsdf$type==3,]#
+den=density(sdr$log2FoldChange)#
+den.df = data.frame(x=den$x, y=den$y)#
+male.df = den.df[den.df$x >=max(den.df$x[den.df$x<0]),]#
+female.df = den.df[den.df$x <= 0,]#
+male.df$df = 'higher in males'#
+female.df$df = 'higher in females'#
+male.col = 'dodgerblue'#
+female.col = 'firebrick'#
+denRepFM=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	scale_color_manual(values=c(female.col, male.col)) +#
+	scale_fill_manual(values=c(female.col, male.col)) +#
+	theme(legend.position=c(0.6, 0.75),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F pungitius"), y="density")#
+plot(denRepFM)#
+#look for degeneration of transcription from Y as preferential loss in male pun expression#
+head(sdr.mr)#
+den=density(sdr.mr$log2FoldChange)#
+den.df = data.frame(x=den$x, y=den$y)#
+pun.df = den.df[den.df$x >=max(den.df$x[den.df$x<0]),]#
+gacu.df = den.df[den.df$x <= 0,]#
+pun.df$df = 'higher in pungitius males'#
+gacu.df$df = ' higher in G.aculeatus males'#
+denRepMG=ggplot(data= pun.df) + #
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data= gacu.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data= gacu.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	theme(legend.position=c(0.6, 0.75),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~" pungitius male : G.aculeatus male"), y="density")#
+plot(denRepMG)#
 #
-#set up name#
-infile = paste(paste(spp, sex, sep="_"), 'allBiggestMonoRes.tsv', sep="_")#
-print(infile)#
+#plot both#
+plot_grid(denRepFM, denRepMG, labels=c('A', 'B'), ncol=1, label_size =16)#
+#-------- DISTRIBUTIONS IN M:F FOLD COVERAGE --------##
 #
-#read in data#
-dat = read.table(infile, header = T)#
-head(dat)#
+#load m:f fold differences DNA#
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/maleVfemale_DNA.Rdata")#
+ll#
+dsr = data.frame(dna.sr$log2FoldChange)#
+colnames(dsr) = c('fc')#
+dsr$dset = 'dna'#
+dsr$geneId = rownames(dna.sr)#
+head(dsr)#
+#load differential expression by sex (von Hippel)#
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/maleVfemale_vonHippel.Rdata")#
+vsr = data.frame(s.r$log2FoldChange)#
+colnames(vsr) = c('fc')#
+vsr$dset = 'pelvic'#
+vsr$geneId = rownames(s.r)#
+head(vsr)#
 #
-#add normalized X values
-ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
-head(dat)#
-dat$norm.x = dat$BIN_START
-unique(dat$CHROM)
-dat = dat[!dat$CHROM %in% c("chrM", "chrUn")]
-rm(list=ls())
-#examine phylogenetic results looking gene trees consistent with sex chromosomes#
+#load differential expression by sex (white)#
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/maleVfemalePungitius.Rdata")#
+wsr = data.frame(s.r$log2FoldChange)#
+colnames(wsr) = c('fc')#
+wsr$dset = 'brain'#
+wsr$geneId = rownames(s.r)#
+head(wsr)#
 #
-setwd("~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference/")#
-source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#load differential expression by sex in 3-spine (white)#
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/maleVfemale3spine.Rdata")#
+tsr = data.frame(s.r$log2FoldChange)#
+colnames(tsr) = c('fc')#
+tsr$dset = 'acu'#
+tsr$geneId = rownames(s.r)#
+head(tsr)#
+#CONTROL FOR MAPPING EFFICIENCY PEVLIC DATA#
+#to control for changes in mapping efficiency, substract#
+#the DNA fold differences from the RNA fold differences#
+dd = merge(vsr, dsr, by = 'geneId')#
+dd$fc = dd$fc.x - dd$fc.y#
+dd$dset = 'pelvic-dna'#
+pdsr=dd[,c('fc', 'dset', 'geneId')]#
+head(pdsr)#
 #
-#MAKE SELECTIONS FOR WHICH SPECIES/SEX TO ANALYZE#
+# see if the dna fold differences predict the RNA differences#
+ddg=merge(dd, gdat, by = 'geneId')#
 #
-#pick the sex (male means looking for Ys, female for Ws)#
-sex='female'#
-sex='male'#
+#for sdr#
+ddsdr = ddg[ddg$type==3,]#
+plot(ddsdr$fc.x~ddsdr$fc.y)#
+lm1=lm(ddsdr$fc.x~ddsdr$fc.y)#
+abline(lm1, col='red')#
+summary(lm1)#
 #
-#pick the species you want to look at#
-spp = 'po'#
-spp = 'tym'#
-spp = 'sin'#
-spp = 'pun'#
+#for autosomes#
+ddauto = ddg[ddg$type==1,]#
+plot(ddauto$fc.x~ ddauto$fc.y)#
+lm2=lm(ddauto$fc.x~ ddauto$fc.y)#
+abline(lm2, col='red')#
+summary(lm2)#
+#CONTROL FOR MAPPING EFFICIENCY brain DATA#
+dd = merge(wsr, dsr, by = 'geneId')#
+dd$fc = dd$fc.x - dd$fc.y#
+dd$dset = 'brain-dna'#
+ddsr=dd[,c('fc', 'dset', 'geneId')]#
+head(ddsr)#
 #
-#set up name#
-infile = paste(paste(spp, sex, sep="_"), 'allBiggestMonoRes.tsv', sep="_")#
-print(infile)#
+# see if the dna fold differences predict the RNA differences#
+ddg=merge(dd, gdat, by = 'geneId')#
 #
-#read in data#
-dat = read.table(infile, header = T, stringsAsFactors=F)#
-dat = dat[!dat$CHROM %in% c("chrM", "chrUn"),]#
-head(dat)#
+#for sdr#
+#This shows that there is indeed an effect of mapping efficiency#
+ddsdr = ddg[ddg$type==3,]#
+plot(ddsdr$fc.x~ddsdr$fc.y)#
+lm1=lm(ddsdr$fc.x~ddsdr$fc.y)#
+abline(lm1, col='red')#
+summary(lm1)#
 #
-#add normalized X values#
+#for autosomes#
+ddauto = ddg[ddg$type==1,]#
+plot(ddauto$fc.x~ ddauto$fc.y)#
+lm2=lm(ddauto$fc.x~ ddauto$fc.y)#
+abline(lm2, col='red')#
+summary(lm2)#
+#ASSEMBLE ALL THE MALE:FEMALE DATA TOGETHER#
+sr = rbind(dsr, vsr, wsr, tsr, ddsr, pdsr)#
+head(sr)#
+#add genomic locations#
+head(gdat)#
+msr = merge(sr, gdat, by='geneId', all.x=T)#
+msr$sex = 'auto'#
+# # msr$sex[msr$chr=='chrXII']<-'chrXII' #to use full chrXII#
+msr$sex[msr$type==3]<-'SDR' #to use SDR#
+msr$sex = factor(msr$sex, levels=c('SDR', 'auto'), ordered=T)#
+msr$sexdf = paste(msr$sex, msr$dset, sep="_")#
+msr$absDiff = abs(msr$fc)#
+msr$sexdf = factor(msr$sexdf, levels=c('SDR_brain', 'auto_brain', 'SDR_acu', 'auto_acu', 'SDR_pelvic', 'auto_pelvic', 'SDR_dna', 'auto_dna', 'SDR_brain-dna', 'auto_brain-dna', 'SDR_pelvic-dna', 'auto_pelvic-dna'), ordered=T)#
+boxplot(msr$absDiff~msr$sexdf, outline=F)#
+#subset#
+keep = c('SDR_pelvic-dna', 'auto_pelvic-dna', 'SDR_brain-dna', 'auto_brain-dna', 'SDR_acu', 'auto_acu')#
+ssr = msr[msr$sexdf %in% keep,]#
+ssr$sexdf = factor(ssr$sexdf, levels=keep, ordered=T)#
+smeds = tapply(ssr$absDiff, INDEX=ssr$sexdf, function(x) median(x, na.rm=T))#
+meddf = data.frame(y=smeds)#
+meddf$sexdf = names(smeds)#
+lineLen = 0.3#
+meddf$x1 = 1:6 - lineLen#
+meddf$x2 = 1:6 + lineLen#
 #
-ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
-head(dat)#
-dat$norm.x = dat$BIN_START#
-for (chr in chromlist){#
-	len = max(dat$BIN_START[dat$CHROM==chr])#
-	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
+#plot main boxplot#
+absBox = ggplot(data=ssr) +#
+	geom_boxplot(aes(x=sexdf, y=absDiff, fill=sex), outlier.shape=26, lwd=0.75) +#
+	lims(y=c(-.1, 2)) + #
+	labs(x='', y=bquote("|"*log[2]~"M:F|")) +#
+	theme(axis.text.x = element_blank(),#
+		axis.line.x = element_line(size=0),#
+		axis.ticks.x = element_blank(), #
+		legend.title=element_blank(),#
+		legend.position=c(0.7, 0.8))#
+plot(absBox)#
+do.wilcox = function(sp1, sp2, df, col, stat){#
+	stat1 = df[df[,col] == sp1, stat]#
+	stat2 = df[df[,col] == sp2, stat]#
+	sub = df[df[,col] %in% c(sp1, sp2),]#
+	w=wilcox.test(x=stat1, y=stat2)#
+	boxplot(sub[,stat]~sub[,col], outline=F, main=paste("p =",w$p.value))#
+	return(w)#
 }#
-head(dat)#
+do.wilcox('SDR_brain-dna', 'auto_brain-dna', ssr, 'sexdf', 'absDiff')#
+do.wilcox('SDR_pelvic-dna', 'auto_pelvic-dna', ssr, 'sexdf', 'absDiff')#
+do.wilcox('SDR_acu', 'auto_acu', ssr, 'sexdf', 'absDiff')#
 #
-#add numerics for sex chromosome consistent#
-dat$sexCon = as.numeric(dat$SDRbool) - 1
-head(dat)
-dat$sexCon = as.numeric(dat$SDRbool)
-head(SDRbool)
-sexCon = dat$SDRbool
-#add numerics for sex chromosome consistent#
-sexCon = dat$SDRbool#
-sexCon[sexCon=='False']<-0#
-sexCon[sexCon=='True']<-1
-#--------------- plot multipanel scatterplots ---------------##
-x=dat$BIN_START#
-dat$BIN_START = x/1e6#
-CUT = 0.99#
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='biggestMonoPhyletic', float= CUT, xlab="Position", ylab='Density Male-specific')
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='sexCon', float= CUT, xlab="Position", ylab='Density Male-specific')
-dat$sexCon = sexCon
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='sexCon', float= CUT, xlab="Position", ylab='Density Male-specific')
-head(dat)
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='sexCon', float= CUT, xlab="Position", ylab='Density Male-specific')
-dat$sexCon = as.numeric(sexCon)
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='sexCon', float= CUT, xlab="Position", ylab='Density Male-specific')
-#SAVE THE RESULTS FOR PLOTTING MAIN FIGURE#
-outName = '~/gitreps/pungitius_sex_chromosome/figure_plotting/pun_Ylike.Rdata'#
-if (spp=='pun'){#
-	save(dat, file=outName)#
-}
+brainp = do.wilcox('SDR_brain-dna', 'auto_brain-dna', ssr, 'sexdf', 'absDiff')$p.value#
+pelvicp = do.wilcox('SDR_pelvic-dna', 'auto_pelvic-dna', ssr, 'sexdf', 'absDiff')$p.value#
+acup = do.wilcox('SDR_acu', 'auto_acu', ssr, 'sexdf', 'absDiff')$p.value#
+#
+pvals = c(brainp, pelvicp, acup)#
+#build the same with violin#
+absViolin = ggplot(data=ssr) +#
+	geom_violin(aes(x=sexdf, y=absDiff, fill=sex, col=sex), na.rm=T) +#
+	geom_segment(data=meddf, aes(x=x1, y=y, xend=x2, yend=y), lwd=1.5) +#
+	lims(y=c(-.1, 2)) + #
+	labs(x='', y='abs(M:F)') + #
+	theme(axis.text.x = element_blank(), axis.ticks.x = element_line(size=0))#
+plot(absViolin)#
+#
+#---------- ALLELE-SPECIFIC EXPRESSION DATA ----------##
+#
+#load xy expression white#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/allele_specific_expression/xy_white.Rdata")#
+#m.w = merged dataset with sex differences and XY within male differences for white dataset#
+ll#
+#scatterplot for Y:X vs Male:Female#
+xyscatter.w = ggplot(data=m.w) +  #
+	geom_smooth(data= m.w, aes(log2FoldChange.x,log2FoldChange.y), method='lm', formula=y~x, se=T) +#
+	geom_point(aes(x=log2FoldChange.x, y= log2FoldChange.y), alpha=1) +#
+	lims(y=c(-2, 1.5)) +#
+	labs(x=bquote(log[2]~"Y:X in males"), y=bquote(log[2]~"M:F") )#
+plot(xyscatter.w)#
+lmw=lm(m.w$log2FoldChange.y~m.w$log2FoldChange.x)#
+summary(lmw)#
+#repeat but with the DNA controlled values#
+dcont = ssr[ssr$dset=='brain-dna',]#
+xy = m.w[,c('Row.names', 'log2FoldChange.x')]#
+colnames(xy) = c('geneId', 'fcYX')#
+head(xy)#
+m=merge(dcont, xy, by = 'geneId')#
+head(m)#
+lmx = lm(m$fc~m$fcYX)#
+plot(m$fc~m$fcYX)#
+#keep the dna controlled one#
+xyscatter.w2 = ggplot(m) +  #
+	geom_smooth(aes(x=fcYX, y=fc), method='lm', formula=y~x, se=T) +#
+	geom_point(aes(x=fcYX, y= fc), alpha=1) +#
+	lims(y=c(-2, 1.5)) +#
+	labs(x=bquote(log[2]~"Y:X in males"), y=bquote(log[2]~"M:F") )#
+plot(xyscatter.w2)#
+lmw=lm(m$fc~m$fcYX)#
+summary(lmw)#
+#load xy expression von Hippel#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/allele_specific_expression/xy_vonHippel.Rdata")#
+#m.vh = merged dataset with sex differences and XY within male differences for von Hippel dataset#
+ll#
+#
+xyscatter.vh = ggplot(data=m.vh) +  #
+	geom_smooth(data= m.vh, aes(log2FoldChange.x,log2FoldChange.y), method='lm', formula=y~x, se=T) +#
+	geom_point(aes(x=log2FoldChange.x, y= log2FoldChange.y), alpha=1) +#
+	lims(y=c(-2, 1.5)) +#
+	labs(x=bquote(log[2]~"Y:X in males"), y=bquote(log[2]~"M:F") )#
+plot(xyscatter.vh)#
+head(m.vh)#
+lmvh=lm(m.vh$log2FoldChange.y~m.vh$log2FoldChange.x)#
+summary(lmvh)#
+#save data for plotting#
+save(absBox, ssr, m, m.vh, xyscatter.w2, denRepMG, denRepFM, file="~/gitreps/pungitius_sex_chromosome/figure_plotting/fig7_files.Rdata")
 rm(list=ls())
-#plot the Y-consistent gene trees figure#
+#That one has a lot more in case these break or aren't clear#
+setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting/")#
+ll=load("fig7_files.Rdata")#
+#---------- PLOT ALL TOGETHER ----------##
+#Figure 7:#
+quartz()#
+plot_grid(absBox, labels='')
+quartz()#
+plot_grid(xyscatter.w, xyscatter.vh, ncol=2, label_size =16, axis='b')
+plot_grid(xyscatter.w2, xyscatter.vh, ncol=2, label_size =16, axis='b')
+rm(list=ls())
+#plot_figure7_exploratory.R#
+#This is a messy version of the plotting script that explores different ways of looking at the results#
+#For final clean copy see ~/gitreps/pungitius_sex_chromosome/figure_plotting/plot_figure7_expression.R#
 #
 library(ggplot2)#
 library(cowplot)#
-setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting")#
-source('~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R')#
-#------------ plot gene tree figure ------------##
+setwd("~/gitreps/pungitius_sex_chromosome/gene_expression/")#
+#-------- MORE DIFFERENTIAL EXPRESSION ON 12 --------##
 #
-#PLOT SDR-LIKE BOOLEAN DATA#
-ll=load("pun_Ylike.Rdata");SEX.CHROM = 'chrXII' #set this up with chrom_window_figuresV4_wrapped.R#
-dat$mb = dat$BIN_START / 1e6
-bm = sdr_normalized(df=dat, xcol='norm.x', ycol='sexCon', sex.chrom= SEX.CHROM, YLAB="Y-consistent", sex.col ='black', other.col ='grey',LWD=0.5,PT.SIZE = 2, SHAPE=3, SPAN=.2, draw.legend=T)#
-tot.length = max(dat[dat$CHROM=='chrXII','mb'])
-#add breaktpoints#
-norm.breaks = c(3.5, 18.9) / tot.length#
-bm=bm + geom_vline(xintercept= norm.breaks[1], lty=2, lwd=0.5, color='green') + #
-	geom_vline(xintercept= norm.breaks[2], lty=2, lwd=0.5,color='green')#
-#set up coordinates for example trees#
-mx=max(dat$mb[dat$CHROM=='chrXII'])#
-Y1=c(0,0,1,1)#
-Y2=c(0.05,0.05,0.95,0.95)#
-labY = c(0.15,0.15,0.85,0.85)#
-labX = c(0.8, 2, 6.6, 14.7)/mx#
-lefts = c(1.1, 2, 6.6, 14.7)/mx#
-rights = c(1.2, 2.1, 6.7, 14.8)/mx#
-tlabs = c("B", "C", "D", "E")#
-tree.segs = data.frame(x1=lefts, x2=rights, y1=Y2, y2=Y2, tlab=tlabs, labY=labY, labX=labX)#
-# bm = bm + geom_segment(data=tree.segs, aes(x = x1, y = y1, xend = x2, yend = y2), lwd=4) +#
-	# geom_text(data=tree.segs, aes(x = labX, y = labY, xend = x2, yend = labY, label=tlab), size=5)#
-plot(bm)
-rm(list=ls())
-#examine phylogenetic results looking gene trees consistent with sex chromosomes#
+#load the ancestral comparison (white)#
+ll=load('~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/pungitiusAncCompare.Rdata')#
+#ddat = assembly of male:female differences with chromosomal region labeled #
+#sdr.mr = the pungitius male vs 3spine male differences within the SDR#
+#format the data#
+ddat$absDiff = abs(ddat$diff)  #absolute M:F variation#
+ddat$type2=ddat$type            #set up region with rest of chr12 (not PAR)#
+ddat$type2[ddat$type==4]<-3    ##
+head(ddat)#
+ddat$sex.chrom = ddat$chr#
+ddat$sex.chrom[ddat$sex.chrom!='chrXII']<-'autosomes'#
+ddat$sex.chrom<-factor(ddat$sex.chrom, levels=c('chrXII', 'autosomes'), ordered=TRUE)#
 #
-setwd("~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference/")#
-source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#M:F DIFF IN SEX VS AUTOSOME#
 #
-#MAKE SELECTIONS FOR WHICH SPECIES/SEX TO ANALYZE#
+#boxplot#
+mfChrom = ggplot(data=ddat) +#
+	geom_boxplot(aes(x= sex.chrom, y=absDiff), outlier.shape=26) + #
+	lims(y=c(0,0.75)) +#
+	labs(x='', y="abs(M:F)")#
+plot(mfChrom)#
 #
-#pick the sex (male means looking for Ys, female for Ws)#
-sex='female'#
-sex='male'#
+#violin#
+mfViolin = ggplot(ddat) + #
+	geom_violin(aes(x= sex.chrom, y=diff))#
+plot(mfViolin)#
+#UPLOAD THE MALE:FEMALE COMPARISON#
 #
-#pick the species you want to look at#
-spp = 'po'#
-spp = 'tym'#
-spp = 'sin'#
-spp = 'pun'#
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/maleVfemalePungitius.Rdata")#
+ll#
+#gsdf = the male vs female in pungitius differences with SDR labeled#
+#format#
+sdr = gsdf[gsdf$type==3,]#
+den=density(sdr$log2FoldChange)#
+den.df = data.frame(x=den$x, y=den$y)#
+male.df = den.df[den.df$x >=max(den.df$x[den.df$x<0]),]#
+female.df = den.df[den.df$x <= 0,]#
+male.df$df = 'higher in males'#
+female.df$df = 'higher in females'#
+male.col = 'dodgerblue'#
+female.col = 'firebrick'#
+denRepFM=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	scale_color_manual(values=c(female.col, male.col)) +#
+	scale_fill_manual(values=c(female.col, male.col)) +#
+	theme(legend.position=c(0.6, 0.75),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F pungitius"), y="density")#
+plot(denRepFM)#
+#look for degeneration of transcription from Y as preferential loss in male pun expression#
+head(sdr.mr)#
+den=density(sdr.mr$log2FoldChange)#
+den.df = data.frame(x=den$x, y=den$y)#
+pun.df = den.df[den.df$x >=max(den.df$x[den.df$x<0]),]#
+gacu.df = den.df[den.df$x <= 0,]#
+pun.df$df = 'higher in pungitius males'#
+gacu.df$df = ' higher in G.aculeatus males'#
+denRepMG=ggplot(data= pun.df) + #
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data= gacu.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data= gacu.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	theme(legend.position=c(0.6, 0.75),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~" pungitius male : G.aculeatus male"), y="density")#
+plot(denRepMG)#
 #
-#set up name#
-infile = paste(paste(spp, sex, sep="_"), 'allBiggestMonoRes.tsv', sep="_")#
-print(infile)#
+#plot both#
+plot_grid(denRepFM, denRepMG, labels=c('A', 'B'), ncol=1, label_size =16)#
+#-------- DISTRIBUTIONS IN M:F FOLD COVERAGE --------##
 #
-#read in data#
-dat = read.table(infile, header = T, stringsAsFactors=F)#
-dat = dat[!dat$CHROM %in% c("chrM", "chrUn"),]#
-head(dat)#
+#load m:f fold differences DNA#
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/maleVfemale_DNA.Rdata")#
+ll#
+dsr = data.frame(dna.sr$log2FoldChange)#
+colnames(dsr) = c('fc')#
+dsr$dset = 'dna'#
+dsr$geneId = rownames(dna.sr)#
+head(dsr)#
+#load differential expression by sex (von Hippel)#
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/maleVfemale_vonHippel.Rdata")#
+vsr = data.frame(s.r$log2FoldChange)#
+colnames(vsr) = c('fc')#
+vsr$dset = 'pelvic'#
+vsr$geneId = rownames(s.r)#
+head(vsr)#
 #
-#add normalized X values#
+#load differential expression by sex (white)#
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/maleVfemalePungitius.Rdata")#
+wsr = data.frame(s.r$log2FoldChange)#
+colnames(wsr) = c('fc')#
+wsr$dset = 'brain'#
+wsr$geneId = rownames(s.r)#
+head(wsr)#
 #
-ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
-head(dat)
-dat$norm.x = dat$BIN_START#
-for (chr in chromlist){#
-	len = max(dat$BIN_START[dat$CHROM==chr])#
-	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
+#load differential expression by sex in 3-spine (white)#
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/baseline_gene_expression/maleVfemale3spine.Rdata")#
+tsr = data.frame(s.r$log2FoldChange)#
+colnames(tsr) = c('fc')#
+tsr$dset = 'acu'#
+tsr$geneId = rownames(s.r)#
+head(tsr)#
+#CONTROL FOR MAPPING EFFICIENCY PEVLIC DATA#
+#to control for changes in mapping efficiency, substract#
+#the DNA fold differences from the RNA fold differences#
+dd = merge(vsr, dsr, by = 'geneId')#
+dd$fc = dd$fc.x - dd$fc.y#
+dd$dset = 'pelvic-dna'#
+pdsr=dd[,c('fc', 'dset', 'geneId')]#
+head(pdsr)#
+#
+# see if the dna fold differences predict the RNA differences#
+ddg=merge(dd, gdat, by = 'geneId')#
+#
+#for sdr#
+ddsdr = ddg[ddg$type==3,]#
+plot(ddsdr$fc.x~ddsdr$fc.y)#
+lm1=lm(ddsdr$fc.x~ddsdr$fc.y)#
+abline(lm1, col='red')#
+summary(lm1)#
+#
+#for autosomes#
+ddauto = ddg[ddg$type==1,]#
+plot(ddauto$fc.x~ ddauto$fc.y)#
+lm2=lm(ddauto$fc.x~ ddauto$fc.y)#
+abline(lm2, col='red')#
+summary(lm2)#
+#CONTROL FOR MAPPING EFFICIENCY brain DATA#
+dd = merge(wsr, dsr, by = 'geneId')#
+dd$fc = dd$fc.x - dd$fc.y#
+dd$dset = 'brain-dna'#
+ddsr=dd[,c('fc', 'dset', 'geneId')]#
+head(ddsr)#
+#
+# see if the dna fold differences predict the RNA differences#
+ddg=merge(dd, gdat, by = 'geneId')#
+#
+#for sdr#
+#This shows that there is indeed an effect of mapping efficiency#
+ddsdr = ddg[ddg$type==3,]#
+plot(ddsdr$fc.x~ddsdr$fc.y)#
+lm1=lm(ddsdr$fc.x~ddsdr$fc.y)#
+abline(lm1, col='red')#
+summary(lm1)#
+#
+#for autosomes#
+ddauto = ddg[ddg$type==1,]#
+plot(ddauto$fc.x~ ddauto$fc.y)#
+lm2=lm(ddauto$fc.x~ ddauto$fc.y)#
+abline(lm2, col='red')#
+summary(lm2)#
+#ASSEMBLE ALL THE MALE:FEMALE DATA TOGETHER#
+sr = rbind(dsr, vsr, wsr, tsr, ddsr, pdsr)#
+head(sr)#
+#add genomic locations#
+head(gdat)#
+msr = merge(sr, gdat, by='geneId', all.x=T)#
+msr$sex = 'auto'#
+# # msr$sex[msr$chr=='chrXII']<-'chrXII' #to use full chrXII#
+msr$sex[msr$type==3]<-'SDR' #to use SDR#
+msr$sex = factor(msr$sex, levels=c('SDR', 'auto'), ordered=T)#
+msr$sexdf = paste(msr$sex, msr$dset, sep="_")#
+msr$absDiff = abs(msr$fc)#
+msr$sexdf = factor(msr$sexdf, levels=c('SDR_brain', 'auto_brain', 'SDR_acu', 'auto_acu', 'SDR_pelvic', 'auto_pelvic', 'SDR_dna', 'auto_dna', 'SDR_brain-dna', 'auto_brain-dna', 'SDR_pelvic-dna', 'auto_pelvic-dna'), ordered=T)#
+boxplot(msr$absDiff~msr$sexdf, outline=F)#
+#subset#
+keep = c('SDR_pelvic-dna', 'auto_pelvic-dna', 'SDR_brain-dna', 'auto_brain-dna', 'SDR_acu', 'auto_acu')#
+ssr = msr[msr$sexdf %in% keep,]#
+ssr$sexdf = factor(ssr$sexdf, levels=keep, ordered=T)#
+smeds = tapply(ssr$absDiff, INDEX=ssr$sexdf, function(x) median(x, na.rm=T))#
+meddf = data.frame(y=smeds)#
+meddf$sexdf = names(smeds)#
+lineLen = 0.3#
+meddf$x1 = 1:6 - lineLen#
+meddf$x2 = 1:6 + lineLen#
+#
+#plot main boxplot#
+absBox = ggplot(data=ssr) +#
+	geom_boxplot(aes(x=sexdf, y=absDiff, fill=sex), outlier.shape=26, lwd=0.75) +#
+	lims(y=c(-.1, 2)) + #
+	labs(x='', y=bquote("|"*log[2]~"M:F|")) +#
+	theme(axis.text.x = element_blank(),#
+		axis.line.x = element_line(size=0),#
+		axis.ticks.x = element_blank(), #
+		legend.title=element_blank(),#
+		legend.position=c(0.7, 0.8))#
+plot(absBox)#
+do.wilcox = function(sp1, sp2, df, col, stat){#
+	stat1 = df[df[,col] == sp1, stat]#
+	stat2 = df[df[,col] == sp2, stat]#
+	sub = df[df[,col] %in% c(sp1, sp2),]#
+	w=wilcox.test(x=stat1, y=stat2)#
+	boxplot(sub[,stat]~sub[,col], outline=F, main=paste("p =",w$p.value))#
+	return(w)#
 }#
-head(dat)
-hist(dat$norm.x)
-#add numerics for sex chromosome consistent#
-sexCon = dat$SDRbool#
-sexCon[sexCon=='False']<-0#
-sexCon[sexCon=='True']<-1#
-dat$sexCon = as.numeric(sexCon)#
+do.wilcox('SDR_brain-dna', 'auto_brain-dna', ssr, 'sexdf', 'absDiff')#
+do.wilcox('SDR_pelvic-dna', 'auto_pelvic-dna', ssr, 'sexdf', 'absDiff')#
+do.wilcox('SDR_acu', 'auto_acu', ssr, 'sexdf', 'absDiff')#
 #
-#--------------- plot multipanel scatterplots ---------------##
-x=dat$BIN_START#
-dat$BIN_START = x/1e6#
-CUT = 0.99#
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='biggestMonoPhyletic', float= CUT, xlab="Position", ylab='Density Male-specific')#
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='sexCon', float= CUT, xlab="Position", ylab='Density Male-specific')#
-#SAVE THE RESULTS FOR PLOTTING MAIN FIGURE#
-outName = '~/gitreps/pungitius_sex_chromosome/figure_plotting/pun_Ylike.Rdata'#
-if (spp=='pun'){#
-	save(dat, file=outName)#
-}
-#plot the Y-consistent gene trees figure#
+brainp = do.wilcox('SDR_brain-dna', 'auto_brain-dna', ssr, 'sexdf', 'absDiff')$p.value#
+pelvicp = do.wilcox('SDR_pelvic-dna', 'auto_pelvic-dna', ssr, 'sexdf', 'absDiff')$p.value#
+acup = do.wilcox('SDR_acu', 'auto_acu', ssr, 'sexdf', 'absDiff')$p.value#
 #
-library(ggplot2)#
-library(cowplot)#
-setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting")#
-source('~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R')#
-#------------ plot gene tree figure ------------##
+pvals = c(brainp, pelvicp, acup)#
+#build the same with violin#
+absViolin = ggplot(data=ssr) +#
+	geom_violin(aes(x=sexdf, y=absDiff, fill=sex, col=sex), na.rm=T) +#
+	geom_segment(data=meddf, aes(x=x1, y=y, xend=x2, yend=y), lwd=1.5) +#
+	lims(y=c(-.1, 2)) + #
+	labs(x='', y='abs(M:F)') + #
+	theme(axis.text.x = element_blank(), axis.ticks.x = element_line(size=0))#
+plot(absViolin)#
 #
-#PLOT SDR-LIKE BOOLEAN DATA#
-ll=load("pun_Ylike.Rdata");SEX.CHROM = 'chrXII' #set this up with chrom_window_figuresV4_wrapped.R#
-dat$mb = dat$BIN_START / 1e6
-head(dat)
-max(dat$norm.x)
-bm = sdr_normalized(df=dat, xcol='norm.x', ycol='sexCon', sex.chrom= SEX.CHROM, YLAB="Y-consistent", sex.col ='black', other.col ='grey',LWD=0.5,PT.SIZE = 2, SHAPE=3, SPAN=.2, draw.legend=T)
-tot.length = max(dat[dat$CHROM=='chrXII','mb'])
-tot.length
-max(dat$mb)
-dat$mb = dat$BIN_START / 1e6
-max(dat$mb)
-max(dat$BIN_START)
-#examine phylogenetic results looking gene trees consistent with sex chromosomes#
+#---------- ALLELE-SPECIFIC EXPRESSION DATA ----------##
 #
-setwd("~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference/")#
-source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#load xy expression white#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/allele_specific_expression/xy_white.Rdata")#
+#m.w = merged dataset with sex differences and XY within male differences for white dataset#
+ll#
+#scatterplot for Y:X vs Male:Female#
+xyscatter.w = ggplot(data=m.w) +  #
+	geom_smooth(data= m.w, aes(log2FoldChange.x,log2FoldChange.y), method='lm', formula=y~x, se=T) +#
+	geom_point(aes(x=log2FoldChange.x, y= log2FoldChange.y), alpha=1) +#
+	lims(y=c(-2, 1.5)) +#
+	labs(x=bquote(log[2]~"Y:X in males"), y=bquote(log[2]~"M:F") )#
+plot(xyscatter.w)#
+lmw=lm(m.w$log2FoldChange.y~m.w$log2FoldChange.x)#
+summary(lmw)#
+#repeat but with the DNA controlled values#
+dcont = ssr[ssr$dset=='brain-dna',]#
+xy = m.w[,c('Row.names', 'log2FoldChange.x')]#
+colnames(xy) = c('geneId', 'fcYX')#
+head(xy)#
+m=merge(dcont, xy, by = 'geneId')#
+head(m)#
+lmx = lm(m$fc~m$fcYX)#
+plot(m$fc~m$fcYX)#
+#keep the dna controlled one#
+xyscatter.w2 = ggplot(m) +  #
+	geom_smooth(aes(x=fcYX, y=fc), method='lm', formula=y~x, se=T) +#
+	geom_point(aes(x=fcYX, y= fc), alpha=1) +#
+	lims(y=c(-2, 1.5)) +#
+	labs(x=bquote(log[2]~"Y:X in males"), y=bquote(log[2]~"M:F") )#
+plot(xyscatter.w2)#
+lmw=lm(m$fc~m$fcYX)#
+summary(lmw)#
+#load xy expression von Hippel#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/allele_specific_expression/xy_vonHippel.Rdata")#
+#m.vh = merged dataset with sex differences and XY within male differences for von Hippel dataset#
+ll#
 #
-#MAKE SELECTIONS FOR WHICH SPECIES/SEX TO ANALYZE#
-#
-#pick the sex (male means looking for Ys, female for Ws)#
-sex='female'#
-sex='male'#
-#
-#pick the species you want to look at#
-spp = 'po'#
-spp = 'tym'#
-spp = 'sin'#
-spp = 'pun'#
-#
-#set up name#
-infile = paste(paste(spp, sex, sep="_"), 'allBiggestMonoRes.tsv', sep="_")#
-print(infile)#
-#
-#read in data#
-dat = read.table(infile, header = T, stringsAsFactors=F)#
-dat = dat[!dat$CHROM %in% c("chrM", "chrUn"),]#
-head(dat)
-#add normalized X values#
-#
-ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
-head(dat)#
-dat$norm.x = dat$BIN_START#
-for (chr in chromlist){#
-	len = max(dat$BIN_START[dat$CHROM==chr])#
-	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
-}#
-head(dat)
-#--------------- plot multipanel scatterplots ---------------##
-x=dat$BIN_START#
-dat$mb = x/1e6#
-CUT = 0.99#
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='mb', ycol='biggestMonoPhyletic', float= CUT, xlab="Position", ylab='Density Male-specific')
+xyscatter.vh = ggplot(data=m.vh) +  #
+	geom_smooth(data= m.vh, aes(log2FoldChange.x,log2FoldChange.y), method='lm', formula=y~x, se=T) +#
+	geom_point(aes(x=log2FoldChange.x, y= log2FoldChange.y), alpha=1) +#
+	lims(y=c(-2, 1.5)) +#
+	labs(x=bquote(log[2]~"Y:X in males"), y=bquote(log[2]~"M:F") )#
+plot(xyscatter.vh)#
+head(m.vh)#
+lmvh=lm(m.vh$log2FoldChange.y~m.vh$log2FoldChange.x)#
+summary(lmvh)#
+#save data for plotting#
+save(absBox, ssr, m, m.vh, xyscatter.w2, xyscatter.vh, denRepMG, denRepFM, file="~/gitreps/pungitius_sex_chromosome/figure_plotting/fig7_files.Rdata")
+#This is a cleaned version of plot_figure7_exploratory.R#
+#That one has a lot more in case these break or aren't clear#
+setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting/")#
+ll=load("fig7_files.Rdata")#
+#---------- PLOT ALL TOGETHER ----------##
+#Figure 7:#
+quartz()#
+plot_grid(absBox, labels='')
 rm(list=ls())
-#y_consistent_trees.R#
-#examine phylogenetic results looking gene trees consistent with sex chromosomes#
-#
-setwd("~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference/")#
-source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
-#
-#MAKE SELECTIONS FOR WHICH SPECIES/SEX TO ANALYZE#
-#
-#pick the sex (male means looking for Ys, female for Ws)#
-sex='female'#
-sex='male'#
-#
-#pick the species you want to look at#
-spp = 'po'#
-spp = 'tym'#
-spp = 'sin'#
-spp = 'pun'#
-#
-#set up name#
-infile = paste(paste(spp, sex, sep="_"), 'allBiggestMonoRes.tsv', sep="_")#
-print(infile)#
-#
-#read in data#
-dat = read.table(infile, header = T, stringsAsFactors=F)#
-dat = dat[!dat$CHROM %in% c("chrM", "chrUn"),]#
-head(dat)#
-#
-#add normalized X values#
-#
-ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
-head(dat)#
-dat$norm.x = dat$BIN_START#
-for (chr in chromlist){#
-	len = max(dat$BIN_START[dat$CHROM==chr])#
-	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
-}#
-head(dat)#
-#
-#add numerics for sex chromosome consistent#
-sexCon = dat$SDRbool#
-sexCon[sexCon=='False']<-0#
-sexCon[sexCon=='True']<-1#
-dat$sexCon = as.numeric(sexCon)#
-#
-#--------------- plot multipanel scatterplots ---------------##
-x=dat$BIN_START#
-dat$mb = x/1e6#
-CUT = 0.99
-#SAVE THE RESULTS FOR PLOTTING MAIN FIGURE#
-outName = '~/gitreps/pungitius_sex_chromosome/figure_plotting/pun_Ylike.Rdata'#
-if (spp=='pun'){#
-	save(dat, file=outName)#
-}
-library(ggplot2)#
-library(cowplot)#
-setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting")#
-source('~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R')#
-#------------ plot gene tree figure ------------##
-#
-#PLOT SDR-LIKE BOOLEAN DATA#
-ll=load("pun_Ylike.Rdata");SEX.CHROM = 'chrXII' #set this up with chrom_window_figuresV4_wrapped.R#
-dat$mb = dat$BIN_START / 1e6#
-bm = sdr_normalized(df=dat, xcol='norm.x', ycol='sexCon', sex.chrom= SEX.CHROM, YLAB="Y-consistent", sex.col ='black', other.col ='grey',LWD=0.5,PT.SIZE = 2, SHAPE=3, SPAN=.2, draw.legend=T)#
-tot.length = max(dat[dat$CHROM=='chrXII','mb'])#
-#add breaktpoints#
-norm.breaks = c(3.5, 18.9) / tot.length#
-bm=bm + geom_vline(xintercept= norm.breaks[1], lty=2, lwd=0.5, color='green') + #
-	geom_vline(xintercept= norm.breaks[2], lty=2, lwd=0.5,color='green')#
-#set up coordinates for example trees#
-mx=max(dat$mb[dat$CHROM=='chrXII'])#
-Y1=c(0,0,1,1)#
-Y2=c(0.05,0.05,0.95,0.95)#
-labY = c(0.15,0.15,0.85,0.85)#
-labX = c(0.8, 2, 6.6, 14.7)/mx#
-lefts = c(1.1, 2, 6.6, 14.7)/mx#
-rights = c(1.2, 2.1, 6.7, 14.8)/mx#
-tlabs = c("B", "C", "D", "E")#
-tree.segs = data.frame(x1=lefts, x2=rights, y1=Y2, y2=Y2, tlab=tlabs, labY=labY, labX=labX)#
-# bm = bm + geom_segment(data=tree.segs, aes(x = x1, y = y1, xend = x2, yend = y2), lwd=4) +#
-	# geom_text(data=tree.segs, aes(x = labX, y = labY, xend = x2, yend = labY, label=tlab), size=5)#
-plot(bm)
-rm(list=ls())
-library(plotrix)#
-library(ggplot2)#
-library(gridExtra)#
-library(cowplot)#
-setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting")#
-source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")
-library(plotrix)#
-library(ggplot2)#
-library(gridExtra)#
-library(cowplot)#
-setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting")#
-source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
-#
-#set some global variables#
-sex.col = 'black'#
-other.col = 'grey'#
-XCOL = 'norm.x'#
-SPAN=0.1#
-CUT= 0.99#
-#optionally don't set y limits#
-fst.ylim = "none"#
-r2.ylim = "none"#
-ss.ylim = "none"#
-dp.ylim = "none"#
-#
-#assign y limits#
-fst.ylim = c(-.02, 0.3)#
-r2.ylim = c(0, 0.8)#
-ss.ylim = c(0, 85)#
-pi.ylim = c(-0.5, 2.5)#
-dp.ylim = c(-1,0.6)#
-XLAB=bquote(Pos.~.(sex.chrom.name)~(Mb))#
-XLAB=""
-ll=load("po_assembledWindowStats.Rdata");SEX.CHROM = 'chrXIX'; sex.chrom.name="chr19";sex.specific = 'pctMaleSpecific'; specific.lab = '% Sex-Specific'
-setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting")
-rm(list=ls())
-#chrom_window_figures.R#
-library(plotrix)#
-library(ggplot2)#
-library(gridExtra)#
-library(cowplot)#
-#
-#set global variables for script#
-setwd("~/gitreps/pungitius_sex_chromosome/male_female_comparisons")#
-source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
-resDir = "dna_100Kb_window_results/"#
-chromsToIgnore = c("chrUn", "chrM")#
-male.color = 'dodgerblue'#
-female.color = 'firebrick'#
-#choose focal species#
-spp="pun"#
-spp="tym"#
-spp="sin"#
-spp="po"
-#upload the VCF wrapper results#
-wrapFile = paste(paste(resDir, spp, sep = ""), "allWindows.tsv", sep="_")#
-dat = read.table(wrapFile, header=T, sep="\t", na.strings = c("NA", "no_snps_in_this_window"))#
-dat=dat[!dat$CHROM %in% chromsToIgnore,]#
-dat$mb = dat$BIN_START / 1e6#
-head(dat)#
-dim(dat)#
-dat$chr_pos = paste(dat$CHROM, dat$BIN_START, sep="_")#
-dat$mfPi = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
-dat$fmPi = log( (dat$PI_female/dat$PI_male), 2)#
-dat$mfDens = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
-dat$fmDens = log( (dat$SNP_COUNT_female/dat$SNP_COUNT_male), 2)#
-dat$pctFemaleSpecific = dat$pFemaleSpecific*100#
-dat$pctMaleSpecific = dat$pMaleSpecific*100
-#SET UP NUMBERED CHROMOSOMES#
-chroms = unique(as.character(dat$CHROM))#
-chroms = chroms[!chroms %in% c("chrM", "chrUn")]#
-chroms = chroms[order(chroms)]#
-nums = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
-cdat = data.frame(chroms, nums)#
-cdat=cdat[order(cdat$nums),]#
-print(cdat)#
-chromlist = as.character(cdat$chroms)#
-save(cdat, chromlist, file="~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")
-#ADD NORMALIZED X VALUES#
-head(dat)#
-dat$norm.x = dat$BIN_START#
-for (chr in chromlist){#
-	len = max(dat$BIN_START[dat$CHROM==chr])#
-	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
-}#
-head(dat)
-#UPLOAD DEPTH RESULTS from bedtools_depth.R#
-depthFile = paste(resDir, paste(spp, 'MvsF_foldDiff.Rdata', sep="_"), sep="")#
-ll = load(depthFile)#
-res.df$BIN_START = res.df$start + 1#
-res.df$BIN_END = res.df$end#
-res.df$chr_pos = paste(res.df$chr, res.df$BIN_START, sep="_")#
-b=merge(res.df[,c('log2FoldChange', 'chr_pos')], dat, by = 'chr_pos', sort=T)#
-dat=b#
-colnames(dat)[2]<-'bedtoolDepth'
-#save the formatted data for plotting main figure#
-outDir= "~/gitreps/pungitius_sex_chromosome/figure_plotting/"#
-outFile = paste(spp, "assembledWindowStats.Rdata", sep = "_")#
-outName = paste(outDir, outFile, sep='')#
-print(outName)
-save(dat, file= outName)
-#below are some plots just for reference#
-#--------------- plot multipanel scatterplots ---------------##
-x=dat$BIN_START#
-dat$BIN_START = x/1e6#
-CUT = 0.99#
-plot_multipanel_chroms(df0=dat, chromlist=chromlist, xcol='BIN_START', ycol='pctMaleSpecific', float= CUT, xlab="Position", ylab='Density Male-specific')
-rm(list=ls())
-#plot the 100 Kb window stats for each species#
-#
-library(plotrix)#
-library(ggplot2)#
-library(gridExtra)#
-library(cowplot)#
-setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting")#
-source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
-#
-#set some global variables#
-sex.col = 'black'#
-other.col = 'grey'#
-XCOL = 'norm.x'#
-SPAN=0.1#
-CUT= 0.99#
-#
-#optionally don't set y limits#
-fst.ylim = "none"#
-r2.ylim = "none"#
-ss.ylim = "none"#
-dp.ylim = "none"#
-#
-#assign y limits#
-fst.ylim = c(-.02, 0.3)#
-r2.ylim = c(0, 0.8)#
-ss.ylim = c(0, 85)#
-pi.ylim = c(-0.5, 2.5)#
-dp.ylim = c(-1,0.6)
-ll=load("po_assembledWindowStats.Rdata");SEX.CHROM = 'chrXIX'; sex.chrom.name="chr19";sex.specific = 'pctMaleSpecific'; specific.lab = '% Sex-Specific'
-#set up 3-spine panels#
-ll=load("po_assembledWindowStats.Rdata");SEX.CHROM = 'chrXIX'; sex.chrom.name="chr19";sex.specific = 'pctMaleSpecific'; specific.lab = '% Sex-Specific'#
-# img1=ggdraw() + draw_image("datasets/pacific_ocean.pdf", scale = 0.9)#
-fst1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, nox=T) #YLAB=bquote(Mean~F[ST])#
-r21 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, nox=T)#
-ss1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB= '', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, nox=T)#
-H = get_two_tailed(dat[,'bedtoolDepth'], CUT)#
-pi1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, nox=F)#;plot(pi1)#
-dp1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='bedtoolDepth', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= dp.ylim, verticals=F);#plot(dp1)#
-#
-#set up pun panels#
-ll=load("datasets/pun_assembledWindowStats.Rdata");SEX.CHROM = 'chrXII';sex.chrom.name='chr12'#
-fst2 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, verticals=TRUE, nox=TRUE, noy=TRUE)#;plot(fst2)#
-r22 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, verticals=TRUE, nox=TRUE, noy=TRUE)#
-ss2 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, verticals=TRUE, nox=TRUE, noy=TRUE)#
-pi2 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, verticals=TRUE, nox=F, noy=TRUE)#;plot(pi2)#
-H = get_two_tailed(dat[,'bedtoolDepth'], CUT)#
-dp2 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='bedtoolDepth', sex.chrom= SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, draw.line=F, tailed = 2, horiz=H, YLIM=dp.ylim, verticals=TRUE, noy=F)#;plot(dp2)#
-#
-#set up sin panels#
-ll=load("datasets/sin_assembledWindowStats.Rdata")#;sex.specific = 'pctFemaleSpecific';specific.lab = '% Sex-Specific'#
-fst3 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, nox=TRUE, noy=TRUE)#
-r23 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, nox=TRUE, noy=TRUE)#
-ss3 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, nox=TRUE, noy=TRUE);#plot(ss3)#
-pi3 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, nox=F, noy=TRUE)#;plot(pi3)#
-dp3 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='bedtoolDepth', sex.chrom= SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=dp.ylim, noy=T)#
-#
-#set up tym panels#
-ll=load("datasets/tym_assembledWindowStats.Rdata")#
-fst4 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, nox=TRUE, noy=TRUE)#
-r24 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, nox=TRUE, noy=TRUE)#
-ss4 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, nox=TRUE, noy=TRUE)#
-pi4 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, nox=F, noy=TRUE)#;plot(pi4)#
-dp4 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='bedtoolDepth', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=dp.ylim, noy=TRUE)#
-#Fst, sex-specific, and pi#
-plot_grid(fst1,fst2,fst3,fst4,ss1,ss2,ss3,ss4,pi1,pi2,pi3,pi4, ncol=4, labels = '')
-fst1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, nox=T) #YLAB=bquote(Mean~F[ST])
-XLAB=bquote(Pos.~.(sex.chrom.name)~(Mb))
-XLAB=bquote(Pos.~.(sex.chrom.name)~(Mb))
-fst1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, nox=T) #YLAB=bquote(Mean~F[ST])
-#set up 3-spine panels#
-ll=load("po_assembledWindowStats.Rdata");SEX.CHROM = 'chrXIX'; sex.chrom.name="chr19";sex.specific = 'pctMaleSpecific'; specific.lab = '% Sex-Specific'#
-# img1=ggdraw() + draw_image("datasets/pacific_ocean.pdf", scale = 0.9)#
-fst1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, nox=T) #YLAB=bquote(Mean~F[ST])#
-r21 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, nox=T)#
-ss1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB= '', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, nox=T)#
-H = get_two_tailed(dat[,'bedtoolDepth'], CUT)#
-pi1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, nox=F)#;plot(pi1)#
-dp1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='bedtoolDepth', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= dp.ylim, verticals=F);#plot(dp1)
-#set up pun panels#
-ll=load("datasets/pun_assembledWindowStats.Rdata");SEX.CHROM = 'chrXII';sex.chrom.name='chr12'#
-fst2 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, verticals=TRUE, nox=TRUE, noy=TRUE)#;plot(fst2)#
-r22 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, verticals=TRUE, nox=TRUE, noy=TRUE)#
-ss2 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, verticals=TRUE, nox=TRUE, noy=TRUE)#
-pi2 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, verticals=TRUE, nox=F, noy=TRUE)#;plot(pi2)#
-H = get_two_tailed(dat[,'bedtoolDepth'], CUT)#
-dp2 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='bedtoolDepth', sex.chrom= SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, draw.line=F, tailed = 2, horiz=H, YLIM=dp.ylim, verticals=TRUE, noy=F)#;plot(dp2)
-ll=load("pun_assembledWindowStats.Rdata");SEX.CHROM = 'chrXII';sex.chrom.name='chr12'
-#set up pun panels#
-ll=load("pun_assembledWindowStats.Rdata");SEX.CHROM = 'chrXII';sex.chrom.name='chr12'#
-fst2 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, verticals=TRUE, nox=TRUE, noy=TRUE)#;plot(fst2)#
-r22 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, verticals=TRUE, nox=TRUE, noy=TRUE)#
-ss2 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, verticals=TRUE, nox=TRUE, noy=TRUE)#
-pi2 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, verticals=TRUE, nox=F, noy=TRUE)#;plot(pi2)#
-H = get_two_tailed(dat[,'bedtoolDepth'], CUT)#
-dp2 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='bedtoolDepth', sex.chrom= SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, draw.line=F, tailed = 2, horiz=H, YLIM=dp.ylim, verticals=TRUE, noy=F)#;plot(dp2)
-#set up sin panels#
-ll=load("sin_assembledWindowStats.Rdata")#;sex.specific = 'pctFemaleSpecific';specific.lab = '% Sex-Specific'#
-fst3 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, nox=TRUE, noy=TRUE)#
-r23 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, nox=TRUE, noy=TRUE)#
-ss3 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, nox=TRUE, noy=TRUE);#plot(ss3)#
-pi3 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, nox=F, noy=TRUE)#;plot(pi3)#
-dp3 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='bedtoolDepth', sex.chrom= SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=dp.ylim, noy=T)
-#set up tym panels#
-ll=load("tym_assembledWindowStats.Rdata")#
-fst4 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, nox=TRUE, noy=TRUE)#
-r24 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, nox=TRUE, noy=TRUE)#
-ss4 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, nox=TRUE, noy=TRUE)#
-pi4 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, nox=F, noy=TRUE)#;plot(pi4)#
-dp4 = multichrom_len_normalized(df=dat, xcol=XCOL, ycol='bedtoolDepth', sex.chrom=SEX.CHROM, YLAB='', XLAB=XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=dp.ylim, noy=TRUE)
-#Fst, sex-specific, and pi#
-plot_grid(fst1,fst2,fst3,fst4,ss1,ss2,ss3,ss4,pi1,pi2,pi3,pi4, ncol=4, labels = '')
-#plot depth for 3-spine and pungitius#
-plot_grid(dp1, dp2)#
-save(dp1, dp2, file="datasets/depthPlots.Rdata")
-save(dp1, dp2, file="depthPlots.Rdata")
+#This is a cleaned version of plot_figure7_exploratory.R#
+#That one has a lot more in case these break or aren't clear#
+setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting/")#
+ll=load("fig7_files.Rdata")#
+#---------- PLOT ALL TOGETHER ----------##
+#Figure 7:#
+quartz()#
+plot_grid(absBox, labels='')
+quartz()#
+plot_grid(xyscatter.w2, xyscatter.vh, ncol=2, label_size =16, axis='b')
+#supplemental showing its not degeneration#
+plot(denRepMG)#
+plot(denRepFM)#
+plot_grid(denRepFM, denRepMG, labels=c('A', 'B'), ncol=1, label_size =16)
+#keep the dna controlled one#
+lmw=lm(m$fc~m$fcYX)#
+summary(lmw)#
+abline(lmw)
+lmw=lm(m$fc~m$fcYX)
+#for dna controlled brain scatterplot#
+plot(m$fc~m$fcYX)#
+lmw=lm(m$fc~m$fcYX)#
+summary(lmw)#
+abline(lmw, col='red')
+#for von Hippel scatterplot#
+plot(m.vh$log2FoldChange.y~m.vh$log2FoldChange.x)#
+lmvh=lm(m.vh$log2FoldChange.y~m.vh$log2FoldChange.x)#
+summary(lmvh)#
+abline(lmvh, col='red')

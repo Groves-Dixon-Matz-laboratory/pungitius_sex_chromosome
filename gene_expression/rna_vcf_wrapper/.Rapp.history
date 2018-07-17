@@ -1,0 +1,707 @@
+setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting")
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")
+show_col(hue_pal()(3))
+library(ggplot2)#
+library(cowplot)#
+library(scales)#
+setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+show_col(hue_pal()(3))
+#################
+TEXTLABS=F#
+#
+#PCA FOR MALES AUTOSOME#
+ll=load("chrI_Pungitius_filt4.recode.vcf_pca.Rdata")#
+df.male = data.frame(pca$scores)#
+df.male = df.male[order(rownames(df.male)),]#
+sex = read.table("metadata/pun_pheno.txt", row.names = 1)#
+m = merge(df.male, sex, by = 0, sort=T, all.x=T)#
+sum(m$Row.names == rownames(df.male)) == nrow(df.male)#
+s = m$V3#
+s[s=='1']<-'F'#
+s[s=='2']<-'M'#
+s[is.na(s)]<-''#
+df.male$group = paste(substr(tolower(rownames(df.male)), start=1,stop=3), s, sep='')#
+shift.table = data.frame(y=c(0, 10, 0, 10), x=c(17, 5, 10, 5))#
+male.auto = plot_snp_pca(df.male, pca, cx=1, cy=2, group='group', shift=T, shift.table=shift.table)
+library(ggplot2)#
+library(cowplot)#
+library(scales)#
+setwd("~/gitreps/pungitius_sex_chromosome/figure_plotting")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+show_col(hue_pal()(3))#
+#
+###########################
+########## PCAs ###########
+###########################
+TEXTLABS=F#
+#
+#PCA FOR MALES AUTOSOME
+ll=load("chrI_Pungitius_filt4.recode.vcf_pca.Rdata")
+df.male = data.frame(pca$scores)
+df.male = df.male[order(rownames(df.male)),]
+sex = read.table("metadata/pun_pheno.txt", row.names = 1)#
+m = merge(df.male, sex, by = 0, sort=T, all.x=T)#
+sum(m$Row.names == rownames(df.male)) == nrow(df.male)#
+s = m$V3#
+s[s=='1']<-'F'#
+s[s=='2']<-'M'#
+s[is.na(s)]<-''#
+df.male$group = paste(substr(tolower(rownames(df.male)), start=1,stop=3), s, sep='')#
+shift.table = data.frame(y=c(0, 10, 0, 10), x=c(17, 5, 10, 5))#
+male.auto = plot_snp_pca(df.male, pca, cx=1, cy=2, group='group', shift=T, shift.table=shift.table)
+sex = read.table("~/gitreps/metadata/pun_pheno.txt", row.names = 1)
+sex = read.table("~/gitreps/pungitius_sex_chromosome/metadata/pun_pheno.txt", row.names = 1)
+m = merge(df.male, sex, by = 0, sort=T, all.x=T)#
+sum(m$Row.names == rownames(df.male)) == nrow(df.male)#
+s = m$V3#
+s[s=='1']<-'F'#
+s[s=='2']<-'M'#
+s[is.na(s)]<-''#
+df.male$group = paste(substr(tolower(rownames(df.male)), start=1,stop=3), s, sep='')#
+shift.table = data.frame(y=c(0, 10, 0, 10), x=c(17, 5, 10, 5))#
+male.auto = plot_snp_pca(df.male, pca, cx=1, cy=2, group='group', shift=T, shift.table=shift.table)
+plot(male.auto)
+#PCA FOR MALE PAR#
+ll=load("chrXII_Pungitius_filt4_PAR.recode.vcf_pca.Rdata")#
+df.male = data.frame(pca$scores)#
+df.male = df.male[order(rownames(df.male)),]#
+m = merge(df.male, sex, by = 0, sort=T, all.x=T)#
+sum(m$Row.names == rownames(df.male)) == nrow(df.male)#
+s = m$V3#
+s[s=='1']<-'F'#
+s[s=='2']<-'M'#
+s[is.na(s)]<-''#
+df.male$group = paste(substr(tolower(rownames(df.male)), start=1,stop=3), s, sep='')#
+shift.table = data.frame(y=c(-3, 2, -3, 1), x=c(2, 2, -1, 3))#
+male.par = plot_snp_pca(df.male, pca, cx=1, cy=2, group='group', shift=T, shift.table=shift.table)
+#PCA FOR MALE SDR#
+ll=load("chrXII_Pungitius_filt4_SDR.recode.vcf_pca.Rdata")#
+df.male = data.frame(pca$scores)#
+df.male = df.male[order(rownames(df.male)),]#
+m = merge(df.male, sex, by = 0, sort=T, all.x=T)#
+sum(m$Row.names == rownames(df.male)) == nrow(df.male)#
+s = m$V3#
+s[s=='1']<-'F'#
+s[s=='2']<-'M'#
+s[is.na(s)]<-''#
+df.male$group = paste(substr(tolower(rownames(df.male)), start=1,stop=3), s, sep='')#
+shift.table = data.frame(y=c(0, 7, 0, 8), x=c(17, 0, 10, 0))#
+male.sdr = plot_snp_pca(df.male, pca, cx=1, cy=2, group='group', shift=T, shift.table=shift.table)#
+plot(male.sdr)
+plot(male.sdr)
+tbl.auto=read.table("~/gitreps/pungitius_sex_chromosome/introgression/admixture/chrI_FULL.3.Q")
+tbl.par=read.table("~/gitreps/pungitius_sex_chromosome/introgression/admixture/chrXII_PAR.3.Q")
+tbl.sdr=read.table("~/gitreps/pungitius_sex_chromosome/introgression/admixture/chrXII_SDR.3.Q")
+colnames(tbl.auto) = c('tym', 'pun', 'sin') #(set these based on the labeled plot below)#
+colnames(tbl.par) = c('tym', 'pun', 'sin')#
+colnames(tbl.sdr) = c('tym', 'pun', 'sin')#
+tbl.auto=tbl.auto[,c('pun', 'sin', 'tym')]#
+tbl.par=tbl.par[,c('pun', 'sin', 'tym')]#
+tbl.sdr=tbl.sdr[,c('pun', 'sin', 'tym')]#
+names = read.table("results/admixture/names.txt")#
+sex = read.table("metadata/pun_pheno.txt")#
+auto.in = format_admixture(tbl.auto, names, sex)#
+par.in = format_admixture(tbl.par, names, sex)#
+sdr.in = format_admixture(tbl.sdr, names, sex)#
+plot_admixture(auto.in)#
+plot_admixture(par.in)#
+plot_admixture(sdr.in)#
+legendPosition="top"#
+legendPosition="none"#
+auto = plot_admixture_bars_only(auto.in, legendPosition)#
+par = plot_admixture_bars_only(par.in, legendPosition)#
+sdr = plot_admixture_bars_only(sdr.in, legendPosition)#
+plot_grid(auto, par,sdr,  ncol=3, labels = LETTERS[1:3], label_size=20)
+sex = read.table("~/gitreps/pungitius_sex_chromosome/metadata/pun_pheno.txt", row.names = 1)
+#########################
+library(reshape)#
+tbl.auto=read.table("~/gitreps/pungitius_sex_chromosome/introgression/admixture/chrI_FULL.3.Q")#
+tbl.par=read.table("~/gitreps/pungitius_sex_chromosome/introgression/admixture/chrXII_PAR.3.Q")#
+tbl.sdr=read.table("~/gitreps/pungitius_sex_chromosome/introgression/admixture/chrXII_SDR.3.Q")#
+colnames(tbl.auto) = c('tym', 'pun', 'sin') #(set these based on the labeled plot below)#
+colnames(tbl.par) = c('tym', 'pun', 'sin')#
+colnames(tbl.sdr) = c('tym', 'pun', 'sin')#
+tbl.auto=tbl.auto[,c('pun', 'sin', 'tym')]#
+tbl.par=tbl.par[,c('pun', 'sin', 'tym')]#
+tbl.sdr=tbl.sdr[,c('pun', 'sin', 'tym')]#
+names = read.table("~/gitreps/pungitius_sex_chromosome/introgression/admixture/names.txt")#
+auto.in = format_admixture(tbl.auto, names, sex)#
+par.in = format_admixture(tbl.par, names, sex)#
+sdr.in = format_admixture(tbl.sdr, names, sex)#
+plot_admixture(auto.in)#
+plot_admixture(par.in)#
+plot_admixture(sdr.in)#
+legendPosition="top"#
+legendPosition="none"#
+auto = plot_admixture_bars_only(auto.in, legendPosition)#
+par = plot_admixture_bars_only(par.in, legendPosition)#
+sdr = plot_admixture_bars_only(sdr.in, legendPosition)#
+plot_grid(auto, par,sdr,  ncol=3, labels = LETTERS[1:3], label_size=20)
+names = read.table("~/gitreps/pungitius_sex_chromosome/introgression/admixture/names.txt")
+auto.in = format_admixture(tbl.auto, names, sex)
+sex = read.table("~/gitreps/pungitius_sex_chromosome/metadata/pun_pheno.txt")
+########################
+#
+tbl.auto=read.table("~/gitreps/pungitius_sex_chromosome/introgression/admixture/chrI_FULL.3.Q")#
+tbl.par=read.table("~/gitreps/pungitius_sex_chromosome/introgression/admixture/chrXII_PAR.3.Q")#
+tbl.sdr=read.table("~/gitreps/pungitius_sex_chromosome/introgression/admixture/chrXII_SDR.3.Q")#
+colnames(tbl.auto) = c('tym', 'pun', 'sin') #(set these based on the labeled plot below)#
+colnames(tbl.par) = c('tym', 'pun', 'sin')#
+colnames(tbl.sdr) = c('tym', 'pun', 'sin')#
+tbl.auto=tbl.auto[,c('pun', 'sin', 'tym')]#
+tbl.par=tbl.par[,c('pun', 'sin', 'tym')]#
+tbl.sdr=tbl.sdr[,c('pun', 'sin', 'tym')]#
+names = read.table("~/gitreps/pungitius_sex_chromosome/introgression/admixture/names.txt")#
+sex = read.table("~/gitreps/pungitius_sex_chromosome/metadata/pun_pheno.txt")#
+auto.in = format_admixture(tbl.auto, names, sex)#
+par.in = format_admixture(tbl.par, names, sex)#
+sdr.in = format_admixture(tbl.sdr, names, sex)#
+plot_admixture(auto.in)#
+plot_admixture(par.in)#
+plot_admixture(sdr.in)#
+legendPosition="top"#
+legendPosition="none"#
+auto = plot_admixture_bars_only(auto.in, legendPosition)#
+par = plot_admixture_bars_only(par.in, legendPosition)#
+sdr = plot_admixture_bars_only(sdr.in, legendPosition)#
+plot_grid(auto, par,sdr,  ncol=3, labels = LETTERS[1:3], label_size=20)
+plot_grid(auto, par,sdr,  ncol=3)
+#plot all together#
+labs=LETTERS[1:6]#
+plot_grid(male.auto, male.par, male.sdr, auto, par,sdr,  ncol=3, labels = '', label_size=18)
+rm(list=ls())
+#myD_stats.R#
+#
+library(ggplot2)#
+library(cowplot)#
+setwd("~/gitreps/stickle_back_sex_chromosomes/")#
+#
+#load chromosome names#
+ll=load("metadata/chromList.Rdata")#
+cdat#
+chroms = as.character(cdat$chroms)#
+# chroms=chroms[chroms!='chrXII']#
+#
+#choose the files you want by suffix#
+suffix = "Dstats_FMS.Rdata"#
+suffix = "Dstats_TSP.Rdata"
+#load D-statistics for each chromosome#
+dstats = c()#
+fixedDstats = c()#
+fdstats = c()#
+for (chr in chroms){#
+	fileName = paste(chr,suffix,sep="_")#
+	ll=load(paste("results/my_abbababa/", fileName, sep=''))#
+	dstats = append(dstats, D)#
+	fixedDstats = append(fixedDstats, Dfixed)#
+	fdstats=append(fdstats, fd)#
+}#
+res.all=data.frame(chroms, fdstats, dstats, fixedDstats)#
+res.auto = res.all[res.all$chroms != 'chrXII',]#
+#plot the distribution for sex and autosomes#
+den = density(res.all$fdstats)#
+den.df = data.frame(x=den$x, y=den$y)#
+g1=ggplot(data=den.df, aes(x=x, y=y)) + #
+	geom_line(col='grey') + #
+	geom_area(fill='grey') +#
+	# scale_x_continuous(limits = c(-0.03, 0.22)) +#
+	# geom_segment(data=d12, aes(x=d, y=y1, xend=d, yend=y2), lineend='round', lwd=1.2) +#
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	labs(x="", y="")#
+plot(g1)
+#plot with line for sex chrom#
+ll=load(paste("results/my_abbababa/chrXII", suffix,sep='_'))#
+sex.chrom=fd#
+line.top = max(den.df$y) / 4#
+d12 = data.frame(d=sex.chrom, y1=0.1, y2=line.top) #to include PAR#
+den = density(res.auto$fdstats)#
+den.df = data.frame(x=den$x, y=den$y)#
+g1=ggplot(data=den.df, aes(x=x, y=y)) + #
+	geom_line(col='grey') + #
+	geom_area(fill='grey') +#
+	# scale_x_continuous(limits = c(-0.03, 0.22)) +#
+	geom_segment(data=d12, aes(x=d, y=y1, xend=d, yend=y2), lineend='round', lwd=1.2) +#
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	labs(x="", y="")#
+plot(g1)
+#----------- repeat but with windows --------------##
+#
+readin = function(fileName){#
+	df = read.table(fileName, header = T)#
+	df$mb = (df$lefts + df$rights) / 2 / 1e6#
+	df = df[df$mb > left & df$mb < right,]#
+	return(df)#
+}#
+#
+left = 4#
+right = 17#
+#
+fms = readin("results/my_abbababa/all_FMS.tsv"); xlim=c(-0.45, 0.45)#
+fmt = readin("results/my_abbababa/all_FMT.tsv")#
+tsp = readin("results/my_abbababa/all_TSP.tsv"); xlim=c(-0.4, 0.4)#
+#
+df = fms#
+df = fmt#
+df = tsp#
+#
+selection = c("chrXII")#
+#
+df.auto = df[!df$chr %in% selection,]#
+sex = df[df$chr %in% selection,]#
+#
+den = density(df.auto[,'fd'], na.rm=T) #get densities for chromosomes only#
+den.df = data.frame(x=den$x, y=den$y)#
+den.sex = density(sex[,'fd'], na.rm=T)#
+sex.df = data.frame(x= den.sex$x, y= den.sex$y)
+g1=ggplot(data= sex.df, aes(x=x, y=y)) + #
+	geom_area(data=sex.df, fill='black', alpha=0.75) +#
+	# geom_segment(data=mn.sex, aes(x=x, y=y1, xend=x, yend=y2), col='black', lty=2) +#
+	# geom_segment(data=mn.auto, aes(x=x, y=y1, xend=x, yend=y2), col='grey', lty=2) +#
+	geom_area(data=den.df, fill='grey', alpha=0.75) +#
+	lims(x=xlim) +#
+	labs(x="D", y="")#
+plot(g1)
+rm(list=ls())
+#myD_stats.R#
+#
+library(ggplot2)#
+library(cowplot)#
+setwd("~/gitreps/stickle_back_sex_chromosomes/")#
+#
+#load chromosome names#
+ll=load("metadata/chromList.Rdata")#
+cdat#
+chroms = as.character(cdat$chroms)#
+# chroms=chroms[chroms!='chrXII']
+#----------- repeat but with windows --------------##
+#
+readin = function(fileName){#
+	df = read.table(fileName, header = T)#
+	df$mb = (df$lefts + df$rights) / 2 / 1e6#
+	df = df[df$mb > left & df$mb < right,]#
+	return(df)#
+}#
+#
+left = 4#
+right = 17#
+#
+fms = readin("results/my_abbababa/all_FMS.tsv"); xlim=c(-0.45, 0.45)#
+fmt = readin("results/my_abbababa/all_FMT.tsv")#
+tsp = readin("results/my_abbababa/all_TSP.tsv"); xlim=c(-0.4, 0.4)#
+#
+df = fms#
+df = fmt#
+df = tsp
+selection = c("chrXII")#
+#
+df.auto = df[!df$chr %in% selection,]#
+sex = df[df$chr %in% selection,]#
+#
+den = density(df.auto[,'fd'], na.rm=T) #get densities for chromosomes only#
+den.df = data.frame(x=den$x, y=den$y)#
+den.sex = density(sex[,'fd'], na.rm=T)#
+sex.df = data.frame(x= den.sex$x, y= den.sex$y)
+g1=ggplot(data= sex.df, aes(x=x, y=y)) + #
+	geom_area(data=sex.df, fill='black', alpha=0.75) +#
+	# geom_segment(data=mn.sex, aes(x=x, y=y1, xend=x, yend=y2), col='black', lty=2) +#
+	# geom_segment(data=mn.auto, aes(x=x, y=y1, xend=x, yend=y2), col='grey', lty=2) +#
+	geom_area(data=den.df, fill='grey', alpha=0.75) +#
+	lims(x=xlim) +#
+	labs(x="D", y="")#
+plot(g1)
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/abbababba")
+#plot_fig3B_chrom_df_ABBA_BABA_stats.R#
+#
+library(ggplot2)#
+library(cowplot)#
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/abbababba")#
+#
+#load chromosome names#
+ll=load("metadata/chromList.Rdata")#
+cdat#
+chroms = as.character(cdat$chroms)#
+#UPLOAD DATA#
+#
+readin = function(fileName){#
+	df = read.table(fileName, header = T)#
+	df$mb = (df$lefts + df$rights) / 2 / 1e6#
+	df = df[df$mb > left & df$mb < right,]#
+	return(df)#
+}#
+#
+left = 4#
+right = 17#
+#
+fms = readin("all_FMS.tsv"); xlim=c(-0.45, 0.45)
+#plot_fig3B_chrom_df_ABBA_BABA_stats.R#
+#
+library(ggplot2)#
+library(cowplot)#
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/abbababba")#
+#
+#load chromosome names#
+ll=load("metadata/chromList.Rdata")#
+cdat#
+chroms = as.character(cdat$chroms)#
+#UPLOAD DATA#
+#
+readin = function(fileName){#
+	df = read.table(fileName, header = T)#
+	df$mb = (df$lefts + df$rights) / 2 / 1e6#
+	df = df[df$mb > left & df$mb < right,]#
+	return(df)#
+}#
+#
+left = 4#
+right = 17#
+#
+fms = readin("all_FMS.tsv"); xlim=c(-0.45, 0.45)
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")
+rm(list=ls())
+library(ggplot2)#
+library(cowplot)#
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/abbababba")#
+#
+#load chromosome names#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+cdat#
+chroms = as.character(cdat$chroms)#
+#UPLOAD DATA#
+#
+readin = function(fileName){#
+	df = read.table(fileName, header = T)#
+	df$mb = (df$lefts + df$rights) / 2 / 1e6#
+	df = df[df$mb > left & df$mb < right,]#
+	return(df)#
+}#
+#
+left = 4#
+right = 17#
+#
+fms = readin("all_FMS.tsv"); xlim=c(-0.45, 0.45)
+fmt = readin("all_FMT.tsv")#
+tsp = readin("all_TSP.tsv"); xlim=c(-0.4, 0.4)
+df = fms
+#format#
+selection = c("chrXII")#
+df.auto = df[!df$chr %in% selection,]#
+sex = df[df$chr %in% selection,]#
+#
+#setup density df#
+den = density(df.auto[,'fd'], na.rm=T) #get densities for chromosomes only#
+den.df = data.frame(x=den$x, y=den$y)#
+den.sex = density(sex[,'fd'], na.rm=T)#
+sex.df = data.frame(x= den.sex$x, y= den.sex$y)#
+#
+#plot#
+g1=ggplot(data= sex.df, aes(x=x, y=y)) + #
+	geom_area(data=sex.df, fill='black', alpha=0.75) +#
+	# geom_segment(data=mn.sex, aes(x=x, y=y1, xend=x, yend=y2), col='black', lty=2) +#
+	# geom_segment(data=mn.auto, aes(x=x, y=y1, xend=x, yend=y2), col='grey', lty=2) +#
+	geom_area(data=den.df, fill='grey', alpha=0.75) +#
+	lims(x=xlim) +#
+	labs(x="D", y="")#
+plot(g1)
+fms = readin("all_FMS.tsv"); xlim=c(-0.48, 0.48)
+df = fms
+#format#
+selection = c("chrXII")#
+df.auto = df[!df$chr %in% selection,]#
+sex = df[df$chr %in% selection,]#
+#
+#setup density df#
+den = density(df.auto[,'fd'], na.rm=T) #get densities for chromosomes only#
+den.df = data.frame(x=den$x, y=den$y)#
+den.sex = density(sex[,'fd'], na.rm=T)#
+sex.df = data.frame(x= den.sex$x, y= den.sex$y)#
+#
+#plot#
+g1=ggplot(data= sex.df, aes(x=x, y=y)) + #
+	geom_area(data=sex.df, fill='black', alpha=0.75) +#
+	# geom_segment(data=mn.sex, aes(x=x, y=y1, xend=x, yend=y2), col='black', lty=2) +#
+	# geom_segment(data=mn.auto, aes(x=x, y=y1, xend=x, yend=y2), col='grey', lty=2) +#
+	geom_area(data=den.df, fill='grey', alpha=0.75) +#
+	lims(x=xlim) +#
+	labs(x="D", y="")#
+plot(g1)
+tsp = readin("all_TSP.tsv"); xlim=c(-0.4, 0.4)
+df = tsp#
+#
+#format#
+selection = c("chrXII")#
+df.auto = df[!df$chr %in% selection,]#
+sex = df[df$chr %in% selection,]#
+#
+#setup density df#
+den = density(df.auto[,'fd'], na.rm=T) #get densities for chromosomes only#
+den.df = data.frame(x=den$x, y=den$y)#
+den.sex = density(sex[,'fd'], na.rm=T)#
+sex.df = data.frame(x= den.sex$x, y= den.sex$y)#
+#
+#plot#
+g1=ggplot(data= sex.df, aes(x=x, y=y)) + #
+	geom_area(data=sex.df, fill='black', alpha=0.75) +#
+	# geom_segment(data=mn.sex, aes(x=x, y=y1, xend=x, yend=y2), col='black', lty=2) +#
+	# geom_segment(data=mn.auto, aes(x=x, y=y1, xend=x, yend=y2), col='grey', lty=2) +#
+	geom_area(data=den.df, fill='grey', alpha=0.75) +#
+	lims(x=xlim) +#
+	labs(x="D", y="")#
+plot(g1)
+setwd("~/gitreps/pungitius_sex_chromosome/gene_expression/rna_vcf_wrapper")
+library(plotrix)#
+library(ggplot2)#
+library(gridExtra)#
+library(cowplot)#
+#
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/gene_expression/rna_vcf_wrapper")
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")
+resDir = "~/gitreps/stickle_back_sex_chromosomes/results/window_stats/rna/"
+chromsToIgnore = c("chrUn", "chrM")#
+male.color = 'dodgerblue'#
+female.color = 'firebrick'
+rm(list=ls())
+#same as script for plotting figure 1 but for the RNA data#
+#
+library(plotrix)#
+library(ggplot2)#
+library(gridExtra)#
+library(cowplot)#
+#
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/gene_expression/rna_vcf_wrapper")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+chromsToIgnore = c("chrUn", "chrM")#
+male.color = 'dodgerblue'#
+female.color = 'firebrick'
+paste(spp, "allWindows.tsv", sep="_")
+spp="DRR"
+paste(spp, "allWindows.tsv", sep="_")
+wrapFile = paste(spp, "allWindows.tsv", sep="_")
+dat = read.table(wrapFile, header=T, sep="\t", na.strings = c("NA", "no_snps_in_this_window"))
+dat=dat[!dat$CHROM %in% chromsToIgnore,]#
+dat$mb = dat$BIN_START / 1e6#
+head(dat)#
+dim(dat)#
+dat$chr_pos = paste(dat$CHROM, dat$BIN_START, sep="_")#
+dat$mfPi = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmPi = log( (dat$PI_female/dat$PI_male), 2)#
+dat$mfDens = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmDens = log( (dat$SNP_COUNT_female/dat$SNP_COUNT_male), 2)#
+dat$pctFemaleSpecific = dat$pFemaleSpecific*100#
+dat$pctMaleSpecific = dat$pMaleSpecific*100
+#build chromosome set#
+if (spp != "guppy"){#
+	chroms = unique(as.character(dat$CHROM))#
+	chroms = chroms[!chroms %in% c("chrM", "chrUn")]#
+	chroms = chroms[order(chroms)]#
+	nums = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+	cdat = data.frame(chroms, nums)#
+	cdat=cdat[order(cdat$nums),]#
+	print(cdat)#
+	chromlist = as.character(cdat$chroms)#
+}#
+# save(cdat, file="metadata/chromList.Rdata")
+#ADD NORMALIZED X VALUES#
+head(dat)#
+dat$norm.x = dat$BIN_START#
+for (chr in chromlist){#
+	len = max(dat$BIN_START[dat$CHROM==chr])#
+	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
+}#
+head(dat)
+datFileName = paste(spp, 'windowData.Rdata', sep="_")
+datFileName
+save(dat, file= datFileName)
+#-------- plot the supplemental figure for the RNA datasets --------##
+#
+setwd("~/gitreps/pungitius_sex_chromosome/gene_expression/rna_vcf_wrapper")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#White Dataset#
+ll=load(paste('SRR', 'windowData.Rdata', sep="_"))#
+fst1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, nox=T)#;plot(fst1)#
+r21 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, nox=T)#
+ss1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB= '', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, nox=T)#;plot(ss1)#
+H = get_two_tailed(dat[,'bedtoolDepth'], CUT)#
+pi1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, nox=F)#;plot(pi1)
+ll=load(paste('SRR', 'windowData.Rdata', sep="_"))
+paste('SRR', 'windowData.Rdata', sep="_")
+RM(LIST=LS())
+#vonHippel Dataset#
+ll=load(paste("DRR", 'windowData.Rdata', sep="_"))#
+fst2 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, nox=T, noy=F)#;plot(fst2)#
+r22 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, nox=T)#
+ss2 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB= '', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, nox=T)#;plot(ss2)#
+H = get_two_tailed(dat[,'bedtoolDepth'], CUT)#
+pi2 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, nox=F)#;plot(pi2)
+#set up plotting vars#
+sex.col = 'black'#
+other.col = 'grey'#
+XCOL = 'norm.x'#
+XLAB=""#
+SPAN=0.1#
+SEX.CHROM = 'chrXII'#
+sex.specific = 'pSexSpecific'; specific.lab = '% Sex-Specific'
+#vonHippel Dataset#
+ll=load(paste("DRR", 'windowData.Rdata', sep="_"))#
+fst2 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, nox=T, noy=F)#;plot(fst2)#
+r22 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, nox=T)#
+ss2 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB= '', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, nox=T)#;plot(ss2)#
+H = get_two_tailed(dat[,'bedtoolDepth'], CUT)#
+pi2 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, nox=F)#;plot(pi2)
+fst.ylim = c(-.2, 0.75)#
+r2.ylim = c(0, 0.8)#
+ss.ylim = c(0, 1)#
+pi.ylim = c(-2, 4)
+#vonHippel Dataset#
+ll=load(paste("DRR", 'windowData.Rdata', sep="_"))#
+fst2 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, nox=T, noy=F)#;plot(fst2)#
+r22 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, nox=T)#
+ss2 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB= '', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, nox=T)#;plot(ss2)#
+H = get_two_tailed(dat[,'bedtoolDepth'], CUT)#
+pi2 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, nox=F)#;plot(pi2)
+plot(pi2)
+#White Dataset#
+ll=load(paste('SRR', 'windowData.Rdata', sep="_"))#
+fst1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, nox=T)#;plot(fst1)#
+r21 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, nox=T)#
+ss1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB= '', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, nox=T)#;plot(ss1)#
+H = get_two_tailed(dat[,'bedtoolDepth'], CUT)#
+pi1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, nox=F)#;plot(pi1)
+plot_grid(fst1, fst2, ss1, ss2, pi1, pi2, ncol=2)
+ll=load(paste('SRR', 'windowData.Rdata', sep="_"))
+rm(list=ls())
+#plot_RNA_vcfwrap.R#
+#same as script for plotting figure 1 but for the RNA data#
+#
+library(plotrix)#
+library(ggplot2)#
+library(gridExtra)#
+library(cowplot)#
+#
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/gene_expression/rna_vcf_wrapper")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+chromsToIgnore = c("chrUn", "chrM")#
+male.color = 'dodgerblue'#
+female.color = 'firebrick'#
+#choose focal species#
+spp="DRR"
+#upload the VCF wrapper results#
+wrapFile = paste(spp, "allWindows.tsv", sep="_")#
+dat = read.table(wrapFile, header=T, sep="\t", na.strings = c("NA", "no_snps_in_this_window"))#
+dat=dat[!dat$CHROM %in% chromsToIgnore,]#
+dat$mb = dat$BIN_START / 1e6#
+head(dat)#
+dim(dat)#
+dat$chr_pos = paste(dat$CHROM, dat$BIN_START, sep="_")#
+dat$mfPi = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmPi = log( (dat$PI_female/dat$PI_male), 2)#
+dat$mfDens = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmDens = log( (dat$SNP_COUNT_female/dat$SNP_COUNT_male), 2)#
+dat$pctFemaleSpecific = dat$pFemaleSpecific*100#
+dat$pctMaleSpecific = dat$pMaleSpecific*100#
+#build chromosome set#
+chroms = unique(as.character(dat$CHROM))#
+chroms = chroms[!chroms %in% c("chrM", "chrUn")]#
+chroms = chroms[order(chroms)]#
+nums = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+cdat = data.frame(chroms, nums)#
+cdat=cdat[order(cdat$nums),]#
+print(cdat)#
+chromlist = as.character(cdat$chroms)#
+#ADD NORMALIZED X VALUES#
+head(dat)#
+dat$norm.x = dat$BIN_START#
+for (chr in chromlist){#
+	len = max(dat$BIN_START[dat$CHROM==chr])#
+	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
+}#
+head(dat)#
+#--------- SAVE/LOAD#
+datFileName = paste(spp, 'windowData.Rdata', sep="_")#
+datFileName#
+save(dat, file= datFileName)
+rm(list=ls())
+#plot_RNA_vcfwrap.R#
+#same as script for plotting figure 1 but for the RNA data#
+#
+library(plotrix)#
+library(ggplot2)#
+library(gridExtra)#
+library(cowplot)#
+#
+#set global variables for script#
+setwd("~/gitreps/pungitius_sex_chromosome/gene_expression/rna_vcf_wrapper")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+chromsToIgnore = c("chrUn", "chrM")#
+male.color = 'dodgerblue'#
+female.color = 'firebrick'
+spp="SRR"#
+#upload the VCF wrapper results#
+wrapFile = paste(spp, "allWindows.tsv", sep="_")#
+dat = read.table(wrapFile, header=T, sep="\t", na.strings = c("NA", "no_snps_in_this_window"))#
+dat=dat[!dat$CHROM %in% chromsToIgnore,]#
+dat$mb = dat$BIN_START / 1e6#
+head(dat)#
+dim(dat)#
+dat$chr_pos = paste(dat$CHROM, dat$BIN_START, sep="_")#
+dat$mfPi = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmPi = log( (dat$PI_female/dat$PI_male), 2)#
+dat$mfDens = log( (dat$SNP_COUNT_male/dat$SNP_COUNT_female), 2)#
+dat$fmDens = log( (dat$SNP_COUNT_female/dat$SNP_COUNT_male), 2)#
+dat$pctFemaleSpecific = dat$pFemaleSpecific*100#
+dat$pctMaleSpecific = dat$pMaleSpecific*100#
+#build chromosome set#
+chroms = unique(as.character(dat$CHROM))#
+chroms = chroms[!chroms %in% c("chrM", "chrUn")]#
+chroms = chroms[order(chroms)]#
+nums = c(1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 19, 15, 16, 17, 18, 20, 21)#
+cdat = data.frame(chroms, nums)#
+cdat=cdat[order(cdat$nums),]#
+print(cdat)#
+chromlist = as.character(cdat$chroms)#
+#ADD NORMALIZED X VALUES#
+head(dat)#
+dat$norm.x = dat$BIN_START#
+for (chr in chromlist){#
+	len = max(dat$BIN_START[dat$CHROM==chr])#
+	dat$norm.x[dat$CHROM==chr]<-dat$BIN_START[dat$CHROM==chr] / len#
+}#
+head(dat)#
+#--------- SAVE/LOAD#
+datFileName = paste(spp, 'windowData.Rdata', sep="_")#
+datFileName#
+save(dat, file= datFileName)
+rm(list=ls())
+#-------- plot the supplemental figure for the RNA datasets --------##
+#
+setwd("~/gitreps/pungitius_sex_chromosome/gene_expression/rna_vcf_wrapper")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#
+#set up plotting vars#
+sex.col = 'black'#
+other.col = 'grey'#
+XCOL = 'norm.x'#
+XLAB=""#
+SPAN=0.1#
+SEX.CHROM = 'chrXII'#
+sex.specific = 'pSexSpecific'; specific.lab = '% Sex-Specific'#
+fst.ylim = c(-.2, 0.75)#
+r2.ylim = c(0, 0.8)#
+ss.ylim = c(0, 1)#
+pi.ylim = c(-2, 4)
+#White Dataset#
+ll=load(paste('SRR', 'windowData.Rdata', sep="_"))#
+fst1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, nox=T)#;plot(fst1)#
+r21 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, nox=T)#
+ss1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB= '', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, nox=T)#;plot(ss1)#
+pi1 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, nox=F)#;plot(pi1)
+#vonHippel Dataset#
+ll=load(paste("DRR", 'windowData.Rdata', sep="_"))#
+fst2 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='MEAN_FST', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=fst.ylim, nox=T, noy=F)#;plot(fst2)#
+r22 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='male_r2', sex.chrom=SEX.CHROM, YLAB='', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=r2.ylim, nox=T)#
+ss2 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol= sex.specific, sex.chrom=SEX.CHROM, YLAB= '', XLAB= XLAB,  sex.col = sex.col, other.col = other.col,SPAN=SPAN, YLIM=ss.ylim, nox=T)#;plot(ss2)#
+pi2 = multichrom_len_normalized(df=dat, xcol= XCOL, ycol='mfPi', sex.chrom= SEX.CHROM, YLAB='', XLAB= XLAB, sex.col = sex.col, other.col = other.col,SPAN=SPAN, , draw.line=F, tailed = 2, horiz=H, YLIM= pi.ylim, nox=F)#;plot(pi2)#
+plot_grid(fst1, fst2, ss1, ss2, pi1, pi2, ncol=2)
