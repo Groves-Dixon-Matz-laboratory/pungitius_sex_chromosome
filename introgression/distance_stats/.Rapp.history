@@ -1,0 +1,2397 @@
+clist = list()#
+clist=append(clist, g1)#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	cplot = ggplot(data=csub) + geom_smooth(aes(x=mb, y=fd), span = span, se=F)#
+	clist[[chr]]<-cplot#
+}
+length(clist)
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	cplot = ggplot(data=csub) + geom_smooth(aes(x=mb, y=fd), span = span, se=F)#
+	clist[[chr]]<-cplot#
+}#
+length(clist)
+plot_grid(plotlist = clist)
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25))#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+plot_grid(plotlist = clist)
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+plot_grid(plotlist = clist)
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x=chr) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+plot_grid(plotlist = clist)
+? plot_grid
+fms = readin("all_FMS.tsv")
+df=fms
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x=chr) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+	clist[[chr]]<-cplot#
+}#
+length(clist)
+plot_grid(plotlist = clist)
+plot_grid(plotlist = clist, ncol=length(clist))
+head(df)
+round(115, digits=1)
+round(115, digits=-1)
+floor(115, digits=-1)
+?round
+floor(115)
+?floor
+31/10
+head(csub)
+max(csub$mb)
+floor(csub)
+floor(17.28)
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		lastTick = round(max(csub$mb))#
+		scale_x_continuous(breaks = c(0, lastTick/2, lastTick))#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+	clist[[chr]]<-cplot#
+}#
+length(clist)
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		lastTick = round(max(csub$mb))#
+		scale_x_continuous(breaks = c(0, lastTick/2, lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+	clist[[chr]]<-cplot#
+}#
+length(clist)
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, lastTick/2, lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+	clist[[chr]]<-cplot#
+}#
+length(clist)
+plot_grid(plotlist = clist, ncol=length(clist))
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+plot_grid(plotlist = clist, ncol=length(clist))
+library(ggplot2)#
+library(cowplot)#
+setwd("/Users/grovesdixon/gitreps/stickle_back_sex_chromosomes/results/my_dxy/full_chroms/run3")#
+#
+#load chromosome names#
+ll=load("/Users/grovesdixon/gitreps/stickle_back_sex_chromosomes/metadata/chromList.Rdata")#
+cdat#
+chroms = as.character(cdat$chroms)
+rm(list=ls())
+#------------ FULL CHROMOSOMES ----------------##
+to.remove = c("chrUn", "chrM"); selection = c("PAR", "SDR")             #line for PAR and SDR#
+to.remove = c("chrUn", "chrM", "PAR", "chrXII"); selection = c("SDR")   #line for SDR only#
+to.remove = c("chrUn", "chrM", "PAR", "SDR"); selection = c("chrXII")  #line for chrXII only#
+#
+readin = function(fileName, pair){#
+	x=read.table(fileName)#
+	x=x[!x$chr %in% to.remove,]#
+	x$pair = pair#
+	return(x)#
+}
+#upload comparisons#
+yt = readin("all_y_tym_distances.tsv", 'yt')#
+ys = readin("all_y_sin_distances.tsv", 'ys')#
+yf = readin("all_y_female_distances.tsv", 'yf')#
+ms = readin("all_malePun_sin_distances.tsv", 'ms')#
+mt = readin("all_malePun_tym_distances.tsv", 'mt')#
+fs = readin("all_femalePun_sin_distances.tsv", 'fs')#
+ft = readin("all_femalePun_tym_distances.tsv", 'ft')#
+st = readin("all_sin_tym_distances.tsv", 'st')
+df = ms
+stat = 'dtilde'
+stat = 'dtilde'
+df = ms
+#function to get means for the stat#
+mn.auto = function(df, stat){#
+	sub = df[!df$chr %in% c("PAR", "SDR", "chrXII"),]#
+	return(mean(df[,stat]))#
+}#
+#
+mn.st = mn.auto(st, stat)
+plot(dtilde~hap.dtilde, data=df)
+plot(pix~hap.pix, data=df)
+plot(pix~hap.pix, data=df)
+plot(piy~hap.piy, data=df)
+#plot distribution for autosomes and sex chrom#
+den = density(df[, stat]) #get densities for non selected chromosome#
+den.df = data.frame(x=den$x, y=den$y)
+g1=ggplot(data=den.df, aes(x=x, y=y)) + #
+	geom_line(col='grey') + #
+	geom_area(fill='grey') +#
+	# scale_x_continuous(limits = c(-0.03, 0.22)) +#
+	# geom_segment(data=d12, aes(x=d, y=y1, xend=d, yend=y2), lineend='round', lwd=1.2) +#
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	labs(x="", y="")#
+plot(g1)
+#plot with line for sex chromosome#
+df.auto = df[!df$chr %in% selection,]#
+den = density(df.auto[,stat]) #get densities for chromosomes only#
+den.df = data.frame(x=den$x, y=den$y)
+sex = df[selection, stat]#
+line.top = max(den.df$y) / 4#
+d12 = data.frame(x=sex, y1=0, y2=line.top)#
+rownames(d12) = selection#
+#
+g1=ggplot(data=den.df, aes(x=x, y=y)) + #
+	geom_line(col='grey') + #
+	geom_area(fill='grey') +#
+	geom_segment(data=d12, aes(x=x, y=y1, xend=x, yend=y2), lineend='round', lwd=1.2) +#
+	# scale_x_continuous(limits = c(0.05, 0.13)) +#
+	labs(x=stat, y="")#
+plot(g1)
+#get a legend#
+autosomes=1:10#
+b=1:10#
+c=c(rep('SDR', 5), rep('autosomes', 5))#
+d=data.frame(a,b)#
+g=ggplot(data=d) + #
+	geom_point(aes(x=a,y=b, color=c), pch=15, size=3, alpha=0.75) + #
+	scale_color_manual(breaks=c("SDR","autosomes"), values=c('grey', 'black'))#
+	theme(legend.title=element_blank())#
+plot(g)
+#compare distances measures#
+plot_stats = function(df, stat1, stat2, MAIN=''){#
+	par(mfrow=c(1,2))#
+	plot(df[,stat2]~df[,stat1], xlab=stat1, ylab=stat2, main=MAIN)#
+	plot(df[,stat2]~df[,stat1], xlab=stat1, ylab=stat2, pch=26, main=MAIN)#
+	text(y=df[,stat2], x=df[,stat1], labels=df[,'chr'])#
+	par(mfrow=c(1,1))#
+}#
+stat1 = 'dxy'
+plot_stats(ys, stat1, stat2, MAIN='punY:sin')
+head(ys)
+stat2 = 'fst'
+#compare distances measures#
+plot_stats = function(df, stat1, stat2, MAIN=''){#
+	par(mfrow=c(1,2))#
+	plot(df[,stat2]~df[,stat1], xlab=stat1, ylab=stat2, main=MAIN)#
+	plot(df[,stat2]~df[,stat1], xlab=stat1, ylab=stat2, pch=26, main=MAIN)#
+	text(y=df[,stat2], x=df[,stat1], labels=df[,'chr'])#
+	par(mfrow=c(1,1))#
+}#
+stat1 = 'dxy'#
+stat2 = 'fst'#
+plot_stats(ys, stat1, stat2, MAIN='punY:sin')
+#get a legend#
+autosomes=1:10#
+b=1:10#
+c=c(rep('SDR', 5), rep('autosomes', 5))#
+d=data.frame(a,b)#
+g=ggplot(data=d) + #
+	geom_point(aes(x=a,y=b, color=c), pch=15, size=3, alpha=0.75) + #
+	scale_color_manual(breaks=c("SDR","autosomes"), values=c('grey', 'black'))#
+	theme(legend.title=element_blank())#
+plot(g)
+c=c(rep('SDR', 5), rep('autosomes', 5))
+d=data.frame(a,b)
+#get a legend#
+a=1:10#
+b=1:10#
+c=c(rep('SDR', 5), rep('autosomes', 5))#
+d=data.frame(a,b)
+g=ggplot(data=d) + #
+	geom_point(aes(x=a,y=b, color=c), pch=15, size=3, alpha=0.75) + #
+	scale_color_manual(breaks=c("SDR","autosomes"), values=c('grey', 'black'))#
+	theme(legend.title=element_blank())#
+plot(g)
+setwd("/Users/grovesdixon/gitreps/stickle_back_sex_chromosomes/results/my_dxy/100Kb_windows")
+to.remove = c("chrUn", "chrM", "PAR", "SDR"); selection = c("chrXII")  #line for chrXII only
+#change to normalize to SDR-like region#
+leftBound = 4;rightBound = 17#
+#default for whole chromosomes#
+# leftBound = 0;rightBound = 1e3#
+#
+#read in data#
+readin = function(fileName, pair){#
+	x=read.table(fileName, sep="\t", header = T, stringsAsFactors=F)#
+	x=x[!x$chr %in% to.remove,]#
+	x$pair = pair#
+	x$mb = (x$lefts + x$rights) / 2 / 1e6#
+	x=x[x$mb > leftBound & x$mb < rightBound,]#
+	return(x)#
+}
+upload comparisons#
+yt = readin("all_y_tym_distances.tsv", 'yt')#
+ys = readin("all_y_sin_distances.tsv", 'ys')#
+yf = readin("all_y_female_distances.tsv", 'yf')#
+ms = readin("all_malePun_sin_distances.tsv", 'ms')#
+mt = readin("all_malePun_tym_distances.tsv", 'mt')#
+fs = readin("all_femalePun_sin_distances.tsv", 'fs')#
+ft = readin("all_femalePun_tym_distances.tsv", 'ft')#
+st = readin("all_sin_tym_distances.tsv", 'st')
+ll=load("/Users/grovesdixon/gitreps/stickle_back_sex_chromosomes/metadata/chromList.Rdata")#
+ll#
+#plot densities#
+df = ms
+stat = 'dtilde'
+#plot density as before#
+df.auto = df[!df$chr %in% selection,]#
+den = density(df.auto[,stat]) #get densities for chromosomes only#
+den.df = data.frame(x=den$x, y=den$y)#
+#
+sex = na.omit(df[df$chr %in% selection, stat])#
+den.sex = density(sex)#
+sex.df = data.frame(x= den.sex$x, y= den.sex$y)#
+#
+mn.sex = data.frame(x=mean(sex, na.rm=T), y1=0, y2=max(den.sex$y))#
+mn.auto = data.frame(x=mean(df.auto[,stat]), y1=0, y2=max(den.sex$y))#
+#
+g1=ggplot(data= sex.df, aes(x=x, y=y)) + #
+	geom_area(data=sex.df, fill='black', alpha=0.75) +#
+	# geom_segment(data=mn.sex, aes(x=x, y=y1, xend=x, yend=y2), col='black', lty=2) +#
+	# geom_segment(data=mn.auto, aes(x=x, y=y1, xend=x, yend=y2), col='grey', lty=2) +#
+	geom_area(data=den.df, fill='grey', alpha=0.75) +#
+	labs(x=stat, y="")#
+plot(g1)
+source("~/gitreps/stickle_back_sex_chromosomes/scripts/pun_sex_chrom_functions.R")#
+#
+fst1 = plot_distance_density(fs, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))
+fst2 = plot_distance_density(ft, 'chrXII', 'fst',  c(0, 0.15, 0.3), c(0, 0.3))#
+dxy1 = plot_distance_density(fs, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(-0.003, 0.018))#
+dxy2 = plot_distance_density(ft, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(-0.003, 0.018))#
+dtilde1 = plot_distance_density(fs, 'chrXII', 'dtilde', c(0, 0.006, 0.012), c(-0.003, 0.015))#
+dtilde2 = plot_distance_density(ft, 'chrXII', 'dtilde',  c(0, 0.006, 0.012), c(-0.003, 0.015))#
+plot_grid(fst1, dxy1, dtilde1, fst2, dxy2, dtilde2)
+#or use means#
+auto.mns = tapply(df.auto[,stat], df.auto$chr, function(x) mean(x, na.rm=T))#
+den = density(auto.mns) #get densities for chromosomes only#
+den.df = data.frame(x=den$x, y=den$y)#
+line.top = max(den.df$y) / 4#
+d12 = data.frame(x=mean(sex), y1=0, y2=line.top)#
+rownames(d12) = selection#
+#
+g1=ggplot(data=den.df, aes(x=x, y=y)) + #
+	geom_line(col='grey') + #
+	geom_area(fill='grey') +#
+	geom_segment(data=d12, aes(x=x, y=y1, xend=x, yend=y2), lineend='round', lwd=1.2) +#
+	labs(x=stat, y="")#
+plot(g1)
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))
+plot(fst)
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.15, 0.3), c(0, 0.3))
+#----- PLOT COMPARISONS BETWEEN Y and SIN -----##
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.15, 0.3), c(0, 0.3))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.15, 0.3), c(0, 0.3))
+plot_grid(fst, dxy, dtilde)
+plot_grid(fst, dxy, dtilde, nrow=1)
+#----- PLOT COMPARISONS BETWEEN Y and SIN -----##
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.15, 0.3), c(0, 0.015))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.15, 0.3), c(0, 0.01))#
+plot_grid(fst, dxy, dtilde, nrow=1)
+#----- PLOT COMPARISONS BETWEEN Y and SIN -----##
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.15, 0.3), c(0, 0.015))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.15, 0.3), c(0, 0.02))#
+plot_grid(fst, dxy, dtilde, nrow=1)
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.008, 0. 0.016), c(0, 0.016))
+#----- PLOT COMPARISONS BETWEEN Y and SIN -----##
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.008, 0. 0.016), c(0, 0.016))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.15, 0.3), c(0, 0.02))#
+plot_grid(fst, dxy, dtilde, nrow=1)
+#----- PLOT COMPARISONS BETWEEN Y and SIN -----##
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(0, 0.016))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.005, 0.1), c(0, 0.01))#
+plot_grid(fst, dxy, dtilde, nrow=1)
+#----- PLOT COMPARISONS BETWEEN Y and SIN -----##
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(0, 0.016))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.005, 0.01), c(0, 0.01))#
+plot_grid(fst, dxy, dtilde, nrow=1)
+#----- PLOT COMPARISONS BETWEEN Y and SIN -----##
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(0, 0.016))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.005, 0.012), c(0, 0.012))#
+plot_grid(fst, dxy, dtilde, nrow=1)
+#----- PLOT COMPARISONS BETWEEN Y and SIN -----##
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(0, 0.016))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.006, 0.012), c(0, 0.012))#
+plot_grid(fst, dxy, dtilde, nrow=1)
+plot_grid(fst, dxy, dtilde, nrow=1, labels = LETTERS[1:3])
+# plot_grid(fst, dxy, dtilde, nrow=1, labels = LETTERS[1:3], label_size=16)
+plot_grid(fst, dxy, dtilde, nrow=1, labels = LETTERS[1:3], label_size=16)
+#----- PLOT COMPARISONS BETWEEN Y and SIN -----##
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(0, 0.016))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.006, 0.012), c(0, 0.013))#
+plot_grid(fst, dxy, dtilde, nrow=1, labels = LETTERS[1:3], label_size=16)
+#----- PLOT COMPARISONS BETWEEN Y and SIN -----##
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(0, 0.016))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.006, 0.012), c(0, 0.0122))#
+plot_grid(fst, dxy, dtilde, nrow=1, labels = LETTERS[1:3], label_size=16)
+#----- PLOT COMPARISONS BETWEEN Y and SIN -----##
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(0, 0.016))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.006, 0.012), c(0, 0.0125))#
+plot_grid(fst, dxy, dtilde, nrow=1, labels = LETTERS[1:3], label_size=16)
+rm(list=ls())
+library(ggplot2)#
+library(cowplot)#
+setwd("/Users/grovesdixon/gitreps/stickle_back_sex_chromosomes/results/my_dxy/full_chroms/run3")#
+#
+#load chromosome names#
+ll=load("/Users/grovesdixon/gitreps/stickle_back_sex_chromosomes/metadata/chromList.Rdata")#
+cdat#
+chroms = as.character(cdat$chroms)
+#------------ FULL CHROMOSOMES ----------------##
+to.remove = c("chrUn", "chrM", "PAR", "SDR"); selection = c("chrXII")  #line for chrXII only#
+#
+readin = function(fileName, pair){#
+	x=read.table(fileName)#
+	x=x[!x$chr %in% to.remove,]#
+	x$pair = pair#
+	return(x)#
+}#
+#
+#upload comparisons#
+yt = readin("all_y_tym_distances.tsv", 'yt')#
+ys = readin("all_y_sin_distances.tsv", 'ys')#
+yf = readin("all_y_female_distances.tsv", 'yf')#
+ms = readin("all_malePun_sin_distances.tsv", 'ms')#
+mt = readin("all_malePun_tym_distances.tsv", 'mt')#
+fs = readin("all_femalePun_sin_distances.tsv", 'fs')#
+ft = readin("all_femalePun_tym_distances.tsv", 'ft')#
+st = readin("all_sin_tym_distances.tsv", 'st')
+#upload comparisons#
+yt = readin("all_y_tym_distances.tsv", 'yt')#
+ys = readin("all_y_sin_distances.tsv", 'ys')#
+yf = readin("all_y_female_distances.tsv", 'yf')#
+ms = readin("all_malePun_sin_distances.tsv", 'ms')#
+mt = readin("all_malePun_tym_distances.tsv", 'mt')#
+fs = readin("all_femalePun_sin_distances.tsv", 'fs')#
+ft = readin("all_femalePun_tym_distances.tsv", 'ft')#
+st = readin("all_sin_tym_distances.tsv", 'st')#
+#select the dataset you want to plot#
+df = ms#
+df = ys#
+df = yt#
+df = ft#
+df = st#
+#
+#select the stat you want to plot#
+stat = 'dtilde'#
+stat = 'hap.dtilde'#
+stat = 'fst'#
+stat = 'dxy'#
+stat = 'dminusx'
+#function to get means for the stat#
+mn.auto = function(df, stat){#
+	sub = df[!df$chr %in% c("PAR", "SDR", "chrXII"),]#
+	return(mean(df[,stat]))#
+}#
+#
+mn.st = mn.auto(st, stat)#
+#
+#plots to prove that using the frequency approximations makes no difference#
+plot(dtilde~hap.dtilde, data=df)#
+plot(pix~hap.pix, data=df)#
+plot(pix~hap.pix, data=df)#
+plot(piy~hap.piy, data=df)
+#plot distribution for autosomes and sex chrom#
+den = density(df[, stat]) #get densities for non selected chromosome#
+den.df = data.frame(x=den$x, y=den$y)#
+#
+g1=ggplot(data=den.df, aes(x=x, y=y)) + #
+	geom_line(col='grey') + #
+	geom_area(fill='grey') +#
+	# scale_x_continuous(limits = c(-0.03, 0.22)) +#
+	# geom_segment(data=d12, aes(x=d, y=y1, xend=d, yend=y2), lineend='round', lwd=1.2) +#
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	labs(x="", y="")#
+plot(g1)
+quartz()
+#plot with line for sex chromosome#
+df.auto = df[!df$chr %in% selection,]#
+den = density(df.auto[,stat]) #get densities for chromosomes only#
+den.df = data.frame(x=den$x, y=den$y)#
+#
+sex = df[selection, stat]#
+line.top = max(den.df$y) / 4#
+d12 = data.frame(x=sex, y1=0, y2=line.top)#
+rownames(d12) = selection
+g1=ggplot(data=den.df, aes(x=x, y=y)) + #
+	geom_line(col='grey') + #
+	geom_area(fill='grey') +#
+	geom_segment(data=d12, aes(x=x, y=y1, xend=x, yend=y2), lineend='round', lwd=1.2) +#
+	# scale_x_continuous(limits = c(0.05, 0.13)) +#
+	labs(x=stat, y="")#
+plot(g1)
+#compare distances measures#
+plot_stats = function(df, stat1, stat2, MAIN=''){#
+	par(mfrow=c(1,2))#
+	plot(df[,stat2]~df[,stat1], xlab=stat1, ylab=stat2, main=MAIN)#
+	plot(df[,stat2]~df[,stat1], xlab=stat1, ylab=stat2, pch=26, main=MAIN)#
+	text(y=df[,stat2], x=df[,stat1], labels=df[,'chr'])#
+	par(mfrow=c(1,1))#
+}#
+stat1 = 'dxy'#
+stat2 = 'fst'#
+plot_stats(ys, stat1, stat2, MAIN='punY:sin')
+plot_stats(yt, stat1, stat2, MAIN='punY:tym')
+plot_stats(yf, stat1, stat2, MAIN='punY:femalePun')
+plot_stats(ms, stat1, stat2, MAIN='malePun:sin')
+plot_stats(mt, stat1, stat2, MAIN='malePun:tym')
+plot_stats(ft, stat1, stat2, MAIN='femalePun:tym')
+plot_stats(fs, stat1, stat2, MAIN='femalePun:sin')
+plot_stats(st, stat1, stat2, MAIN='sin:tym')
+#--------------- 100 KB WINDOWS ---------------##
+#
+setwd("/Users/grovesdixon/gitreps/stickle_back_sex_chromosomes/results/my_dxy/100Kb_windows")#
+to.remove = c("chrUn", "chrM"); selection = c("PAR", "SDR", "chrXII")             #line for PAR and SDR#
+to.remove = c("chrUn", "chrM", "PAR", "chrXII"); selection = c("SDR")   #line for SDR only#
+to.remove = c("chrUn", "chrM", "PAR", "SDR"); selection = c("chrXII")  #line for chrXII only#
+#change to normalize to SDR-like region#
+leftBound = 4;rightBound = 17#
+#default for whole chromosomes#
+# leftBound = 0;rightBound = 1e3#
+#
+#read in data#
+readin = function(fileName, pair){#
+	x=read.table(fileName, sep="\t", header = T, stringsAsFactors=F)#
+	x=x[!x$chr %in% to.remove,]#
+	x$pair = pair#
+	x$mb = (x$lefts + x$rights) / 2 / 1e6#
+	x=x[x$mb > leftBound & x$mb < rightBound,]#
+	return(x)#
+}#
+#
+#upload comparisons#
+yt = readin("all_y_tym_distances.tsv", 'yt')#
+ys = readin("all_y_sin_distances.tsv", 'ys')#
+yf = readin("all_y_female_distances.tsv", 'yf')#
+ms = readin("all_malePun_sin_distances.tsv", 'ms')#
+mt = readin("all_malePun_tym_distances.tsv", 'mt')#
+fs = readin("all_femalePun_sin_distances.tsv", 'fs')#
+ft = readin("all_femalePun_tym_distances.tsv", 'ft')#
+st = readin("all_sin_tym_distances.tsv", 'st')#
+ll=load("/Users/grovesdixon/gitreps/stickle_back_sex_chromosomes/metadata/chromList.Rdata")#
+ll#
+#select the dataset#
+df = ms#
+df = ys#
+df = yt#
+df = fs#
+df = ft#
+df = st#
+df=yf#
+#select the statistic to plot#
+stat = 'dtilde'#
+stat = 'hap.dtilde'#
+stat = 'fst'#
+stat = 'dxy'#
+stat = 'dminusx'#
+#plot density as before#
+df.auto = df[!df$chr %in% selection,]#
+den = density(df.auto[,stat]) #get densities for chromosomes only#
+den.df = data.frame(x=den$x, y=den$y)#
+#
+sex = na.omit(df[df$chr %in% selection, stat])#
+den.sex = density(sex)#
+sex.df = data.frame(x= den.sex$x, y= den.sex$y)#
+#
+mn.sex = data.frame(x=mean(sex, na.rm=T), y1=0, y2=max(den.sex$y))#
+mn.auto = data.frame(x=mean(df.auto[,stat]), y1=0, y2=max(den.sex$y))#
+#
+g1=ggplot(data= sex.df, aes(x=x, y=y)) + #
+	geom_area(data=sex.df, fill='black', alpha=0.75) +#
+	# geom_segment(data=mn.sex, aes(x=x, y=y1, xend=x, yend=y2), col='black', lty=2) +#
+	# geom_segment(data=mn.auto, aes(x=x, y=y1, xend=x, yend=y2), col='grey', lty=2) +#
+	geom_area(data=den.df, fill='grey', alpha=0.75) +#
+	labs(x=stat, y="")#
+plot(g1)#
+#----- PLOT COMPARISONS BETWEEN Y and SIN -----##
+#these are intended to show that it's introgression and not ILS#
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(0, 0.016))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.006, 0.012), c(0, 0.0125))#
+plot_grid(fst, dxy, dtilde, nrow=1, labels = LETTERS[1:3], label_size=16)
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/distance_stats")
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")
+rm(list=ls())
+library(ggplot2)#
+library(cowplot)#
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/distance_stats")#
+source("~/gitreps/pungitius_sex_chromosome//pun_sex_chrom_functions.R")#
+#load chromosome names#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+chroms = as.character(cdat$chroms)
+#----- PLOT COMPARISONS BETWEEN Y and SIN -----##
+#these are intended to show that it's introgression and not ILS#
+#
+ys = readinDistance("all_y_sin_distances.tsv", 'ys')#
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(0, 0.016))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.006, 0.012), c(0, 0.0125))#
+plot_grid(fst, dxy, dtilde, nrow=1, labels = LETTERS[1:3], label_size=16)
+to.remove = c("chrUn", "chrM", "PAR", "SDR"); selection = c("chrXII") #just subset from 12 instead of reading sdr and par
+ys = readinDistance("all_y_sin_distances.tsv", 'ys')#
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(0, 0.016))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.006, 0.012), c(0, 0.0125))#
+plot_grid(fst, dxy, dtilde, nrow=1, labels = LETTERS[1:3], label_size=16)
+ys = readinDistance("all_y_sin_distances.tsv", 'ys')
+readinDistance = function(fileName, pair){#
+	x=read.table(fileName)#
+	x=x[!x$chr %in% to.remove,]#
+	x$pair = pair#
+	return(x)#
+}
+ys = readinDistance("all_y_sin_distances.tsv", 'ys')
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/distance_stats")
+ys = readinDistance("all_y_sin_distances.tsv", 'ys')
+library(ggplot2)#
+library(cowplot)#
+setwd("/Users/grovesdixon/gitreps/stickle_back_sex_chromosomes/results/my_dxy/full_chroms/run3")#
+#
+#load chromosome names#
+ll=load("/Users/grovesdixon/gitreps/stickle_back_sex_chromosomes/metadata/chromList.Rdata")#
+cdat#
+chroms = as.character(cdat$chroms)
+#------------ FULL CHROMOSOMES ----------------##
+to.remove = c("chrUn", "chrM"); selection = c("PAR", "SDR")             #line for PAR and SDR#
+to.remove = c("chrUn", "chrM", "PAR", "chrXII"); selection = c("SDR")   #line for SDR only#
+to.remove = c("chrUn", "chrM", "PAR", "SDR"); selection = c("chrXII")  #line for chrXII only#
+#
+readin = function(fileName, pair){#
+	x=read.table(fileName)#
+	x=x[!x$chr %in% to.remove,]#
+	x$pair = pair#
+	return(x)#
+}#
+#
+#upload comparisons#
+yt = readin("all_y_tym_distances.tsv", 'yt')
+setwd("/Users/grovesdixon/gitreps/stickle_back_sex_chromosomes/results/my_dxy/100Kb_windows")
+to.remove = c("chrUn", "chrM", "PAR", "SDR"); selection = c("chrXII")  #line for chrXII only
+readinDistance = function(fileName, pair){#
+	x=read.table(fileName, sep="\t", header = T, stringsAsFactors=F)#
+	x=x[!x$chr %in% to.remove,]#
+	x$pair = pair#
+	x$mb = (x$lefts + x$rights) / 2 / 1e6#
+	x=x[x$mb > leftBound & x$mb < rightBound,]#
+	return(x)#
+}
+rm(list=ls())
+library(ggplot2)#
+library(cowplot)#
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/distance_stats")#
+source("~/gitreps/pungitius_sex_chromosome//pun_sex_chrom_functions.R")#
+#load chromosome names#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+chroms = as.character(cdat$chroms)#
+to.remove = c("chrUn", "chrM", "PAR", "SDR"); selection = c("chrXII") #just subset from 12 instead of reading sdr and par#
+#----- PLOT COMPARISONS BETWEEN Y and SIN -----##
+#these are intended to show that it's introgression and not ILS#
+#
+ys = readinDistance("all_y_sin_distances.tsv", 'ys')#
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(0, 0.016))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.006, 0.012), c(0, 0.0125))#
+plot_grid(fst, dxy, dtilde, nrow=1, labels = LETTERS[1:3], label_size=16)
+ys = readinDistance("all_y_sin_distances.tsv", 'ys')
+rm(list=ls())
+#plot_distances_stats.R#
+#
+library(ggplot2)#
+library(cowplot)#
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/distance_stats")#
+source("~/gitreps/pungitius_sex_chromosome//pun_sex_chrom_functions.R")#
+#load chromosome names#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+chroms = as.character(cdat$chroms)#
+#
+#set up variables to examine chromosome regions from 4Mb to 17Mb to match SDR#
+to.remove = c("chrUn", "chrM", "PAR", "SDR"); selection = c("chrXII") #just subset from 12 instead of reading sdr and par#
+leftBound = 4#
+rightBound = 17#
+#
+#----- PLOT COMPARISONS BETWEEN Y and SIN -----##
+#these are intended to show that it's introgression and not ILS#
+#
+ys = readinDistance("all_y_sin_distances.tsv", 'ys')
+fst = plot_distance_density(ys, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+dxy = plot_distance_density(ys, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(0, 0.016))#
+dtilde = plot_distance_density(ys, 'chrXII', 'dtilde', c(0, 0.006, 0.012), c(0, 0.0125))#
+plot_grid(fst, dxy, dtilde, nrow=1, labels = LETTERS[1:3], label_size=16)
+fst1 = plot_distance_density(fs, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+fst2 = plot_distance_density(ft, 'chrXII', 'fst',  c(0, 0.15, 0.3), c(0, 0.3))#
+dxy1 = plot_distance_density(fs, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(-0.003, 0.018))#
+dxy2 = plot_distance_density(ft, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(-0.003, 0.018))#
+dtilde1 = plot_distance_density(fs, 'chrXII', 'dtilde', c(0, 0.006, 0.012), c(-0.003, 0.015))#
+dtilde2 = plot_distance_density(ft, 'chrXII', 'dtilde',  c(0, 0.006, 0.012), c(-0.003, 0.015))#
+plot_grid(fst1, dxy1, dtilde1, fst2, dxy2, dtilde2)
+#purpose here is to see what the distance looks like#
+#greater distance for the sex chromosome would support 12 as ancestral#
+fs = readinDistance("all_femalePun_sin_distances.tsv", 'fs')#
+ft = readinDistance("all_femalePun_tym_distances.tsv", 'ft')#
+fst1 = plot_distance_density(fs, 'chrXII', 'fst', c(0, 0.15, 0.3), c(0, 0.3))#
+fst2 = plot_distance_density(ft, 'chrXII', 'fst',  c(0, 0.15, 0.3), c(0, 0.3))#
+dxy1 = plot_distance_density(fs, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(-0.003, 0.018))#
+dxy2 = plot_distance_density(ft, 'chrXII', 'dxy', c(0, 0.008, 0.016), c(-0.003, 0.018))#
+dtilde1 = plot_distance_density(fs, 'chrXII', 'dtilde', c(0, 0.006, 0.012), c(-0.003, 0.015))#
+dtilde2 = plot_distance_density(ft, 'chrXII', 'dtilde',  c(0, 0.006, 0.012), c(-0.003, 0.015))#
+plot_grid(fst1, dxy1, dtilde1, fst2, dxy2, dtilde2)
+rm(list=ls())
+#plot_ABBA_BABA.R#
+#
+library(ggplot2)#
+library(cowplot)#
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/abbababba")#
+#
+#load chromosome names#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+chroms = as.character(cdat$chroms)#
+#funciton to read in and format the fd data#
+readin = function(fileName){#
+	df = read.table(fileName, header = T)#
+	df$mb = (df$lefts + df$rights) / 2 / 1e6#
+	df = df[df$mb > left & df$mb < right,]#
+	return(df)#
+}
+###########################
+#
+#pick boundaries for SDR#
+left = 4#
+right = 17#
+#upload the data#
+fms = readin("all_FMS.tsv"); xlim=c(-0.5, 0.5)
+#select which one to plot#
+df = fms#
+df = fmt#
+df = tsp#
+#format density dataframe#
+selection = c("chrXII")#
+df.auto = df[!df$chr %in% selection,]#
+sex = df[df$chr %in% selection,]#
+den = density(df.auto[,'fd'], na.rm=T) #get densities for chromosomes only#
+den.df = data.frame(x=den$x, y=den$y)#
+den.sex = density(sex[,'fd'], na.rm=T)#
+sex.df = data.frame(x= den.sex$x, y= den.sex$y)#
+#
+#plot#
+g1=ggplot(data= sex.df, aes(x=x, y=y)) + #
+	geom_area(data=sex.df, fill='black', alpha=0.75) +#
+	# geom_segment(data=mn.sex, aes(x=x, y=y1, xend=x, yend=y2), col='black', lty=2) +#
+	# geom_segment(data=mn.auto, aes(x=x, y=y1, xend=x, yend=y2), col='grey', lty=2) +#
+	geom_area(data=den.df, fill='grey', alpha=0.75) +#
+	lims(x=xlim) +#
+	labs(x="D", y="")#
+plot(g1)
+fms = readin("all_FMS.tsv"); xlim=c(-0.5, 0.5)
+df = fms
+#format density dataframe#
+selection = c("chrXII")#
+df.auto = df[!df$chr %in% selection,]#
+sex = df[df$chr %in% selection,]#
+den = density(df.auto[,'fd'], na.rm=T) #get densities for chromosomes only#
+den.df = data.frame(x=den$x, y=den$y)#
+den.sex = density(sex[,'fd'], na.rm=T)#
+sex.df = data.frame(x= den.sex$x, y= den.sex$y)
+#plot#
+g1=ggplot(data= sex.df, aes(x=x, y=y)) + #
+	geom_area(data=sex.df, fill='black', alpha=0.75) +#
+	# geom_segment(data=mn.sex, aes(x=x, y=y1, xend=x, yend=y2), col='black', lty=2) +#
+	# geom_segment(data=mn.auto, aes(x=x, y=y1, xend=x, yend=y2), col='grey', lty=2) +#
+	geom_area(data=den.df, fill='grey', alpha=0.75) +#
+	lims(x=xlim) +#
+	labs(x="D", y="")#
+plot(g1)
+#upload the data#
+fms = readin("all_FMS.tsv"); xlim=c(-0.5, 0.5)#
+fmt = readin("all_FMT.tsv")#
+tsp = readin("all_TSP.tsv"); xlim=c(-0.35, 0.35)
+df = fmt
+#format density dataframe#
+selection = c("chrXII")#
+df.auto = df[!df$chr %in% selection,]#
+sex = df[df$chr %in% selection,]#
+den = density(df.auto[,'fd'], na.rm=T) #get densities for chromosomes only#
+den.df = data.frame(x=den$x, y=den$y)#
+den.sex = density(sex[,'fd'], na.rm=T)#
+sex.df = data.frame(x= den.sex$x, y= den.sex$y)#
+#
+#plot#
+g1=ggplot(data= sex.df, aes(x=x, y=y)) + #
+	geom_area(data=sex.df, fill='black', alpha=0.75) +#
+	# geom_segment(data=mn.sex, aes(x=x, y=y1, xend=x, yend=y2), col='black', lty=2) +#
+	# geom_segment(data=mn.auto, aes(x=x, y=y1, xend=x, yend=y2), col='grey', lty=2) +#
+	geom_area(data=den.df, fill='grey', alpha=0.75) +#
+	lims(x=xlim) +#
+	labs(x="D", y="")#
+plot(g1)
+tsp = readin("all_TSP.tsv"); xlim=c(-0.35, 0.35)
+df = tsp
+#format density dataframe#
+selection = c("chrXII")#
+df.auto = df[!df$chr %in% selection,]#
+sex = df[df$chr %in% selection,]#
+den = density(df.auto[,'fd'], na.rm=T) #get densities for chromosomes only#
+den.df = data.frame(x=den$x, y=den$y)#
+den.sex = density(sex[,'fd'], na.rm=T)#
+sex.df = data.frame(x= den.sex$x, y= den.sex$y)#
+#
+#plot#
+g1=ggplot(data= sex.df, aes(x=x, y=y)) + #
+	geom_area(data=sex.df, fill='black', alpha=0.75) +#
+	# geom_segment(data=mn.sex, aes(x=x, y=y1, xend=x, yend=y2), col='black', lty=2) +#
+	# geom_segment(data=mn.auto, aes(x=x, y=y1, xend=x, yend=y2), col='grey', lty=2) +#
+	geom_area(data=den.df, fill='grey', alpha=0.75) +#
+	lims(x=xlim) +#
+	labs(x="D", y="")#
+plot(g1)
+#################################
+#
+#pick boundaries for SDR#
+left = 0#
+right = 1e10#
+span = 0.2#
+#upload the fd data#
+tsp = readin("all_TSP.tsv")#
+fms = readin("all_FMS.tsv")#
+#select the dataset#
+df=fms#
+df=tsp#
+#
+chr='chrXII'#
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+plot_grid(plotlist = clist, ncol=length(clist))
+df=fms
+df=fms#
+#build plots#
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+#plot#
+plot_grid(plotlist = clist, ncol=length(clist))
+readin_fd = function(fileName){#
+	df = read.table(fileName, header = T)#
+	df$mb = (df$lefts + df$rights) / 2 / 1e6#
+	df = df[df$mb > left & df$mb < right,]#
+	return(df)#
+}
+tsp = readin_fd("all_TSP.tsv")
+fms = readin_fd("all_FMS.tsv")
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/distance_stats")#
+to.remove = c("chrUn", "chrM", "PAR", "SDR"); selection = c("chrXII") #just subset from 12 instead of reading sdr and par#
+leftBound = 0#
+rightBound = 1e10#
+ys = readinDistance("all_y_sin_distances.tsv", 'ys')
+source("~/gitreps/pungitius_sex_chromosome//pun_sex_chrom_functions.R")
+ys = readinDistance("all_y_sin_distances.tsv", 'ys')
+head(ys)
+#build plots#
+flist = list()#
+dlist=list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}
+length(dlist)
+length(flist)
+plot_grid(plotlist = dlist, nrow=1)
+head(csub)
+head(ys)
+#build plots#
+flist = list()#
+dlist=list()#
+for (chr in chroms){#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}
+length(dlist)
+plot_grid(plotlist = dlist, nrow=1)
+quartz()
+plot_grid(plotlist = dlist, nrow=1)
+#build plots#
+flist = list()#
+dlist=list()#
+for (chr in chroms){#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		# lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		# lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)#
+#
+quart()#
+plot_grid(plotlist = flist, nrow=1)
+plot_grid(plotlist = dlist, nrow=1)
+quart()#
+plot_grid(plotlist = dlist, nrow=1)
+quartz()
+plot_grid(plotlist = dlist, nrow=1)
+head(ys)
+max(ys$dtilde)
+max(ys$fst)
+flist = list()#
+dlist=list()#
+for (chr in chroms){#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)#
+#
+quart()#
+plot_grid(plotlist = flist, nrow=1)
+quartz()#
+plot_grid(plotlist = dlist, nrow=1)
+cdat
+full = append(clist, flist, dlist)
+full = append(clist, flist)
+full = append(append(clist, flist), dlist)
+plot_grid(plotlist=full, nrow=3)
+quartz()
+plot_grid(plotlist=full, nrow=3)
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = scat_smooth(csub, 'mb', 'fd', YLIM)#
+	# cplot = ggplot(data=csub) + #
+		# geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		# lims(y=c(0,0.25)) +#
+		# labs(x='', title=chr) +#
+		# scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		# theme(axis.title.y=element_blank(),#
+        # axis.text.y=element_blank(),#
+        # axis.ticks.y=element_blank())#
+	clist[[chr]]<-cplot#
+}
+scat_smooth = function(df, X, Y, YLIM){#
+	p=geom_smooth(aes.string(x=X, y=Y), span = span, se=F) +#
+			lims(y=YLIM) +#
+			labs(x='', title=chr) +#
+			scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+			theme(axis.title.y=element_blank(),#
+	        axis.text.y=element_blank(),#
+	        axis.ticks.y=element_blank())#
+}
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = scat_smooth(csub, 'mb', 'fd', YLIM)#
+	# cplot = ggplot(data=csub) + #
+		# geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		# lims(y=c(0,0.25)) +#
+		# labs(x='', title=chr) +#
+		# scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		# theme(axis.title.y=element_blank(),#
+        # axis.text.y=element_blank(),#
+        # axis.ticks.y=element_blank())#
+	clist[[chr]]<-cplot#
+}
+scat_smooth = function(df, X, Y, YLIM){#
+	p=geom_smooth(aes_string(x=X, y=Y), span = span, se=F) +#
+			lims(y=YLIM) +#
+			labs(x='', title=chr) +#
+			scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+			theme(axis.title.y=element_blank(),#
+	        axis.text.y=element_blank(),#
+	        axis.ticks.y=element_blank())#
+}#
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = scat_smooth(csub, 'mb', 'fd', YLIM)#
+	# cplot = ggplot(data=csub) + #
+		# geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		# lims(y=c(0,0.25)) +#
+		# labs(x='', title=chr) +#
+		# scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		# theme(axis.title.y=element_blank(),#
+        # axis.text.y=element_blank(),#
+        # axis.ticks.y=element_blank())#
+	clist[[chr]]<-cplot#
+}#
+length(clist)
+YLIM
+scat_smooth = function(df, X, Y, YLIM){#
+	p=geom_smooth(aes_string(x=X, y=Y), span = span, se=F) +#
+		lims(y=YLIM) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+	        axis.text.y=element_blank(),#
+	        axis.ticks.y=element_blank())#
+	return(p)#
+}
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = scat_smooth(csub, 'mb', 'fd', YLIM)#
+	# cplot = ggplot(data=csub) + #
+		# geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		# lims(y=c(0,0.25)) +#
+		# labs(x='', title=chr) +#
+		# scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		# theme(axis.title.y=element_blank(),#
+        # axis.text.y=element_blank(),#
+        # axis.ticks.y=element_blank())#
+	clist[[chr]]<-cplot#
+}#
+length(clist)
+head(csub)
+cplot = scat_smooth(csub, 'mb', 'fd', YLIM)
+scat_smooth = function(df, X, Y, YLIM, lastTick){#
+	p=geom_smooth(aes_string(x=X, y=Y), span = span, se=F) +#
+		lims(y=YLIM) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+	        axis.text.y=element_blank(),#
+	        axis.ticks.y=element_blank())#
+	return(p)#
+}
+lastTick
+cplot = scat_smooth(csub, 'mb', 'fd', YLIM, lastTick)
+X='mb'
+Y='fd'
+head(csub)
+df=csub
+YLIM=c(0,0.25)
+p=geom_smooth(aes_string(x=X, y=Y), span = span, se=F) +#
+		lims(y=YLIM) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+	        axis.text.y=element_blank(),#
+	        axis.ticks.y=element_blank())
+chr
+lastTick
+scat_smooth = function(df, X, Y, YLIM, lastTick){#
+	p=geom_smooth(aes_string(x=X, y=Y), span = span, se=F) +#
+		lims(y=YLIM) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+	        axis.text.y=element_blank(),#
+	        axis.ticks.y=element_blank())#
+	return(p)#
+}
+cplot = scat_smooth(csub, 'mb', 'fd', YLIM, lastTick)
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+#plot#
+plot_grid(plotlist = clist, ncol=length(clist))
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	cplot = cplot + geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green')#
+    	cplot = cplot + geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    }#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+#plot#
+plot_grid(plotlist = clist, ncol=length(clist))
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    # if (chr=='chrXII'){#
+    	# cplot = cplot + geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green')#
+    	# cplot = cplot + geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    # }#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+#plot#
+plot_grid(plotlist = clist, ncol=length(clist))
+rm(list=ls())
+#plot_genomic_windows.R#
+library(ggplot2)#
+library(cowplot)#
+source("~/gitreps/pungitius_sex_chromosome//pun_sex_chrom_functions.R")#
+#
+#---- ABBA BABA ----##
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/abbababba")#
+#
+#pick boundaries for SDR#
+left = 0#
+right = 1e10#
+span = 0.2#
+#
+#upload the fd data#
+#funciton to read in and format the fd data
+##
+tsp = readin_fd("all_TSP.tsv")#
+fms = readin_fd("all_FMS.tsv")#
+#select the dataset#
+df=tsp#
+df=fms
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    # if (chr=='chrXII'){#
+    	# cplot = cplot + geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green')#
+    	# cplot = cplot + geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    # }#
+	clist[[chr]]<-cplot#
+}#
+length(clist)
+rm(list=ls())
+#plot_genomic_windows.R#
+library(ggplot2)#
+library(cowplot)#
+source("~/gitreps/pungitius_sex_chromosome//pun_sex_chrom_functions.R")#
+#
+#---- ABBA BABA ----##
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/abbababba")#
+#
+#pick boundaries for SDR#
+left = 0#
+right = 1e10#
+span = 0.2#
+#
+#upload the fd data#
+#funciton to read in and format the fd data#
+##
+tsp = readin_fd("all_TSP.tsv")#
+fms = readin_fd("all_FMS.tsv")#
+#select the dataset#
+df=tsp#
+df=fms#
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    # if (chr=='chrXII'){#
+    	# cplot = cplot + geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green')#
+    	# cplot = cplot + geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    # }#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+#plot#
+plot_grid(plotlist = clist, ncol=length(clist))
+#plot_genomic_windows.R#
+library(ggplot2)#
+library(cowplot)#
+source("~/gitreps/pungitius_sex_chromosome//pun_sex_chrom_functions.R")#
+#
+#---- ABBA BABA ----##
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/abbababba")#
+#load chromosome names#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+chroms = as.character(cdat$chroms)#
+#
+#pick boundaries for SDR#
+left = 0#
+right = 1e10#
+span = 0.2#
+#
+#upload the fd data#
+#funciton to read in and format the fd data#
+##
+tsp = readin_fd("all_TSP.tsv")#
+fms = readin_fd("all_FMS.tsv")
+#select the dataset#
+df=tsp#
+df=fms#
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    # if (chr=='chrXII'){#
+    	# cplot = cplot + geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green')#
+    	# cplot = cplot + geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    # }#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+#plot#
+plot_grid(plotlist = clist, ncol=length(clist))
+#---- FST AND DTILDE ----##
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/distance_stats")#
+to.remove = c("chrUn", "chrM", "PAR", "SDR"); selection = c("chrXII") #just subset from 12 instead of reading sdr and par#
+leftBound = 0#
+rightBound = 1e10#
+ys = readinDistance("all_y_sin_distances.tsv", 'ys')#
+#build plots#
+flist = list()#
+dlist=list()#
+for (chr in chroms){#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)
+#plot all together#
+full = append(append(clist, flist), dlist)#
+plot_grid(plotlist=full, nrow=3)
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+for (chr in chroms){#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	cplot = cplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    }#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+#plot#
+plot_grid(plotlist = clist, ncol=length(clist))
+#build plots#
+flist = list()#
+dlist=list()#
+for (chr in chroms){#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	fplot = fplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    	dplot = dplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    }#
+#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)#
+#
+#plot individually#
+plot_grid(plotlist = flist, nrow=1)#
+plot_grid(plotlist = dlist, nrow=1)#
+#plot all together#
+full = append(append(clist, flist), dlist)#
+plot_grid(plotlist=full, nrow=3)
+#build plots#
+flist = list()#
+dlist=list()#
+for (chr in chroms){#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	fplot = fplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    	dplot = dplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    }#
+#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)
+#build plots#
+flist = list()#
+dlist=list()#
+for (chr in chroms){#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	fstplot = fstplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    	dplot = dplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    }#
+#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)
+#plot all together#
+full = append(append(clist, flist), dlist)#
+plot_grid(plotlist=full, nrow=3)
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter)#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=chr) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	cplot = cplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    }#
+	clist[[chr]]<-cplot#
+}#
+length(clist)
+#plot#
+plot_grid(plotlist = clist, ncol=length(clist))
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter)#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	cplot = cplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    }#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+#plot#
+plot_grid(plotlist = clist, ncol=length(clist))
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter, sep='')#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	cplot = cplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    }#
+	clist[[chr]]<-cplot#
+}#
+length(clist)
+#build plots#
+flist = list()#
+dlist=list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter)#
+	main = ""#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	fstplot = fstplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    	dplot = dplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green')#
+    }#
+#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)
+#plot all together#
+full = append(append(clist, flist), dlist)#
+plot_grid(plotlist=full, nrow=3)
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter, sep='')#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	cplot = cplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fd), span = span, se=F)#
+    }#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+#plot#
+plot_grid(plotlist = clist, ncol=length(clist))
+#build plots#
+flist = list()#
+dlist=list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter)#
+	main = ""#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	fstplot = fstplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fst), span = span, se=F)#
+    	dplot = dplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=dtilde), span = span, se=F)#
+    }#
+#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)#
+#
+#plot individually#
+# plot_grid(plotlist = flist, nrow=1)#
+# plot_grid(plotlist = dlist, nrow=1)#
+#plot all together#
+full = append(append(clist, flist), dlist)#
+plot_grid(plotlist=full, nrow=3)
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter, sep='')#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	cplot = cplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fd), span = span, se=F)#
+    }#
+	clist[[chr]]<-cplot#
+}#
+length(clist)
+#build plots#
+flist = list()#
+dlist=list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter)#
+	main = ""#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	fstplot = fstplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fst), span = span, se=F)#
+    	dplot = dplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=dtilde), span = span, se=F)#
+    }#
+#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)
+#plot all together#
+full = append(append(clist, flist), dlist)#
+plot_grid(plotlist=full, nrow=3)
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter, sep='')#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	cplot = cplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fd), span = span, se=F)#
+    }#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+#plot#
+plot_grid(plotlist = clist, ncol=length(clist))
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter, sep='')#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25), x=c(0, max(csub$mb))) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	cplot = cplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fd), span = span, se=F)#
+    }#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+#plot#
+plot_grid(plotlist = clist, ncol=length(clist))
+plot_grid(plotlist=full, nrow=3)
+#build plots#
+YLIM=c(0,0.25)#
+clist = list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter, sep='')#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank(),#
+        axis.title.x=element_blank(),#
+        axis.text.x=element_blank(),#
+        axis.ticks.x=element_blank())#
+    if (chr=='chrXII'){#
+    	cplot = cplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fd), span = span, se=F)#
+    }#
+	clist[[chr]]<-cplot#
+}#
+length(clist)
+#build plots#
+flist = list()#
+dlist=list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter)#
+	main = ""#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank(),#
+        axis.title.x=element_blank(),#
+        axis.text.x=element_blank(),#
+        axis.ticks.x=element_blank())#
+    if (chr=='chrXII'){#
+    	fstplot = fstplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fst), span = span, se=F)#
+    	dplot = dplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=dtilde), span = span, se=F)#
+    }#
+#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)#
+#
+#plot individually#
+# plot_grid(plotlist = flist, nrow=1)#
+# plot_grid(plotlist = dlist, nrow=1)#
+#plot all together#
+full = append(append(clist, flist), dlist)#
+plot_grid(plotlist=full, nrow=3)
+#build plots#
+flist = list()#
+dlist=list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter)#
+	main = ""#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank(),#
+        axis.title.x=element_blank(),#
+        axis.text.x=element_blank(),#
+        axis.ticks.x=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	fstplot = fstplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fst), span = span, se=F)#
+    	dplot = dplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=dtilde), span = span, se=F)#
+    }#
+#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)#
+#
+#plot individually#
+# plot_grid(plotlist = flist, nrow=1)#
+# plot_grid(plotlist = dlist, nrow=1)#
+#plot all together#
+full = append(append(clist, flist), dlist)#
+plot_grid(plotlist=full, nrow=3)
+#build plots#
+flist = list()#
+dlist=list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter)#
+	main = ""#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank(),#
+        axis.title.x=element_blank(),#
+        axis.text.x=element_blank(),#
+        axis.ticks.x=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(floor(lastTick/2)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	fstplot = fstplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fst), span = span, se=F)#
+    	dplot = dplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=dtilde), span = span, se=F)#
+    }#
+#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)#
+#
+#plot individually#
+# plot_grid(plotlist = flist, nrow=1)#
+# plot_grid(plotlist = dlist, nrow=1)#
+#plot all together#
+full = append(append(clist, flist), dlist)#
+plot_grid(plotlist=full, nrow=3)
+#build plots#
+flist = list()#
+dlist=list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter)#
+	main = ""#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank(),#
+        axis.title.x=element_blank(),#
+        axis.text.x=element_blank(),#
+        axis.ticks.x=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(floor(lastTick/2))) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	fstplot = fstplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fst), span = span, se=F)#
+    	dplot = dplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=dtilde), span = span, se=F)#
+    }#
+#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)#
+#
+#plot individually#
+# plot_grid(plotlist = flist, nrow=1)#
+# plot_grid(plotlist = dlist, nrow=1)#
+#plot all together#
+full = append(append(clist, flist), dlist)#
+plot_grid(plotlist=full, nrow=3)
+? scale_x_continuous
+#build plots#
+flist = list()#
+dlist=list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter)#
+	main = ""#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank(),#
+        axis.title.x=element_blank(),#
+        axis.text.x=element_blank(),#
+        axis.ticks.x=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick), labels=c('', as.character(floor(lastTick/2)), '')) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	fstplot = fstplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fst), span = span, se=F)#
+    	dplot = dplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=dtilde), span = span, se=F)#
+    }#
+#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)#
+#
+#plot individually#
+# plot_grid(plotlist = flist, nrow=1)#
+# plot_grid(plotlist = dlist, nrow=1)#
+#plot all together#
+full = append(append(clist, flist), dlist)#
+plot_grid(plotlist=full, nrow=3)
+#build plots#
+flist = list()#
+dlist=list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter)#
+	main = ""#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank(),#
+        axis.title.x=element_blank(),#
+        axis.text.x=element_blank(),#
+        axis.ticks.x=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick), labels=c('0', '', lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	fstplot = fstplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fst), span = span, se=F)#
+    	dplot = dplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=dtilde), span = span, se=F)#
+    }#
+#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)#
+#
+#plot individually#
+# plot_grid(plotlist = flist, nrow=1)#
+# plot_grid(plotlist = dlist, nrow=1)#
+#plot all together#
+full = append(append(clist, flist), dlist)#
+plot_grid(plotlist=full, nrow=3)
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter, sep='')#
+	main=counter#
+	csub = na.omit(df[df$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	cplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fd), span = span, se=F) +#
+		lims(y=c(0,0.25)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank(),#
+        axis.title.x=element_blank(),#
+        axis.text.x=element_blank(),#
+        axis.ticks.x=element_blank())#
+    if (chr=='chrXII'){#
+    	cplot = cplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fd), span = span, se=F)#
+    }#
+	clist[[chr]]<-cplot#
+}#
+length(clist)#
+#
+#plot
+#plot all together#
+full = append(append(clist, flist), dlist)#
+plot_grid(plotlist=full, nrow=3)
+#build plots#
+flist = list()#
+dlist=list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter)#
+	main = ""#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank(),#
+        # axis.ticks.x=element_blank()#
+        axis.title.x=element_blank(),#
+        axis.text.x=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick), labels=c('0', '', lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank())#
+    if (chr=='chrXII'){#
+    	fstplot = fstplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fst), span = span, se=F)#
+    	dplot = dplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=dtilde), span = span, se=F)#
+    }#
+#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)#
+#
+#plot individually#
+# plot_grid(plotlist = flist, nrow=1)#
+# plot_grid(plotlist = dlist, nrow=1)#
+#plot all together#
+full = append(append(clist, flist), dlist)#
+plot_grid(plotlist=full, nrow=3)
+#build plots#
+flist = list()#
+dlist=list()#
+counter = 0#
+for (chr in chroms){#
+	counter = counter + 1#
+	main = paste("Chr", counter)#
+	main = ""#
+	csub = na.omit(ys[ys$chr==chr,])#
+	lastTick = round(max(csub$mb))#
+	#plot fst#
+	fstplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=fst), span = span, se=F) +#
+		lims(y=c(0,0.32)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank(),#
+        # axis.ticks.x=element_blank()#
+        axis.title.x=element_blank(),#
+        axis.text.x=element_blank())#
+    #plot dtilde#
+    dplot = ggplot(data=csub) + #
+		geom_smooth(aes(x=mb, y=dtilde), span = span, se=F) +#
+		lims(y=c(0,0.012)) +#
+		labs(x='', title=main) +#
+		scale_x_continuous(breaks = c(0, floor(lastTick/2), lastTick), labels=c('0', '', lastTick)) +#
+		theme(axis.title.y=element_blank(),#
+        axis.text.y=element_blank(),#
+        axis.ticks.y=element_blank(), #
+        # axis.ticks.x=element_blank(),#
+        axis.title.x=element_blank(),#
+        axis.text.x=element_blank())#
+    if (chr=='chrXII'){#
+    	fstplot = fstplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=fst), span = span, se=F)#
+    	dplot = dplot + #
+    	geom_vline(xintercept= 3.8, lty=2, lwd=1, color='green') +#
+    	geom_vline(xintercept= 18.9, lty=2, lwd=1, color='green') +#
+    	geom_smooth(aes(x=mb, y=dtilde), span = span, se=F)#
+    }#
+#
+    flist[[chr]]<-fstplot#
+	dlist[[chr]]<-dplot#
+}#
+length(dlist)#
+length(flist)#
+#
+#plot individually#
+# plot_grid(plotlist = flist, nrow=1)#
+# plot_grid(plotlist = dlist, nrow=1)#
+#plot all together#
+full = append(append(clist, flist), dlist)#
+plot_grid(plotlist=full, nrow=3)

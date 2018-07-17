@@ -1,5 +1,9 @@
-overall_walkthough.txt
+#overall_walkthough.txt
 
+#Groves Dixon
+#last updated 6-16-18
+#This text file outlines the steps to the project
+#sections are divided into directories in the repository
 
 ###############################
 ### male_female_comparisons ###
@@ -15,16 +19,70 @@ Prepare and explore all window data using window_figures.R
 ########## gene_trees ##########
 ################################
 
-#--- pre_Y_inference ---#
+#--- pre_Y_inference
 
 Follow data processing steps in gene_trees_walkthough.txt
 
 use y_consistent_trees.R to assess if gene trees are consistent with sex chromosomes
 
-#----- Y_inference -----#
+#----- Y_inference
 
 Follow data processing steps in y_assignment_trees.txt
 	major product is a new vcf chrXII_pun_Ylabeled.vcf, with Y haplotypes labeled for males
 	merge this back together with other phased data for downstream analyses with Y haplotypes
+
+Run twisst on the gene trees from chr12 with 
+
+
+#################################
+######### introgression #########
+#################################
+
+follow steps in introgression_walkthough.txt
+
+plot PCA results with plot_pcas.R
+
+plot admixture results with plot_admixture.R
+
+plot fd statstics with plot_ABBA_BABA.R
+
+plot distance stats with plot_distance.R
+
+plot big multipanel line plot with plot_genomic_windows.R
+
+
+##################################
+########## degeneration ##########
+##################################
+
+follow steps in degeneration_walkthrough.txt
+
+analyze repetitive element differences with repetitive_element_deseq.R
+
+analyze dnds differences with compare_pairwise_dnds.R
+
+analyze provean scores with plot_provean.R
+
+###################################
+######### gene expression #########
+###################################
+
+follow gene_expression_walkthrough.txt
+
+#--- baseline expression
+
+clean and prep White data with intialize_basicAlignment_counts.R   
+
+get ancestral and male:female expression differences with deseqBaseline_white.R
+
+get male:female expression differences for von Hippel dataset with deseqBaseline_vonHippel.R                    
+
+get DNA fold differences for controlling for mapping efficiency with deseqBaseline_DNA.R                          
+
+replicate 3-spine degeneration results with deseqBaseline_replicate_white_degeneration.R #(this was not included in paper)
+
+
+#--- allele-specific expression
+
 
 

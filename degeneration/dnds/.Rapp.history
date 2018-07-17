@@ -1,0 +1,678 @@
+#repetitive_element_deseq.R#
+#
+library('DESeq2')#
+library('ggplot2')#
+library('cowplot')#
+setwd("~/gitreps/stickle_back_sex_chromosomes/repetitive_element_enrichment")#
+#
+#LOAD DATA#
+#
+# raw=read.table("family_counts_3spine_reference.tsv", sep="\t", comment.char="", strip.white=TRUE, header = T) #this is the version mapped to repeatMasker families made from the glazer reference#
+# raw=read.table("family_counts_denovo_reference.tsv", sep="\t", comment.char="", strip.white=TRUE, header = T) #this is the version mapped to repeatMasker families made from the glazer reference#
+raw=read.table("combinedFamilyCounts.tsv", sep="\t", comment.char="", strip.white=TRUE, header = T )#
+#FORMAT#
+#
+colnames(raw) = sub("_sorted.bam", "", colnames(raw))#
+head(raw)#
+counts = raw[,4:ncol(raw)]#
+families = as.character(raw$chr)#
+dupCount = sum(duplicated(families))#
+#some names are duplicates, tag to make rownames#
+families[duplicated(families)] = paste(families[duplicated(families)], "DUP2", sep="_")#
+rownames(counts) = families#
+counts = counts[,grep("pun", colnames(counts))]#
+counts = counts[!grepl("Unknown", rownames(counts)),] #remove unknown repetitive element types#
+#
+#--------- get FPM ---------##
+#upload overall counts#
+rdat = read.table("dna_raw_read_counts.tsv", header = T)#
+rdat = rdat[grep("pun", rdat$sample),]#
+m = rdat$readCount / 1e6#
+names(m) = rdat$sample#
+head(rdat)#
+print("Names match?")#
+sum(rdat$sample==colnames(counts))==ncol(counts)#
+#
+#get fpm#
+fpm = sweep(counts, MARGIN=2, FUN="/", STATS=m)#
+#
+#double-check#
+head(counts)#
+head(fpm)#
+m#
+counts[2,'pun11'] / m['pun11'] == fpm[2,'pun11']#
+counts[5,3] / m[3] == fpm[5,3]#
+#
+#add project to coldata#
+sdat = read.table("genus_Pun_sex.txt")#
+colnames(sdat) = c('sample', 'sex')#
+rownames(sdat) = sdat$sample#
+samples = colnames(counts)#
+coldata=data.frame(sdat[samples,], row.names=samples)#
+head(coldata)#
+nrow(coldata)#
+ncol(counts)#
+sum(coldata$sample==colnames(fpm))==ncol(fpm)#
+#get ratio for mean FPKM between males and females#
+tdat = t(fpm)#
+head(tdat)#
+sum(coldata$sample==rownames(tdat))==ncol(fpm)#
+mdat = data.frame(t(apply(fpm, 1, function(x) tapply(x, INDEX=coldata$sex, mean))))#
+head(mdat)#
+hi = apply(mdat, 1, max)#
+m2=mdat#
+low = apply(m2, 1, min)#
+m2[m2==0] <- min(low[low>0])#
+m2$ratio = m2$M / m2$F#
+m2$log = log(m2$ratio, 2)#
+#LOOK AT CPM RESULTS#
+boxplot(m2$log)#
+boxplot(m2$log, outline=F);abline(h=0, lty=2, lwd=0.5)#
+plot(density(m2$log));abline(v=0, lty=2, lwd=0.5)#
+#RUN DEESEQ#
+#
+#get size factors from PCR duplicate removed/mapped to whole genome dataset#
+ll=load("genomeSizeFactors.Rdata") #this comes from bedtools_depth.R#
+print(genomeSizeFactors)#
+names(genomeSizeFactors) = tolower(names(genomeSizeFactors))#
+print("Names match?")#
+sum(names(genomeSizeFactors) == coldata$sample)==nrow(coldata)#
+#
+#run DESEq piecewise#
+dds<-DESeqDataSetFromMatrix(counts,#
+	colData = coldata,#
+	design = formula(~sex))#
+sizeFactors(dds) <-genomeSizeFactors#
+dds<-estimateDispersions(dds)#
+dds<-nbinomWaldTest(dds)#
+#GET DESEQ RESULTS#
+res = results(dds, contrast = c('sex', 'M', 'F'), independentFiltering=F)#
+summary(res)#
+head(res[order(res$pvalue),], n=20)#
+rld = rlog(dds)#
+rld.df = assay(rld)#
+#VOLCANO PLOT#
+res.df = data.frame(res)#
+res.df$sig = res.df$padj < 0.1#
+res.df$sig[is.na(res.df$sig)]<-FALSE#
+res.df$logp = -log(res.df$pvalue, 10)#
+res.df$logBaseMean = log(res.df$baseMean)#
+head(res.df)#
+volcano = ggplot(data=res.df, aes(x=log2FoldChange, y=logp)) + #
+	scale_colour_manual(values=c('black','red')) +#
+	geom_point(data=res.df, aes(color = sig), alpha=0.4) +#
+	xlab("log2 fold difference") +#
+	ylab("-log10 p-value") +#
+	lims(x=c(-3.2, 3.2)) #
+plot(volcano)#
+g = ggplot(data=res.df, aes(y=log2FoldChange, x= logBaseMean)) + #
+	scale_colour_manual(values=c('black','red')) +#
+	geom_point(data=res.df, aes(color = sig), alpha=0.4) +#
+	ylab("log2 fold difference") +#
+	xlab("Mean Coverage") +#
+	theme_bw() #+ ggtitle('Male vs Famale Fold Enrichment')#
+plot(g)#
+#high female repeats#
+w = res[res$log2FoldChange < -1,]#
+w#
+#
+#significant male repeats#
+s = res[!is.na(res$padj) & res$padj < 0.1,]#
+s#
+#
+#look at density of significant#
+plot(density(s$log2FoldChange), xlim=c(-3.5, 3.5))#
+#log at overall log fold differences#
+boxplot(res.df$log2FoldChange)#
+boxplot(res.df$log2FoldChange, outline=F);abline(h=0, lty=2, lwd=0.5)#
+plot(density(res.df$log2FoldChange, na.rm=T))#
+#check agreement between DESEq and differences in mean FPKM#
+mgdat = merge(res.df, m2, by = 0)#
+plot(mgdat$log~mgdat$log2FoldChange, xlab="Deseq log2 diff", ylab='FPKM log2 diff')#
+#ASSESS THE TOTAL PROPORTION OF MALES AND FEMALES THAT ARE REPETITIVE ELEMENTS#
+#
+#assemble total counter per million reads#
+tfpm = apply(fpm, 2, sum)#
+mt = merge(tfpm, coldata, by = 0)
+### PLOT RESULTS FIGURES #####
+#
+volcano = ggplot(data=res.df, aes(x=log2FoldChange, y=logp)) + #
+	scale_colour_manual(values=c('black','red')) +#
+	geom_point(data=res.df, aes(color = sig), alpha=0.4) +#
+	xlab("log2 fold difference") +#
+	ylab("-log10 p-value") +#
+	lims(x=c(-3.2, 3.2), y=c(0,17)) #
+plot(volcano)#
+#
+#DENSITY PLOT FOR SIGNIFICANT#
+den=density(s$log2FoldChange)#
+den.df = data.frame(x=den$x, y=den$y)#
+g1=ggplot(data=den.df, aes(x=x, y=y)) + #
+	geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(col='grey') + #
+	geom_area(fill='grey') +#
+	lims(x=c(-3.3, 3.3)) +#
+	# scale_x_continuous(limits = c(-0.03, 0.22)) +#
+	# geom_segment(data=d12, aes(x=d, y=y1, xend=d, yend=y2), lineend='round', lwd=1.2) +#
+	labs(x="", y="")#
+plot(g1)
+#BOXPLOT#
+mt$pct = mt$x / 1e6 * 100#
+g=ggplot(data=mt) + #
+	geom_boxplot(aes(x=sex, y=pct)) +#
+	labs(y="% reads", x="Sex") +#
+	lims(y=c(6.1, 6.7))#
+plot(g)#
+tapply(mt$x, INDEX=mt$sex, mean)#
+male = mt$x[mt$sex=="M"]#
+female = mt$x[mt$sex=="F"]#
+t.test(x=male, y=female, alternative='greater')
+#BOXPLOT#
+mt$pct = mt$x / 1e6 * 100#
+g=ggplot(data=mt) + #
+	geom_boxplot(aes(x=sex, y=pct)) +#
+	labs(y="% reads", x="Sex") +#
+	lims(y=c(6.1, 6.65))#
+plot(g)#
+tapply(mt$x, INDEX=mt$sex, mean)#
+male = mt$x[mt$sex=="M"]#
+female = mt$x[mt$sex=="F"]#
+t.test(x=male, y=female, alternative='greater')
+t.test(x=male, y=female, alternative='greater')
+#DENSITY PLOT FOR SIGNIFICANT#
+den=density(s$log2FoldChange)#
+den.df = data.frame(x=den$x, y=den$y)#
+g1=ggplot(data=den.df, aes(x=x, y=y)) + #
+	geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(col='grey') + #
+	geom_area(fill='grey') +#
+	lims(x=c(-3.3, 3.3)) +#
+	# scale_x_continuous(limits = c(-0.03, 0.22)) +#
+	# geom_segment(data=d12, aes(x=d, y=y1, xend=d, yend=y2), lineend='round', lwd=1.2) +#
+	labs(x="", y="")#
+plot(g1)
+head(s)
+nrow(s)
+pos = s$log2FoldChange > 0
+male = sum(pos)
+female = sum(!pos)
+male = sum(pos)
+male
+female
+ns = res[!is.na(res$padj) & res$padj >= 0.1,]
+nrow(ns)
+nrow(s)
+rm(list=ls())
+setwd("/Users/grovesdixon/gitreps/stickle_back_sex_chromosomes/results/dnds")
+stat = 'dS'#
+ylab = paste('pairwise', stat)#
+d=read.table('ref_chrXII_pairwise_dNdS.tsv', header = T)
+head(d)
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs threespine')
+stat = 'dN'
+ylab = paste('pairwise', stat)#
+d=read.table('ref_chrXII_pairwise_dNdS.tsv', header = T)#
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs threespine')
+stat = 'dNdS'
+d=read.table('ref_chrXII_pairwise_dNdS.tsv', header = T)#
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs threespine')
+stat = 'dN'
+d=read.table('sin_pairwise_dNdS.tsv', header = T)[d$species !='ref_chrXII',]#
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs sinensis')
+stat = 'dNdS'
+d=read.table('sin_pairwise_dNdS.tsv', header = T)[d$species !='ref_chrXII',]#
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs sinensis')
+d=read.table('sin_pairwise_dNdS.tsv', header = T)#
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs sinensis')
+stat = 'dS'
+d=read.table('sin_pairwise_dNdS.tsv', header = T)#
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs sinensis')
+d=read.table('ref_chrXII_pairwise_dNdS.tsv', header = T)#
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs threespine')
+stat = 'dNdS'
+ylab = paste('pairwise', stat)#
+d=read.table('ref_chrXII_pairwise_dNdS.tsv', header = T)#
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs threespine')
+stat = 'dS'
+d=read.table('tym_pairwise_dNdS.tsv', header = T)#
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs tymensis')
+d=read.table('sin_pairwise_dNdS.tsv', header = T)#
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs sinensis')
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs threespine')
+d=read.table('ref_chrXII_pairwise_dNdS.tsv', header = T)#
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs threespine')
+d=read.table('sin_pairwise_dNdS.tsv', header = T)#
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs sinensis')
+d=read.table('ref_chrXII_pairwise_dNdS.tsv', header = T)#
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs threespine')
+head(d)
+lm1 = lm(d[,stat]~d$species)
+anova(lm1)
+#compare for pairwise against threespine#
+d=read.table('ref_chrXII_pairwise_dNdS.tsv', header = T)#
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs threespine')#
+lm1 = lm(d[,stat]~d$species)#
+anova(lm1)
+m=d[d$species==y,]
+m=d[d$species=='y',]
+y=d[d$species=='y',]#
+x=d[d$species=='x',]
+head(y)
+head(x)
+sum(y$gene==x$gene)==nrow(x)
+?t.test
+t.test(x=y$dNdS, y=x$dNdS, alternative='greater', paired=TRUE)
+#--------- SAVE/LOAD ---------------#
+directory<-"~/gitreps/zebrafish_early_ethanol_RNASeq"#
+setwd(directory)#
+source('scripts/zebrafish_RNAseq_functions.R')#
+# save(dds.e, res.e, dds.t, res.t, dds.f, res.f, file="results/time_split_ethanol_tests.Rdata")#
+lnames = load('results/ethanol_full_LRT_results.Rdata');lnames#
+lnames = load('results/time_split_ethanol_tests.Rdata');lnames
+#--------- VOLCANO PLOTS ---------------#
+source('scripts/zebrafish_RNAseq_functions.R')#
+XLIM=c(-4.2,4.2)#
+YLIM=c(0, 35)#
+volcano_plot(res.eth, MAIN='Ethanol Effect\nAll Timepoints', XLIM=XLIM)
+#--------- SAVE/LOAD ---------------#
+directory<-"~/gitreps/zebrafish_early_ethanol_RNASeq"#
+setwd(directory)#
+source('scripts/zebrafish_RNAseq_functions.R')#
+# save(dds.e, res.e, dds.t, res.t, dds.f, res.f, file="results/time_split_ethanol_tests.Rdata")#
+lnames = load('results/ethanol_full_LRT_results.Rdata');lnames#
+lnames = load('results/time_split_ethanol_tests.Rdata');lnames#
+#--------- HEATMAPS ---------------#
+library(pheatmap)#
+#load variance stabilized counts#
+lnames=load("~/gitreps/zebrafish_early_ethanol_RNASeq/datasets/raw_rld.Rdata")#variance stabilized counts for job2 only. Output from script get_variance_stabilized_counts.R#
+lnames = load("~/gitreps/zebrafish_early_ethanol_RNASeq/datasets/outliers.Rdata")#
+rld.df=rld.df[,!colnames(rld.df) %in% outlierNames]#
+head(rld.df)#
+dim(rld.df)#
+#
+#subset for significant ethanol genes#
+head(res.eth)#
+CUT=0.05#
+sig=res.eth[!is.na(res.eth$padj) & res.eth$padj<CUT,]#
+dim(sig)#
+sig.rld=rld.df[rownames(rld.df) %in% rownames(sig),]#
+#
+#get names#
+names = get_gene_names(rownames(sig.rld))#
+labs = c()#
+for (i in 1:nrow(names)){#
+	n=names$description[i]#
+	if (n ==''){#
+		n=names$external_gene_name[i]#
+	}#
+	labs=append(labs, strsplit(n, '[Source', fixed=T)[[1]][1])	#
+}#
+labs#
+#
+#plot the heatmap#
+# heat.colors = colorRampPalette(rev(c("chocolate1","#FEE090","grey10", "cyan3","cyan")),bias=3)(100)#
+pheatmap(sig.rld,cluster_cols=T, cluster_rows=T,border_color=NA,clustering_distance_rows="correlation", labels_row=labs)#
+#--------- VOLCANO PLOTS --------------
+#--------- VOLCANO PLOTS ---------------##
+source('scripts/zebrafish_RNAseq_functions.R')#
+XLIM=c(-4.2,4.2)#
+YLIM=c(0, 35)#
+volcano_plot(res.eth, MAIN='Ethanol Effect\nAll Timepoints', XLIM=XLIM)
+volcano_plot(data.frame(res.eth), MAIN='Ethanol Effect\nAll Timepoints', XLIM=XLIM)
+#ggplot#
+NAME=F#
+top=10#
+#
+a=ggvolcano_plot(res.eth, XLIM=XLIM, YLIM=F, addNames = NAME, topN = top, MAIN='Ethanol Effect', submain='All Timepoints', xshift=0.4, yshift=0.8)
+#plot with color coding for overlapping significant between datasets#
+s1 = rownames(res.eth)[res.eth$padj<0.1 & !is.na(res.eth$padj)]#
+s2 = rownames(res.e)[res.e$padj<0.1 & !is.na(res.e$padj)]#
+s3 = rownames(res.t)[res.t$padj<0.1 & !is.na(res.t$padj)]#
+s4 = rownames(res.f)[res.f$padj<0.1 & !is.na(res.f$padj)]#
+s = s1[s1 %in% s2 & s1 %in% s3 & s1 %in% s4]#
+length(s)#
+#
+res.eth$inc = rownames(res.eth) %in% s#
+res.eth$sig = res.eth$padj < 0.1#
+sub.eth = data.frame(res.eth[rownames(res.eth) %in% s,])#
+g = ggplot(data= data.frame(res.eth), aes(x=log2FoldChange, y=-log10(pvalue), colour=sig)) + #
+	scale_colour_manual(values=c('black', 'red')) +#
+	geom_point(alpha=0.4, size=1.75) + #
+	geom_point(data=sub.eth, aes(x=log2FoldChange, y=-log10(pvalue)), color='blue') +#
+	xlab("log2 fold difference") + #
+	ylab("-log10 p-value") +#
+	theme_bw() #
+plot(g)
+length(s)
+s
+write.table("~/junk/sigAllTimepoints.txt", row.names=F, quote=F)
+write.table(s, "~/junk/sigAllTimepoints.txt", row.names=F, quote=F)
+head(res.e)
+sdf = data.frame(s)
+head(sdf)
+rownames(sdf) = sdf$s
+snames = merge_gene_names(sdf)
+cat snames
+snames
+snames$s<-NULL
+snames
+write.table(snames, "~/junk/sigAllTimepoints.txt", row.names=F, quote=F, sep="\t")
+head(s1)
+"ENSDARG00000098733" %in% s1
+"ENSDARG00000098733" %in% s2
+"ENSDARG00000098733" %in% s3
+"ENSDARG00000098733" %in% s4
+head(res.eth)
+res.eth[]
+res.eth['ENSDARG00000098733',]
+res.e['ENSDARG00000098733',]
+res.f['ENSDARG00000098733']
+res.f['ENSDARG00000098733',]
+setwd("~/gitreps/stickle_back_sex_chromosomes/results/dnds")
+rm(list=ls())
+setwd("~/gitreps/stickle_back_sex_chromosomes/results/dnds")#
+library(ggplot2)#
+library(cowplot)#
+library(reshape)
+m = read.table("y_present.txt", header = T)$POS
+f = read.table("x_present.txt", header = T)$POS
+s = read.table("sin_present.txt", header = T)$POS
+t = read.table("tym_present.txt", header = T)$POS
+head(m)
+#make list of the datasets#
+punList = list(m,f,s,t)#
+names = c('y', 'x', 'sin', 'tym')#
+names(punList) = names
+#make list of the datasets#
+punList = list(m,f,s,t)#
+names = c('male', 'female', 'sin', 'tym')#
+names(punList) = names
+dpunList = lapply(punList, function(x) return(x[!x %in% po]))
+um = get.unique.vars(target = c('male'), LINS, LINNAMES)
+LINS = list(m, f, s, t, po)#
+LINNAMES = c('male', 'female', 'sin', 'tym', 'po')#
+names(LINS) = LINNAMES
+LINS = list(m, f, s, t)
+LINNAMES = c('male', 'female', 'sin', 'tym')
+names(LINS) = LINNAMES
+get.unique.vars = function(target, lineages, linNames){#
+	t = unlist(lineages[linNames %in% target])#
+	print(length(t))#
+	others = unique(unlist(lineages[!linNames %in% c(target)]))#
+	ut = t[!t %in% others]#
+	print(length(ut))#
+	prop = round(length(ut) / length(t), digits=4)*100#
+	print("Percent unique:")#
+	print(paste(prop, "%", sep=''))#
+	return(ut)#
+}#
+#
+output.uniq = function(pos, chr, outname){#
+	odat = data.frame(rep(chr, n=length(pos)), pos)#
+	write.table(odat, file = outname, quote = F, row.names = F, sep = "\t", col.names = F)#
+}#
+#unique male pun variants#
+um = get.unique.vars(target = c('male'), LINS, LINNAMES)
+uf = get.unique.vars(target = c('female'), noMale, noMaleNames)
+LINS = list(m, f, s, t)#
+LINNAMES = c('male', 'female', 'sin', 'tym')#
+names(LINS) = LINNAMES#
+#
+noMale = list(f,s,t)#
+noMaleNames = c('female', 'sin', 'tym', 'po')#
+names(noMale) = noMaleNames
+noMale = list(f,s,t)
+noMaleNames = c('female', 'sin', 'tym')
+names(noMale) = noMaleNames
+get.unique.vars = function(target, lineages, linNames){#
+	t = unlist(lineages[linNames %in% target])#
+	print(length(t))#
+	others = unique(unlist(lineages[!linNames %in% c(target)]))#
+	ut = t[!t %in% others]#
+	print(length(ut))#
+	prop = round(length(ut) / length(t), digits=4)*100#
+	print("Percent unique:")#
+	print(paste(prop, "%", sep=''))#
+	return(ut)#
+}#
+#
+output.uniq = function(pos, chr, outname){#
+	odat = data.frame(rep(chr, n=length(pos)), pos)#
+	write.table(odat, file = outname, quote = F, row.names = F, sep = "\t", col.names = F)#
+}
+um = get.unique.vars(target = c('male'), LINS, LINNAMES)
+uf = get.unique.vars(target = c('female'), noMale, noMaleNames)
+us = get.unique.vars(target = c('sin'), LINS, LINNAMES)
+ut = get.unique.vars(target = c('tym'), LINS, LINNAMES)
+head(uf)
+13082 %in% t
+head(t)
+13144 %in% t
+13144 %in% s
+13144 %in% f
+output.uniq(um,'chrXII', 'uniqueMalePun.tsv')
+output.uniq(uf,'chrXII', 'uniqueFemalePun.tsv')#
+output.uniq(us,'chrXII', 'uniqueSin.tsv')#
+output.uniq(ut,'chrXII', 'uniqueTym.tsv')
+get.prop.unique.shared = function(pairNames, lineages, linNames, PROP=TRUE){#
+	names(lineages) = linNames#
+	pair = lineages[pairNames]#
+	others =lineages[!linNames %in% pairNames]#
+	print("Pair:")#
+	print(summary(pair))#
+	print("Others:")#
+	print(summary(others))#
+	allOther = unique(unlist(others))#
+	allPair = unique(unlist(pair))#
+	shared = allPair[allPair %in% pair[[1]] & allPair %in% pair[[2]]]#
+	upair = shared[!shared %in% allOther]#
+	print(length(upair))#
+	prop = length(upair) / unlist(lapply(pair, length))#
+	names(prop) = c(paste(pairNames[1],pairNames[2], sep="_"), paste(pairNames[2],pairNames[1], sep="_"))#
+	print(prop)#
+	if (PROP){#
+		return(prop[1])#
+	}#
+	else{#
+		return(length(upair))#
+		}#
+}
+ms = get.prop.unique.shared(pairNames=c('male', 'sin'), lineages = LINS, linNames = LINNAMES)
+mt = get.prop.unique.shared(pairNames=c('male', 'tym'), lineages = LINS, linNames = LINNAMES)
+mf = get.prop.unique.shared(pairNames=c('male', 'female'), lineages = LINS, linNames = LINNAMES)
+fs = get.prop.unique.shared(pairNames=c('female', 'sin'), lineages = LINS, linNames = LINNAMES)
+ft = get.prop.unique.shared(pairNames=c('female', 'tym'), lineages = LINS, linNames = LINNAMES)
+ts = get.prop.unique.shared(pairNames=c('tym', 'sin'), lineages = LINS, linNames = LINNAMES)
+#get uniquely shared variants between males and other species#
+ms = get.prop.unique.shared(pairNames=c('male', 'sin'), lineages = LINS, linNames = LINNAMES)#
+mt = get.prop.unique.shared(pairNames=c('male', 'tym'), lineages = LINS, linNames = LINNAMES)#
+mf = get.prop.unique.shared(pairNames=c('male', 'female'), lineages = LINS, linNames = LINNAMES)#
+fs = get.prop.unique.shared(pairNames=c('female', 'sin'), lineages = LINS, linNames = LINNAMES)#
+ft = get.prop.unique.shared(pairNames=c('female', 'tym'), lineages = LINS, linNames = LINNAMES)#
+ts = get.prop.unique.shared(pairNames=c('tym', 'sin'), lineages = LINS, linNames = LINNAMES)#
+#
+res = c(ms, mt, fs, ft)#
+r=data.frame(res)
+r$lin=c("male.pun-sin", 'male.pun-tym', 'female.pun-sin', 'female.pun-tym')#
+g=ggplot(data=r, aes(x=lin, y=res*100, fill=lin)) + geom_bar(stat="identity") + ggtitle("Uniquely Shared Mutations") + labs(x="Terminal Node Pairs", y="% Uniquely Shared Variants", fill="Pairs")#
+plot(g)
+res = c(ms, mt, fs, ft, ts, mf)#
+r=data.frame(res)#
+r$lin=rownames(r)#
+g=ggplot(data=r, aes(x=lin, y=res*100, fill=lin)) + geom_bar(stat="identity") + ggtitle("Uniquely Shared Mutations") + labs(x="Terminal Node Pairs", y="% Uniquely Shared Variants", fill="Pairs")#
+plot(g)
+setwd("~/gitreps/stickle_back_sex_chromosomes/results/dnds")#
+library(ggplot2)#
+library(cowplot)#
+library(reshape)#
+#
+#upload the variants present in the different species/sex#
+#these are sites for which the non-reference allele frequency is > 0.1 in the specified group (on chr12)#
+m = read.table("y_present.txt", header = T)$POS#
+f = read.table("x_present.txt", header = T)$POS#
+s = read.table("sin_present.txt", header = T)$POS#
+t = read.table("tym_present.txt", header = T)$POS#
+head(m)#
+#
+#make list of the datasets#
+punList = list(m,f,s,t)#
+names = c('male', 'female', 'sin', 'tym')#
+names(punList) = names#
+#
+#look at the total derived variants in each group#
+#exclude any variants also found in the pacific ocean samples#
+dpunList = lapply(punList, function(x) return(x[!x %in% po]))#
+barplot(unlist(lapply(dpunList, length)))#
+totDer = unlist(lapply(dpunList, length))
+adapted from shared_derived_alleles.R, which is older#
+setwd("~/gitreps/stickle_back_sex_chromosomes/results/dnds")#
+library(ggplot2)#
+library(cowplot)#
+library(reshape)#
+#
+#upload the variants present in the different species/sex#
+#these are sites for which the non-reference allele frequency is > 0.1 in the specified group (on chr12)#
+m = read.table("y_present.txt", header = T)$POS#
+f = read.table("x_present.txt", header = T)$POS#
+s = read.table("sin_present.txt", header = T)$POS#
+t = read.table("tym_present.txt", header = T)$POS#
+head(m)#
+#
+#make list of the datasets#
+punList = list(m,f,s,t)#
+names = c('male', 'female', 'sin', 'tym')#
+names(punList) = names
+LINS = list(m, f, s, t)#
+LINNAMES = c('male', 'female', 'sin', 'tym')#
+names(LINS) = LINNAMES
+noMale = list(f,s,t)#
+noMaleNames = c('female', 'sin', 'tym')#
+names(noMale) = noMaleNames
+#OUTPUT UNIQUE VARIANTS FOR EACH SAMPLE#
+#
+get.unique.vars = function(target, lineages, linNames){#
+	t = unlist(lineages[linNames %in% target])#
+	print(length(t))#
+	others = unique(unlist(lineages[!linNames %in% c(target)]))#
+	ut = t[!t %in% others]#
+	print(length(ut))#
+	prop = round(length(ut) / length(t), digits=4)*100#
+	print("Percent unique:")#
+	print(paste(prop, "%", sep=''))#
+	return(ut)#
+}#
+#
+output.uniq = function(pos, chr, outname){#
+	odat = data.frame(rep(chr, n=length(pos)), pos)#
+	write.table(odat, file = outname, quote = F, row.names = F, sep = "\t", col.names = F)#
+}
+#unique male pun variants#
+um = get.unique.vars(target = c('male'), LINS, LINNAMES)#
+#female variants not found in po, tym, or sin#
+uf = get.unique.vars(target = c('female'), noMale, noMaleNames)#
+#unique sin#
+us = get.unique.vars(target = c('sin'), LINS, LINNAMES)#
+#unique sin#
+ut = get.unique.vars(target = c('tym'), LINS, LINNAMES)#
+#
+#write out#
+output.uniq(um,'chrXII', 'uniqueY.tsv')#
+output.uniq(uf,'chrXII', 'uniqueX.tsv')#
+output.uniq(us,'chrXII', 'uniqueSin.tsv')#
+output.uniq(ut,'chrXII', 'uniqueTym.tsv')
+#write out#
+output.uniq(um,'chrXII', 'uniqueY.tsv')#
+output.uniq(uf,'chrXII', 'uniqueX.tsv')#
+output.uniq(us,'chrXII', 'uniqueSin.tsv')#
+output.uniq(ut,'chrXII', 'uniqueTym.tsv')
+setwd("~/gitreps/stickle_back_sex_chromosomes/results/dnds")#
+library(ggplot2)#
+library(cowplot)#
+library(reshape)#
+#
+#upload the variants present in the different species/sex#
+#these are sites for which the non-reference allele frequency is > 0.1 in the specified group (on chr12)#
+m = read.table("y_present.txt", header = T)$POS#
+f = read.table("x_present.txt", header = T)$POS#
+s = read.table("sin_present.txt", header = T)$POS#
+t = read.table("tym_present.txt", header = T)$POS#
+head(m)#
+#
+#make list of the datasets#
+punList = list(m,f,s,t)#
+names = c('male', 'female', 'sin', 'tym')#
+names(punList) = names#
+LINS = list(m, f, s, t)#
+LINNAMES = c('male', 'female', 'sin', 'tym')#
+names(LINS) = LINNAMES#
+#
+noMale = list(f,s,t)#
+noMaleNames = c('female', 'sin', 'tym')#
+names(noMale) = noMaleNames#
+#
+#OUTPUT UNIQUE VARIANTS FOR EACH SAMPLE#
+#
+get.unique.vars = function(target, lineages, linNames){#
+	t = unlist(lineages[linNames %in% target])#
+	print(length(t))#
+	others = unique(unlist(lineages[!linNames %in% c(target)]))#
+	ut = t[!t %in% others]#
+	print(length(ut))#
+	prop = round(length(ut) / length(t), digits=4)*100#
+	print("Percent unique:")#
+	print(paste(prop, "%", sep=''))#
+	return(ut)#
+}#
+#
+output.uniq = function(pos, chr, outname){#
+	odat = data.frame(rep(chr, n=length(pos)), pos)#
+	write.table(odat, file = outname, quote = F, row.names = F, sep = "\t", col.names = F)#
+}#
+#unique male pun variants#
+um = get.unique.vars(target = c('male'), LINS, LINNAMES)#
+#female variants not found in po, tym, or sin#
+uf = get.unique.vars(target = c('female'), noMale, noMaleNames)#
+#unique sin#
+us = get.unique.vars(target = c('sin'), LINS, LINNAMES)#
+#unique sin#
+ut = get.unique.vars(target = c('tym'), LINS, LINNAMES)#
+#
+#write out
+output.uniq(um,'chrXII', 'unique_y.tsv')#
+output.uniq(uf,'chrXII', 'unique_x.tsv')#
+output.uniq(us,'chrXII', 'unique_sin.tsv')#
+output.uniq(ut,'chrXII', 'unique_tym.tsv')
+setwd("/Users/grovesdixon/gitreps/stickle_back_sex_chromosomes/results/dnds")#
+#choose statsitic#
+stat = 'dN'#
+stat = 'dS'#
+stat = 'dNdS'#
+ylab = paste('pairwise', stat)#
+#
+#compare for pairwise against threespine#
+d=read.table('ref_chrXII_pairwise_dNdS.tsv', header = T)
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs threespine')
+head(d)
+exclude = d$dN==0 | d$dS == 0
+head(exclude)
+boxplot(d[!exclude,stat]~d[!exclude,'species'], outline=F, ylab= ylab, main='vs threespine')
+stat = 'dN'
+boxplot(d[!exclude,stat]~d[!exclude,'species'], outline=F, ylab= ylab, main='vs threespine')
+stat = 'dS'
+boxplot(d[!exclude,stat]~d[!exclude,'species'], outline=F, ylab= ylab, main='vs threespine')
+setwd("/Users/grovesdixon/gitreps/stickle_back_sex_chromosomes/results/dnds")#
+#choose statsitic#
+stat = 'dN'#
+stat = 'dS'#
+stat = 'dNdS'
+ylab = paste('pairwise', stat)
+d=read.table('ref_chrXII_pairwise_dNdS.tsv', header = T)
+exclude = d$dN==0 | d$dS == 0#
+boxplot(d[,stat]~d$species, outline=F, ylab= ylab, main='vs threespine')
+sub=d[grep('maf', d$species),]
+head(sub)
+boxplot(sub[,stat]~ sub$species, outline=F, ylab= ylab, main='vs threespine')
+sub$species = as.factor(sub$species)
+boxplot(sub[,stat]~ sub$species, outline=F, ylab= ylab, main='vs threespine')
+sub$species = factor(sub$species)
+boxplot(sub[,stat]~ sub$species, outline=F, ylab= ylab, main='vs threespine')

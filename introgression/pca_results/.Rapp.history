@@ -1,0 +1,857 @@
+oordinate(7, 3.5e6, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+oordinate=function(chr,pos,direction,scafFile){#
+  # This R function converts between the 'old' and 'new' stickleback assembly coordinate systems. The 'old' coordinate system#
+  # is the assembly described in the Jones et al 2012 stickleback genome paper. It requires access to the FileS4 NewScaffoldOrder.csv file.#
+  # It has 4 inputs: chr, pos, direction, and scafFile. It returns a list of [chromosome, position].#
+  # Inputs:#
+  # chr is a number or string (e.g. 1, '1', 'Un') of the starting chromosome.#
+  # pos is a number of the starting position.#
+  # direction is either 'old2new' or 'new2old'.#
+  # scafFile gives the path and file name to the file 'FileS4 NewScaffoldOrder.csv'#
+  # Output:#
+  # List of [chromosome, position] of the converted coordinate.#
+  # Examples:#
+  # convertCoordinate(3,1538202,'old2new','Path/to/FileS4 NewScaffoldOrder.csv') # same position#
+  # convertCoordinate('Un',37499024,'old2new','Path/to/FileS4 NewScaffoldOrder.csv') # now on chr 1#
+  # convertCoordinate('Un',23343225,'old2new','Path/to/FileS4 NewScaffoldOrder.csv') # now on chr 2#
+  # convertCoordinate("1",541084,'old2new','Path/to/FileS4 NewScaffoldOrder.csv') # different location on chr 1#
+  # convertCoordinate('1',680442,'new2old','Path/to/FileS4 NewScaffoldOrder.csv') # reverse of previous line#
+  # convertCoordinate(12,594205,'new2old','Path/to/FileS4 NewScaffoldOrder.csv') # used to be on Un#
+  # convertCoordinate(1,540083,'old2new','Path/to/FileS4 NewScaffoldOrder.csv') # in between contigs in original assembly, so NA#
+  translate=function(pos,startA,startB,endB,orientation){#
+    # Translates from one coordinate system to a second#
+    if(!orientation=='reverse'){#
+      pos2=startB+(pos-startA)#
+    } else{#
+      pos2=endB-(pos-startA)#
+    }#
+    return(pos2)#
+  }#
+  scafTable=read.csv(scafFile,header=TRUE,stringsAsFactors=FALSE)#
+  if(direction=='old2new'){#
+    # Pull out right scaffold#
+    x=scafTable[scafTable$OldChr==chr & scafTable$OldStart<=pos & scafTable$OldEnd>=pos,]#
+    # Make sure there's exactly 1 scaffold meeting criteria#
+    if(!nrow(x)==1){#
+      return (list(NA,NA))#
+    } else {#
+      # Calculate new coordinate#
+      newChr=x[1,'NewChr']#
+      newPos=translate(pos,x[1,'OldStart'],x[1,'NewStart'],x[1,'NewEnd'],x[1,'NewOrientation'])#
+      return(list(newChr,newPos))#
+    }#
+  } else if(direction=='new2old'){#
+    # Pull out right scaffold#
+    x=scafTable[scafTable$NewChr==chr & scafTable$NewStart<=pos & scafTable$NewEnd>=pos,]#
+    # Make sure there's exactly 1 scaffold meeting criteria#
+    if(!nrow(x)==1){#
+      return (list(NA,NA))#
+    } else {#
+      # Calculate new coordinate#
+      oldChr=x[1,'OldChr']#
+      oldPos=translate(pos,x[1,'NewStart'],x[1,'OldStart'],x[1,'OldEnd'],x[1,'NewOrientation'])#
+      return(list(oldChr,oldPos))#
+    }#
+  }#
+  else{#
+    print('Direction must be old2new or new2old')#
+    return(list(NA,NA))#
+  }#
+}#
+oordinate(7, 3.5e6, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+oordinate(7, 4e6, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+oordinate(7, 3.2e6, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+oordinate(7, 4e6, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+oordinate(7, 17232130, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+oordinate(7, 17232170, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+oordinate(7, 21540000, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+oordinate(7, 21580000, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+oordinate(7, 22515405, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+oordinate(1, 22397, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+oordinate(1, 26010, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+oordinate(7, 3e6, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")#
+#
+oordinate(1, 4e6, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+oordinate(7, 4e6, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+oordinate(7, 3e6, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+oordinate(7, 4e6, 'new2old', "/Users/grovesdixon/lab_files/projects/stickle_back_sex_chromosomes/large_files/reference_genome/FileS4_NewScaffoldOrder.csv")
+ll=load("~/gitreps/stickle_back_sex_chromosomes/results/mcdonald_kreitman/chrXII_mkt.Rdata")#
+ll
+head(winres)
+winres[[5]]['pop2/pop6',]
+ll=load("~/gitreps/stickle_back_sex_chromosomes/results/mcdonald_kreitman/chrXII_mkt2_backup")
+ll
+head(winres)
+winres[[5]]['pop2/pop6',]
+ll=load("~/gitreps/stickle_back_sex_chromosomes/results/mcdonald_kreitman/chrVI_mkt.Rdata")
+ll
+head(winres)
+winres[[5]]['pop2/pop6',]
+ll=load("~/gitreps/stickle_back_sex_chromosomes/results/mcdonald_kreitman/chrXII_mkt.Rdata")
+ll
+ll=load("~/gitreps/stickle_back_sex_chromosomes/results/mcdonald_kreitman/chrXII_mkt.Rdata")
+ll
+head(winres)#
+winres[[5]]['pop2/pop6',]
+mp.po = lapply(winres, function(x) res= rbind(res, (x['pop2/pop6',])))
+res = winres[[1]]['pop2/pop6',]#
+mp.po = lapply(winres, function(x) res= rbind(res, (x['pop2/pop6',])))
+mp.po
+#plot_mkt.R#
+#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/results/mcdonald_kreitman/chrXII_mkt.Rdata")#
+ll#
+popTable#
+head(winres)#
+length(winres)#
+winres[[1]]#
+mb=apply(wbounds, 1, mean)/1e6#
+#
+winres[[5]]['pop2/pop6',]#
+#
+res = winres[[1]]['pop2/pop6',]#
+mp.po = lapply(winres, function(x) res= rbind(res, (x['pop2/pop6',])))#
+pair='pop1/pop2'#
+#
+gather_mkt = function(pair, group){#
+	res=winres[[1]][pair,]#
+	for (i in 2:length(winres)){#
+		w = winres[[i]][pair,]#
+		res=rbind(res,w)#
+	}#
+	rownames(res) = 1:nrow(res)#
+	res=data.frame(res)#
+	res$mb=mb#
+	res$group=group#
+	return(res)#
+}#
+#
+mf = gather_mkt('pop1/pop2', 'mf')
+m.po = gather_mkt('pop2/pop6', 'Mpun')#
+f.po = gather_mkt('pop1/pop6', 'Fpun')#
+s.po = gather_mkt('pop4/pop6', 'sin')#
+t.po = gather_mkt('pop5/pop6', 'tym')#
+cdat = rbind(m.po, f.po, s.po, t.po)
+PT.SIZE = 0.5#
+SHAPE = 19#
+LWD=0.5#
+SPAN=0.1#
+SE=F#
+CHR='chrXII'
+y='alpha'
+g=ggplot(cdat, aes_string(y=y, x='mb', color='group')) +#
+	geom_smooth(lwd=2, span = SPAN, se=SE, method='loess')#
+print(g)
+y='alpha'
+g=ggplot(cdat, aes_string(y=y, x='mb', color='group')) +#
+	geom_smooth(lwd=2, span = SPAN, se=SE, method='loess')#
+print(g)
+PT.SIZE = 0.5#
+SHAPE = 19#
+LWD=0.5#
+SPAN=0.1#
+SE=F#
+CHR='chrXII'
+head(cdat)
+g=ggplot(cdat, aes_string(y=y, x='mb', color='group')) +#
+	geom_smooth(lwd=2, span = SPAN, se=SE, method='loess')#
+print(g)
+library('ggplot2')
+g=ggplot(cdat, aes_string(y=y, x='mb', color='group')) +#
+	geom_smooth(lwd=2, span = SPAN, se=SE, method='loess')#
+print(g)
+nrow(mf)
+nrow(f.po)
+head(m.po)
+rdat = m.po
+rdat$rat = m.po$alpha / f.po$alpha
+plot(rat~mb, data=rdat)
+head(rdat)
+rdat
+plot(rat~mb, data=rdat, ylim=c(0,5))
+plot(rat~mb, data=rdat, ylim=c(0,7))
+plot(rat~mb, data=rdat, ylim=c(-5,7))
+plot(rat~mb, data=rdat)
+rdat$rat = m.po$neutrality.index / f.po$neutrality.index#
+plot(rat~mb, data=rdat)
+#plot_figure7_expression.R#
+#-------- MORE DIFFERENTIAL EXPRESSION ON 12 --------##
+#
+#load the ancestral comparison (white)#
+ll=load('~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/pungitiusAncCompare.Rdata')#
+#ddat = assembly of male:female differences with chromosomal region labeled #
+#sdr.mr = the pungitius male vs 3spine male differences within the SDR#
+ddat$absDiff = abs(ddat$diff)  #absolute M:F variation#
+ddat$type2=ddat$type            #set up region with rest of chr12 (not PAR)#
+ddat$type2[ddat$type==4]<-3    ##
+head(ddat)#
+ddat$sex.chrom = ddat$chr#
+ddat$sex.chrom[ddat$sex.chrom!='chrXII']<-'autosomes'#
+ddat$sex.chrom<-factor(ddat$sex.chrom, levels=c('chrXII', 'autosomes'), ordered=TRUE)#
+#
+mfChrom = ggplot(data=ddat) +#
+	geom_boxplot(aes(x= sex.chrom, y=absDiff), outlier.shape=26) + #
+	lims(y=c(0,0.75)) +#
+	labs(x='', y="abs(M:F)")#
+plot(mfChrom)#
+#
+mfViolin = ggplot(ddat) + #
+	geom_violin(aes(x= sex.chrom, y=diff))#
+plot(mfViolin)#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/maleVfemalePungitius.Rdata")#
+ll#
+#gsdf = the male vs female in pungitius differences with SDR labeled#
+sdr = gsdf[gsdf$type==3,]#
+den=density(sdr$log2FoldChange)#
+den.df = data.frame(x=den$x, y=den$y)#
+male.df = den.df[den.df$x >=max(den.df$x[den.df$x<0]),]#
+female.df = den.df[den.df$x <= 0,]#
+male.df$df = 'up in males'#
+female.df$df = 'up in females'#
+male.col = 'dodgerblue'#
+female.col = 'firebrick'#
+denRepFM=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	scale_color_manual(values=c(female.col, male.col)) +#
+	scale_fill_manual(values=c(female.col, male.col)) +#
+	theme(legend.position=c(0.45, 0.8),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F"), y="density")#
+plot(denRepFM)#
+plotList = list(absBox, denRepFM, xyscatter.w, xyscatter.vh)#
+plot_grid(plotlist=plotList, rel_widths=rw, rel_heights=rh, ncol=4, labels=LETTERS[1:4], label_size =16, axis='b')#
+#look for degeneration of transcription from Y as preferential loss in male pun expression#
+head(sdr.mr)#
+plot(density(sdr.mr$log2FoldChange))
+library(ggplot2)
+library(cowplot)
+den=density(sdr.mr$log2FoldChange)
+den.df = data.frame(x=den$x, y=den$y)
+denRepMG=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	# theme(legend.position=c(0.45, 0.8),#
+		# legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F"), y="density")#
+plot(denRepMG)
+pun.df$df = 'higher in ninespine males'#
+gacu.df$df = 'higher in threespine males'#
+denRepMG=ggplot(data=den.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	theme(legend.position=c(0.45, 0.8),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F"), y="density")#
+plot(denRepMG)
+denRepMG=ggplot(data=gacu.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data= pun.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data= pun.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	theme(legend.position=c(0.45, 0.8),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F"), y="density")#
+plot(denRepMG)
+head(gacu.df)
+den=density(sdr.mr$log2FoldChange)#
+den.df = data.frame(x=den$x, y=den$y)#
+pun.df = den.df[den.df$x >=max(den.df$x[den.df$x<0]),]#
+gacu.df = den.df[den.df$x <= 0,]#
+pun.df$df = 'higher in ninespine males'#
+gacu.df$df = 'higher in threespine males'
+head(gacu.df)
+denRepMG=ggplot(data=gacu.df) + #
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data= pun.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data= pun.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	theme(legend.position=c(0.45, 0.8),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F"), y="density")#
+plot(denRepMG)
+denRepMG=ggplot(data=gacu.df) + #
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data= pun.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data= pun.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	theme(legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F"), y="density")#
+plot(denRepMG)
+denRepMG=ggplot(data=gacu.df) + #
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data= pun.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data= pun.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	theme(legend.position='top',#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F"), y="density")#
+plot(denRepMG)
+denRepMG=ggplot(data=gacu.df) + #
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data= pun.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data= pun.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	theme(legend.position='top',#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"threespine male : ninespine male"), y="density")#
+plot(denRepMG)
+#plot_figure7_expression.R#
+library(ggplot2)#
+library(cowplot)#
+#
+#-------- MORE DIFFERENTIAL EXPRESSION ON 12 --------##
+#
+#load the ancestral comparison (white)#
+ll=load('~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/pungitiusAncCompare.Rdata')#
+#ddat = assembly of male:female differences with chromosomal region labeled #
+#sdr.mr = the pungitius male vs 3spine male differences within the SDR#
+ddat$absDiff = abs(ddat$diff)  #absolute M:F variation#
+ddat$type2=ddat$type            #set up region with rest of chr12 (not PAR)#
+ddat$type2[ddat$type==4]<-3    ##
+head(ddat)#
+ddat$sex.chrom = ddat$chr#
+ddat$sex.chrom[ddat$sex.chrom!='chrXII']<-'autosomes'#
+ddat$sex.chrom<-factor(ddat$sex.chrom, levels=c('chrXII', 'autosomes'), ordered=TRUE)#
+#
+mfChrom = ggplot(data=ddat) +#
+	geom_boxplot(aes(x= sex.chrom, y=absDiff), outlier.shape=26) + #
+	lims(y=c(0,0.75)) +#
+	labs(x='', y="abs(M:F)")#
+plot(mfChrom)#
+#
+mfViolin = ggplot(ddat) + #
+	geom_violin(aes(x= sex.chrom, y=diff))#
+plot(mfViolin)#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/maleVfemalePungitius.Rdata")#
+ll#
+#gsdf = the male vs female in pungitius differences with SDR labeled#
+sdr = gsdf[gsdf$type==3,]#
+den=density(sdr$log2FoldChange)#
+den.df = data.frame(x=den$x, y=den$y)#
+male.df = den.df[den.df$x >=max(den.df$x[den.df$x<0]),]#
+female.df = den.df[den.df$x <= 0,]#
+male.df$df = 'higher in males'#
+female.df$df = 'higher in females'#
+male.col = 'dodgerblue'#
+female.col = 'firebrick'#
+denRepFM=ggplot(data=female.df) + #
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data=male.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data=male.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	scale_color_manual(values=c(female.col, male.col)) +#
+	scale_fill_manual(values=c(female.col, male.col)) +#
+	theme(legend.position=c(0.45, 0.8),#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"M:F"), y="density")#
+plot(denRepFM)#
+#look for degeneration of transcription from Y as preferential loss in male pun expression#
+head(sdr.mr)#
+plot(density(sdr.mr$log2FoldChange))#
+den=density(sdr.mr$log2FoldChange)#
+den.df = data.frame(x=den$x, y=den$y)#
+pun.df = den.df[den.df$x >=max(den.df$x[den.df$x<0]),]#
+gacu.df = den.df[den.df$x <= 0,]#
+pun.df$df = 'higher in ninespine males'#
+gacu.df$df = 'higher in threespine males'#
+denRepMG=ggplot(data=gacu.df) + #
+	geom_line(aes(x=x, y=y, color=df), na.rm=T) + #
+	geom_area(aes(x=x, y=y, fill=df), na.rm=T) +#
+	geom_line(data= pun.df, aes(x=x,y=y, color=df), na.rm=T) + #
+	geom_area(data= pun.df, aes(x=x,y=y, fill=df), na.rm=T) +#
+	theme(legend.position='top',#
+		legend.title=element_blank()) +#
+	labs(x=bquote(log[2]~"threespine male : ninespine male"), y="density")#
+plot(denRepMG)#
+#-------- DISTRIBUTIONS IN M:F FOLD COVERAGE --------##
+#
+#load m:f fold differences DNA#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/maleVfemale_DNA.Rdata")#
+ll#
+dsr = data.frame(dna.sr$log2FoldChange)#
+colnames(dsr) = c('fc')#
+dsr$dset = 'dna'#
+dsr$geneId = rownames(dna.sr)#
+head(dsr)#
+#load differential expression by sex (von Hippel)#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/maleVfemale_vonHippel.Rdata")#
+vsr = data.frame(s.r$log2FoldChange)#
+colnames(vsr) = c('fc')#
+vsr$dset = 'pelvic'#
+vsr$geneId = rownames(s.r)#
+head(vsr)#
+#
+#load differential expression by sex (white)#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/maleVfemalePungitius.Rdata")#
+wsr = data.frame(s.r$log2FoldChange)#
+colnames(wsr) = c('fc')#
+wsr$dset = 'brain'#
+wsr$geneId = rownames(s.r)#
+head(wsr)#
+#
+#load differential expression by sex in 3-spine (white)#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/baseline_gene_expression/maleVfemale3spine.Rdata")#
+tsr = data.frame(s.r$log2FoldChange)#
+colnames(tsr) = c('fc')#
+tsr$dset = 'acu'#
+tsr$geneId = rownames(s.r)#
+head(tsr)#
+#CONTROL FOR MAPPING EFFICIENCY PEVLIC DATA#
+#to control for changes in mapping efficiency, substract#
+#the DNA fold differences from the RNA fold differences#
+dd = merge(vsr, dsr, by = 'geneId')#
+dd$fc = dd$fc.x - dd$fc.y#
+dd$dset = 'pelvic-dna'#
+pdsr=dd[,c('fc', 'dset', 'geneId')]#
+head(pdsr)#
+#
+# see if the dna fold differences predict the RNA differences#
+ddg=merge(dd, gdat, by = 'geneId')#
+#
+#for sdr#
+ddsdr = ddg[ddg$type==3,]#
+plot(ddsdr$fc.x~ddsdr$fc.y)#
+lm1=lm(ddsdr$fc.x~ddsdr$fc.y)#
+abline(lm1, col='red')#
+summary(lm1)#
+#
+#for autosomes#
+ddauto = ddg[ddg$type==1,]#
+plot(ddauto$fc.x~ ddauto$fc.y)#
+lm2=lm(ddauto$fc.x~ ddauto$fc.y)#
+abline(lm2, col='red')#
+summary(lm2)#
+#CONTROL FOR MAPPING EFFICIENCY brain DATA#
+dd = merge(wsr, dsr, by = 'geneId')#
+dd$fc = dd$fc.x - dd$fc.y#
+dd$dset = 'brain-dna'#
+ddsr=dd[,c('fc', 'dset', 'geneId')]#
+head(ddsr)#
+#
+# see if the dna fold differences predict the RNA differences#
+ddg=merge(dd, gdat, by = 'geneId')#
+#
+#for sdr#
+ddsdr = ddg[ddg$type==3,]#
+plot(ddsdr$fc.x~ddsdr$fc.y)#
+lm1=lm(ddsdr$fc.x~ddsdr$fc.y)#
+abline(lm1, col='red')#
+summary(lm1)#
+#
+#for autosomes#
+ddauto = ddg[ddg$type==1,]#
+plot(ddauto$fc.x~ ddauto$fc.y)#
+lm2=lm(ddauto$fc.x~ ddauto$fc.y)#
+abline(lm2, col='red')#
+summary(lm2)#
+#ASSEMBLE ALL THE MALE:FEMALE DATA TOGETHER#
+sr = rbind(dsr, vsr, wsr, tsr, ddsr, pdsr)#
+head(sr)#
+#add genomic locations#
+head(gdat)#
+#
+msr = merge(sr, gdat, by='geneId', all.x=T)#
+msr$sex = 'auto'#
+# # msr$sex[msr$chr=='chrXII']<-'chrXII' #to use full chrXII#
+msr$sex[msr$type==3]<-'SDR' #to use SDR#
+msr$sex = factor(msr$sex, levels=c('SDR', 'auto'), ordered=T)#
+msr$sexdf = paste(msr$sex, msr$dset, sep="_")#
+msr$absDiff = abs(msr$fc)#
+msr$sexdf = factor(msr$sexdf, levels=c('SDR_brain', 'auto_brain', 'SDR_acu', 'auto_acu', 'SDR_pelvic', 'auto_pelvic', 'SDR_dna', 'auto_dna', 'SDR_brain-dna', 'auto_brain-dna', 'SDR_pelvic-dna', 'auto_pelvic-dna'), ordered=T)#
+boxplot(msr$absDiff~msr$sexdf, outline=F)#
+#subset#
+keep = c('SDR_pelvic-dna', 'auto_pelvic-dna', 'SDR_brain-dna', 'auto_brain-dna', 'SDR_acu', 'auto_acu')#
+ssr = msr[msr$sexdf %in% keep,]#
+ssr$sexdf = factor(ssr$sexdf, levels=keep, ordered=T)#
+smeds = tapply(ssr$absDiff, INDEX=ssr$sexdf, function(x) median(x, na.rm=T))#
+meddf = data.frame(y=smeds)#
+meddf$sexdf = names(smeds)#
+lineLen = 0.3#
+meddf$x1 = 1:6 - lineLen#
+meddf$x2 = 1:6 + lineLen#
+absBox = ggplot(data=ssr) +#
+	geom_boxplot(aes(x=sexdf, y=absDiff, fill=sex), outlier.shape=26, lwd=0.75) +#
+	lims(y=c(-.1, 2)) + #
+	labs(x='', y='abs(M:F)') +#
+	theme(axis.text.x = element_blank(), #
+		axis.ticks.x = element_line(size=0), #
+		legend.title=element_blank(),#
+		legend.position=c(0.7, 0.8))#
+plot(absBox)#
+#
+do.wilcox = function(sp1, sp2, df, col, stat){#
+	stat1 = df[df[,col] == sp1, stat]#
+	stat2 = df[df[,col] == sp2, stat]#
+	sub = df[df[,col] %in% c(sp1, sp2),]#
+	w=wilcox.test(x=stat1, y=stat2)#
+	boxplot(sub[,stat]~sub[,col], outline=F, main=paste("p =",w$p.value))#
+	return(w)#
+}#
+do.wilcox('SDR_brain-dna', 'auto_brain-dna', ssr, 'sexdf', 'absDiff')#
+do.wilcox('SDR_pelvic-dna', 'auto_pelvic-dna', ssr, 'sexdf', 'absDiff')#
+do.wilcox('SDR_acu', 'auto_acu', ssr, 'sexdf', 'absDiff')#
+#
+brainp = do.wilcox('SDR_brain-dna', 'auto_brain-dna', ssr, 'sexdf', 'absDiff')$p.value#
+pelvicp = do.wilcox('SDR_pelvic-dna', 'auto_pelvic-dna', ssr, 'sexdf', 'absDiff')$p.value#
+acup = do.wilcox('SDR_acu', 'auto_acu', ssr, 'sexdf', 'absDiff')$p.value#
+#
+pvals = c(brainp, pelvicp, acup)#
+#
+absViolin = ggplot(data=ssr) +#
+	geom_violin(aes(x=sexdf, y=absDiff, fill=sex, col=sex), na.rm=T) +#
+	geom_segment(data=meddf, aes(x=x1, y=y, xend=x2, yend=y), lwd=1.5) +#
+	lims(y=c(-.1, 2)) + #
+	labs(x='', y='abs(M:F)') + #
+	theme(axis.text.x = element_blank(), axis.ticks.x = element_line(size=0))#
+plot(absViolin)#
+#
+#---------- ALLELE-SPECIFIC EXPRESSION DATA ----------##
+#
+#load xy expression white#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/allele_specific_expression/xy_white.Rdata")#
+#m.w = merged dataset with sex differences and XY within male differences for white dataset#
+ll#
+#
+xyscatter.w = ggplot(data=m.w) +  #
+	geom_smooth(data= m.w, aes(log2FoldChange.x,log2FoldChange.y), method='lm', formula=y~x, se=T) +#
+	geom_point(aes(x=log2FoldChange.x, y= log2FoldChange.y), alpha=1) +#
+	lims(y=c(-2, 1.5)) +#
+	labs(x=bquote(log[2]~"Y:X in males"), y=bquote(log[2]~"M:F") )#
+plot(xyscatter.w)#
+lmw=lm(m.w$log2FoldChange.y~m.w$log2FoldChange.x)#
+summary(lmw)#
+#load xy expression von Hippel#
+ll=load("~/gitreps/stickle_back_sex_chromosomes/allele_specific_expression/xy_vonHippel.Rdata")#
+#m.vh = merged dataset with sex differences and XY within male differences for von Hippel dataset#
+ll#
+#
+xyscatter.vh = ggplot(data=m.vh) +  #
+	geom_smooth(data= m.vh, aes(log2FoldChange.x,log2FoldChange.y), method='lm', formula=y~x, se=T) +#
+	geom_point(aes(x=log2FoldChange.x, y= log2FoldChange.y), alpha=1) +#
+	lims(y=c(-2, 1.5)) +#
+	labs(x=bquote(log[2]~"Y:X in males"), y=bquote(log[2]~"M:F") )#
+plot(xyscatter.vh)#
+head(m.vh)#
+lmvh=lm(m.vh$log2FoldChange.y~m.vh$log2FoldChange.x)#
+summary(lmvh)#
+#---------- PLOT ALL TOGETHER ----------##
+plot(denRep)#
+plot(absBox)
+plotList = list(absBox, denRepFM, xyscatter.w, xyscatter.vh)#
+rw = c(5,3,3,3)#
+rh = c(1,1,1,1)#
+plot_grid(plotlist=plotList, rel_widths=rw, rel_heights=rh, ncol=4, labels=LETTERS[1:4], label_size =16, axis='b')
+rm(list=ls())
+print("Running R script pca_chrom_snps.R...")#
+print(paste("Number of cores to use =", N.CORES))#
+#library(plotrix)#
+library(vcfR)#
+library(adegenet)#
+library(ggplot2)#
+library(cowplot)#
+#upload phenotype file
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/mitochondria")
+ids="species_labels.txt"#
+vcfInput="chrM_Pungitius.recode.vcf"#
+#
+print(paste("Loading phenotype file", ids))#
+sdat = read.table(ids, header = T, stringsAsFactors=FALSE)
+#upload the vcf#
+print(paste("Loading VCF file", vcfInput))#
+gll=vcfR2genlight(read.vcfR(vcfInput))#
+print("Done loading VCF.")
+#look at genlight object#
+print("Converting data to matrix...")#
+x=as.matrix(gll)#
+gi=as.genind(x)#
+x[1:10,1:10]#
+#
+#assign species#
+print("Matching up phenotypes")#
+names = gll@ind.names#
+print("Names from VCF:")#
+print(names)#
+colnames(sdat) = c('sample', 'spp')#
+rownames(sdat) = sdat$sample#
+sdat2=sdat[names,]
+print("Sample names match between files?")#
+matching=sum(rownames(sdat2) == names) == nrow(sdat2)#
+print(matching)#
+#
+if (!matching){#
+	print("Samples Found in species ID table not found in VCF:")#
+	print(sdat$sample[!sdat$sample %in% names])#
+	print("Samples Found in VCF but not species ID table:")#
+	print(names[!names %in% sdat$sample])#
+}
+pop(gll)=as.character(sdat2$spp)#
+sppNum=as.numeric(as.factor(sdat2$spp))#
+#set up colors based on ggplot standard#
+gg_color_hue <- function(n) {#
+  hues = seq(15, 375, length = n + 1)#
+  hcl(h = hues, l = 65, c = 100)[1:n]#
+}#
+col.set=gg_color_hue(length(unique(sdat2$spp)))#
+cols=col.set[sppNum]
+toRemove <- is.na(glMean(gll, alleleAsUnit = FALSE)) # TRUE where NA#
+which(toRemove) # position of entirely non-typed loci#
+gll2 <- gll[, !toRemove]#
+glPca(gll2) # this should work
+#run PCA#
+print("Running PCA...")#
+pca=glPca(gll2,nf=2, n.cores=N.CORES)#
+p=pca$scores#
+print("Done.")
+toRemove <- is.na(glMean(gll, alleleAsUnit = FALSE)) # TRUE where NA
+which(toRemove) # position of entirely non-typed loci
+gll2 <- gll[, !toRemove]
+glPca(gll2) # this should work
+#myD_stats.R#
+#
+library(ggplot2)#
+library(cowplot)#
+setwd("~/gitreps/stickle_back_sex_chromosomes/")#
+#
+#load chromosome names#
+ll=load("metadata/chromList.Rdata")#
+cdat#
+chroms = as.character(cdat$chroms)#
+# chroms=chroms[chroms!='chrXII']#
+#
+#choose the files you want by suffix#
+suffix = "Dstats_FMS.Rdata"#
+suffix = "Dstats_TSP.Rdata"
+rm(list=ls())
+#myD_stats.R#
+#
+library(ggplot2)#
+library(cowplot)#
+setwd("~/gitreps/stickle_back_sex_chromosomes/")#
+#
+#load chromosome names#
+ll=load("metadata/chromList.Rdata")#
+cdat#
+chroms = as.character(cdat$chroms)#
+# chroms=chroms[chroms!='chrXII']#
+#
+#choose the files you want by suffix#
+suffix = "Dstats_FMS.Rdata"#
+suffix = "Dstats_TSP.Rdata"
+#load D-statistics for each chromosome#
+dstats = c()#
+fixedDstats = c()#
+fdstats = c()#
+for (chr in chroms){#
+	fileName = paste(chr,suffix,sep="_")#
+	ll=load(paste("results/my_abbababa/", fileName, sep=''))#
+	dstats = append(dstats, D)#
+	fixedDstats = append(fixedDstats, Dfixed)#
+	fdstats=append(fdstats, fd)#
+}#
+res.all=data.frame(chroms, fdstats, dstats, fixedDstats)#
+res.auto = res.all[res.all$chroms != 'chrXII',]
+#plot the distribution for sex and autosomes#
+den = density(res.all$fdstats)#
+den.df = data.frame(x=den$x, y=den$y)#
+g1=ggplot(data=den.df, aes(x=x, y=y)) + #
+	geom_line(col='grey') + #
+	geom_area(fill='grey') +#
+	# scale_x_continuous(limits = c(-0.03, 0.22)) +#
+	# geom_segment(data=d12, aes(x=d, y=y1, xend=d, yend=y2), lineend='round', lwd=1.2) +#
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	labs(x="", y="")#
+plot(g1)
+#plot with line for sex chrom#
+ll=load(paste("results/my_abbababa/chrXII", suffix,sep='_'))#
+sex.chrom=fd#
+line.top = max(den.df$y) / 4#
+d12 = data.frame(d=sex.chrom, y1=0.1, y2=line.top) #to include PAR#
+den = density(res.auto$fdstats)#
+den.df = data.frame(x=den$x, y=den$y)#
+g1=ggplot(data=den.df, aes(x=x, y=y)) + #
+	geom_line(col='grey') + #
+	geom_area(fill='grey') +#
+	# scale_x_continuous(limits = c(-0.03, 0.22)) +#
+	geom_segment(data=d12, aes(x=d, y=y1, xend=d, yend=y2), lineend='round', lwd=1.2) +#
+	# geom_vline(aes(xintercept=0), linetype='dashed') +#
+	labs(x="", y="")#
+plot(g1)
+#----------- repeat but with windows --------------##
+#
+readin = function(fileName){#
+	df = read.table(fileName, header = T)#
+	df$mb = (df$lefts + df$rights) / 2 / 1e6#
+	df = df[df$mb > left & df$mb < right,]#
+	return(df)#
+}#
+#
+left = 4#
+right = 17#
+#
+fms = readin("results/my_abbababa/all_FMS.tsv"); xlim=c(-0.45, 0.45)
+fmt = readin("results/my_abbababa/all_FMT.tsv")#
+tsp = readin("results/my_abbababa/all_TSP.tsv"); xlim=c(-0.4, 0.4)#
+#
+df = fms
+selection = c("chrXII")#
+#
+df.auto = df[!df$chr %in% selection,]#
+sex = df[df$chr %in% selection,]#
+#
+den = density(df.auto[,'fd'], na.rm=T) #get densities for chromosomes only#
+den.df = data.frame(x=den$x, y=den$y)#
+den.sex = density(sex[,'fd'], na.rm=T)#
+sex.df = data.frame(x= den.sex$x, y= den.sex$y)#
+g1=ggplot(data= sex.df, aes(x=x, y=y)) + #
+	geom_area(data=sex.df, fill='black', alpha=0.75) +#
+	# geom_segment(data=mn.sex, aes(x=x, y=y1, xend=x, yend=y2), col='black', lty=2) +#
+	# geom_segment(data=mn.auto, aes(x=x, y=y1, xend=x, yend=y2), col='grey', lty=2) +#
+	geom_area(data=den.df, fill='grey', alpha=0.75) +#
+	lims(x=xlim) +#
+	labs(x="D", y="")#
+plot(g1)
+rm(list=ls())
+library(ggplot2)#
+library(cowplot)#
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/pca_results")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+library(scales)#
+show_col(hue_pal()(3))
+c(hue_pal()(3), hue_pal()(4)[4])
+################
+TEXTLABS=F#
+#PCA FOR MALES full chr12#
+ll=load("chrXII_Pungitius_filt4.recode.vcf_pca.Rdata")#
+df.male = data.frame(pca$scores)
+df.male = df.male[order(rownames(df.male)),]#
+sex = read.table("metadata/pun_pheno.txt", row.names = 1)#
+m = merge(df.male, sex, by = 0, sort=T, all.x=T)#
+sum(m$Row.names == rownames(df.male)) == nrow(df.male)#
+s = m$V3#
+s[s=='1']<-'F'#
+s[s=='2']<-'M'#
+s[is.na(s)]<-''#
+df.male$group = paste(substr(tolower(rownames(df.male)), start=1,stop=3), s, sep='')#
+shift.table = data.frame(y=c(0, 10, 0, 10), x=c(17, 5, 10, 5))#
+malepc = plot_snp_pca(df.male, pca, cx=1, cy=2, group='group', shift=T, shift.table=shift.table)
+######################
+TEXTLABS=F#
+#PCA FOR MALES full chr12#
+ll=load("chrXII_Pungitius_filt4.recode.vcf_pca.Rdata")#
+df.male = data.frame(pca$scores)#
+df.male = df.male[order(rownames(df.male)),]#
+sex = read.table("~/gitreps/pungitius_sex_chromosome/pun_pheno.txt", row.names = 1)#
+m = merge(df.male, sex, by = 0, sort=T, all.x=T)#
+sum(m$Row.names == rownames(df.male)) == nrow(df.male)
+sex = read.table("~/gitreps/pungitius_sex_chromosome/pun_pheno.txt", row.names = 1)
+sex = read.table("~/gitreps/pungitius_sex_chromosome/metadata/pun_pheno.txt", row.names = 1)
+##########################
+TEXTLABS=F#
+#PCA FOR MALES full chr12#
+ll=load("chrXII_Pungitius_filt4.recode.vcf_pca.Rdata")#
+df.male = data.frame(pca$scores)#
+df.male = df.male[order(rownames(df.male)),]#
+sex = read.table("~/gitreps/pungitius_sex_chromosome/metadata/pun_pheno.txt", row.names = 1)
+m = merge(df.male, sex, by = 0, sort=T, all.x=T)#
+sum(m$Row.names == rownames(df.male)) == nrow(df.male)#
+s = m$V3#
+s[s=='1']<-'F'#
+s[s=='2']<-'M'#
+s[is.na(s)]<-''
+df.male$group = paste(substr(tolower(rownames(df.male)), start=1,stop=3), s, sep='')
+shift.table = data.frame(y=c(0, 10, 0, 10), x=c(17, 5, 10, 5))
+malepc = plot_snp_pca(df.male, pca, cx=1, cy=2, group='group', shift=T, shift.table=shift.table)
+plot(malepc)
+#PCA FOR MALES AUTOSOME#
+ll=load("results/pcas/pun_sex/chrI_Pungitius_filt4.recode.vcf_pca.Rdata")#
+df.male = data.frame(pca$scores)#
+df.male = df.male[order(rownames(df.male)),]#
+m = merge(df.male, sex, by = 0, sort=T, all.x=T)#
+sum(m$Row.names == rownames(df.male)) == nrow(df.male)#
+s = m$V3#
+s[s=='1']<-'F'#
+s[s=='2']<-'M'#
+s[is.na(s)]<-''#
+df.male$group = paste(substr(tolower(rownames(df.male)), start=1,stop=3), s, sep='')#
+shift.table = data.frame(y=c(0, 10, 0, 10), x=c(17, 5, 10, 5))#
+male.auto = plot_snp_pca(df.male, pca, cx=1, cy=2, group='group', shift=T, shift.table=shift.table)
+#PCA FOR MALES AUTOSOME#
+ll=load("chrI_Pungitius_filt4.recode.vcf_pca.Rdata")#
+df.male = data.frame(pca$scores)#
+df.male = df.male[order(rownames(df.male)),]#
+m = merge(df.male, sex, by = 0, sort=T, all.x=T)#
+sum(m$Row.names == rownames(df.male)) == nrow(df.male)#
+s = m$V3#
+s[s=='1']<-'F'#
+s[s=='2']<-'M'#
+s[is.na(s)]<-''#
+df.male$group = paste(substr(tolower(rownames(df.male)), start=1,stop=3), s, sep='')#
+shift.table = data.frame(y=c(0, 10, 0, 10), x=c(17, 5, 10, 5))#
+male.auto = plot_snp_pca(df.male, pca, cx=1, cy=2, group='group', shift=T, shift.table=shift.table)
+plot(male.auto)
+ll=load("chrXII_Pungitius_filt4_PAR.recode.vcf_pca.Rdata")
+df.male = data.frame(pca$scores)#
+df.male = df.male[order(rownames(df.male)),]#
+m = merge(df.male, sex, by = 0, sort=T, all.x=T)#
+sum(m$Row.names == rownames(df.male)) == nrow(df.male)#
+s = m$V3#
+s[s=='1']<-'F'#
+s[s=='2']<-'M'#
+s[is.na(s)]<-''#
+df.male$group = paste(substr(tolower(rownames(df.male)), start=1,stop=3), s, sep='')#
+shift.table = data.frame(y=c(-3, 2, -3, 1), x=c(2, 2, -1, 3))#
+male.par = plot_snp_pca(df.male, pca, cx=1, cy=2, group='group', shift=T, shift.table=shift.table)
+plot(male.par)
+#PCA FOR MALE SDR#
+ll=load("results/pcas/pun_sex/chrXII_Pungitius_filt4_SDR.recode.vcf_pca.Rdata")#
+df.male = data.frame(pca$scores)#
+df.male = df.male[order(rownames(df.male)),]#
+m = merge(df.male, sex, by = 0, sort=T, all.x=T)#
+sum(m$Row.names == rownames(df.male)) == nrow(df.male)#
+s = m$V3#
+s[s=='1']<-'F'#
+s[s=='2']<-'M'#
+s[is.na(s)]<-''#
+df.male$group = paste(substr(tolower(rownames(df.male)), start=1,stop=3), s, sep='')#
+shift.table = data.frame(y=c(0, 7, 0, 8), x=c(17, 0, 10, 0))#
+male.sdr = plot_snp_pca(df.male, pca, cx=1, cy=2, group='group', shift=T, shift.table=shift.table)#
+plot(male.sdr)
+#PCA FOR MALE SDR#
+ll=load("chrXII_Pungitius_filt4_SDR.recode.vcf_pca.Rdata")#
+df.male = data.frame(pca$scores)#
+df.male = df.male[order(rownames(df.male)),]#
+m = merge(df.male, sex, by = 0, sort=T, all.x=T)#
+sum(m$Row.names == rownames(df.male)) == nrow(df.male)#
+s = m$V3#
+s[s=='1']<-'F'#
+s[s=='2']<-'M'#
+s[is.na(s)]<-''#
+df.male$group = paste(substr(tolower(rownames(df.male)), start=1,stop=3), s, sep='')#
+shift.table = data.frame(y=c(0, 7, 0, 8), x=c(17, 0, 10, 0))#
+male.sdr = plot_snp_pca(df.male, pca, cx=1, cy=2, group='group', shift=T, shift.table=shift.table)#
+plot(male.sdr)
+#PCA FOR PAR#
+ll=load("genusPun_chr12_PAR.recode.vcf_pca.Rdata")#
+pca.sdr = pca#
+df.sdr = format_y_snp_pca_df(pca.sdr)#
+shift.table = data.frame(y=c(8, -8, 0, 7, 0), x=c(0, 2, 15, 3, 12))#
+ypar = plot_snp_pca(df.sdr, pca.sdr, cx=1, cy=2, group='group', shift=T, shift.table=shift.table)#
+plot(ypar)
+ll=load("genusPun_chr12_PAR.recode.vcf_pca.Rdata")
+pca.sdr = pca#
+df.sdr = format_y_snp_pca_df(pca.sdr)#
+shift.table = data.frame(y=c(8, -8, 0, 7, 0), x=c(0, 2, 15, 3, 12))#
+ypar = plot_snp_pca(df.sdr, pca.sdr, cx=1, cy=2, group='group', shift=T, shift.table=shift.table)#
+plot(ypar)

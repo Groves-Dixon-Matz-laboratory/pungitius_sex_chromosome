@@ -1,0 +1,174 @@
+#xy_vonHippel_deseq.R#
+#
+library('DESeq2')#
+library('ggplot2')#
+library('cowplot')#
+setwd("~/gitreps/stickle_back_sex_chromosomes/allele_specific_expression/")#
+#
+#load data#
+raw.counts = read.table('readCounts_vonHippel_SNPsplit.tsv', header = T, row.names='geneID', sep="\t")
+#isolate the X and Y reads for males#
+cnames = colnames(raw.counts)#
+males = cnames[grep("_M", cnames)]#
+pe.males = males[!grepl('trim', males)] #3 total#
+se.males = males[grepl('trim', males)] #2 total#
+#
+#combine the st reads for the paired end reads#
+counts0=raw.counts[,colnames(raw.counts) %in% pe.males]#
+colnames(counts0) = sub(".counts.txt", "", colnames(counts0))#
+st = counts0[,grep("_st", colnames(counts0))]#
+non = counts0[,-grep("_st", colnames(counts0))]#
+head(st)#
+head(non)#
+sum(sub("_st", "", colnames(st)) == colnames(non)) == ncol(non)#
+colnames(st) = sub("_st", "", colnames(st))#
+pe.counts = st + non#
+head(pe.counts)#
+dim(pe.counts)#
+#
+#format the single-end counts#
+se.counts = raw.counts[,colnames(raw.counts) %in% se.males]#
+colnames(se.counts) = sub('.trim', '', colnames(se.counts))#
+colnames(se.counts) = sub('.counts.txt', '', colnames(se.counts))#
+#
+#join pe and se#
+counts = cbind(pe.counts, se.counts)#
+head(counts)#
+dim(counts) #two sets of reads for each of the 5 male samples#
+#
+#double-check that worked#
+sum(counts$SRR2976063_M.genome2 == counts0$SRR2976063_M.genome2 + counts0$SRR2976063_M.genome2_st) == nrow(counts0)
+setwd("~/gitreps/pungitius_sex_chromosome/gene_expression/allele_specific_expression")
+rm(list=ls())
+library('DESeq2')#
+library('ggplot2')#
+library('cowplot')#
+setwd("~/gitreps/pungitius_sex_chromosome/gene_expression/allele_specific_expression")#
+#
+#load data#
+raw.counts = read.table('readCounts_vonHippel_SNPsplit.tsv', header = T, row.names='geneID', sep="\t")#
+#isolate the X and Y reads for males#
+cnames = colnames(raw.counts)#
+males = cnames[grep("_M", cnames)]#
+pe.males = males[!grepl('trim', males)] #3 total#
+se.males = males[grepl('trim', males)] #2 total#
+#
+#combine the st reads for the paired end reads#
+counts0=raw.counts[,colnames(raw.counts) %in% pe.males]#
+colnames(counts0) = sub(".counts.txt", "", colnames(counts0))#
+st = counts0[,grep("_st", colnames(counts0))]#
+non = counts0[,-grep("_st", colnames(counts0))]#
+head(st)#
+head(non)#
+sum(sub("_st", "", colnames(st)) == colnames(non)) == ncol(non)#
+colnames(st) = sub("_st", "", colnames(st))#
+pe.counts = st + non#
+head(pe.counts)#
+dim(pe.counts)#
+#
+#format the single-end counts#
+se.counts = raw.counts[,colnames(raw.counts) %in% se.males]#
+colnames(se.counts) = sub('.trim', '', colnames(se.counts))#
+colnames(se.counts) = sub('.counts.txt', '', colnames(se.counts))#
+#
+#join pe and se#
+counts = cbind(pe.counts, se.counts)#
+head(counts)#
+dim(counts) #two sets of reads for each of the 5 male samples#
+#
+#double-check that worked#
+sum(counts$SRR2976063_M.genome2 == counts0$SRR2976063_M.genome2 + counts0$SRR2976063_M.genome2_st) == nrow(counts0)
+#remove non-gene objects from counts data#
+to.remove=rownames(counts)[grep("__", rownames(counts))]#
+counts[to.remove,]#
+dim(counts)#
+counts= counts[!rownames(counts) %in% to.remove,]#
+dim(counts)#
+#
+#remove genes with low coverage#
+cut=1#
+cc=counts#
+means=apply(cc,1,mean)#
+table(means>cut)#
+counts=cc[means>cut,]#
+dim(counts)#
+#
+#add project to coldata#
+sample = colnames(counts)#
+chr = sample#
+chr[grep('genome1', chr)]<-'X'#
+chr[grep('genome2', chr)]<-'Y'#
+coldata = data.frame(row.names=sample, chrom=chr)#
+rownames(coldata)==colnames(counts)#
+#set up input matrix for DESeq#
+ddsHTSeq<-DESeqDataSetFromMatrix(counts,#
+	colData = coldata,#
+	design = formula(~chrom))#
+#
+#run DESeq#
+dds = DESeq(ddsHTSeq)#
+#
+#get DEseq results#
+res = results(dds, contrast = c('chrom', 'Y', 'X'), independentFiltering=T)#
+summary(res)#
+head(res)#
+#check X-linked#
+gdat = read.table("gene_locations.txt", header = T)#
+rownames(gdat) = gdat$geneId#
+chr12genes = gdat[gdat$chr=="chrXII",'geneId']#
+r12 = rownames(res)[rownames(res) %in% chr12genes]#
+length(r12) / nrow(res)
+#volcano plot#
+res.df = data.frame(res)#
+res.df$sig = res.df$padj < 0.1#
+res.df$sig[is.na(res.df$sig)]<-FALSE#
+res.df$logp = -log(res.df$pvalue, 10)#
+res.df$chr12 = rownames(res.df) %in% chr12genes#
+res.df=res.df[rownames(res.df) %in% chr12genes,]#
+head(res.df)#
+dim(res.df)#
+#
+g = ggplot(data=res.df, aes(x=log2FoldChange, y=logp)) + #
+	scale_colour_manual(values=c('black','red')) +#
+	geom_point(data=res.df, aes(color = sig), alpha=0.4) +#
+	xlab("log2 fold difference") +#
+	ylab("-log10 p-value") +#
+	theme_bw()#
+plot(g)
+plot(density(res.df$log2FoldChange), main='', xlab='log2 Y:X')
+#compare with basic alignment results#
+ll=load("../baseline_gene_expression/maleVfemale_vonHippel.Rdata")#
+head(s.r)#
+s.df = data.frame(s.r)#
+plot(density(s.df$log2FoldChange, na.rm=T), main='', xlab='log2 Male:Female')#
+#
+m=merge(res.df, s.df, by = 0)#
+plot(m$log2FoldChange.y~m$log2FoldChange.x, xlab="log2 Y:X in males", ylab="log2 Male:Female")#
+abline(h=0)#
+abline(v=0)#
+lm1=lm(m$log2FoldChange.y~m$log2FoldChange.x)#
+abline(lm1, col='red')#
+summary(lm1)
+ll=load("../baseline_gene_expression/maleVfemale_vonHippel.Rdata")
+ll=load("~/gitreps/pungitius_sex_chromosome/figure_plotting/maleVfemale_vonHippel.Rdata")
+head(s.r)#
+s.df = data.frame(s.r)#
+plot(density(s.df$log2FoldChange, na.rm=T), main='', xlab='log2 Male:Female')#
+#
+m=merge(res.df, s.df, by = 0)#
+plot(m$log2FoldChange.y~m$log2FoldChange.x, xlab="log2 Y:X in males", ylab="log2 Male:Female")#
+abline(h=0)#
+abline(v=0)#
+lm1=lm(m$log2FoldChange.y~m$log2FoldChange.x)#
+abline(lm1, col='red')#
+summary(lm1)
+#plot relationship#
+g = ggplot(data=m) +  #
+	labs(x="Y:X within males", y="Male:Female") +#
+	geom_smooth(data=m, aes(log2FoldChange.x,log2FoldChange.y), method='lm', formula=y~x, se=T) +#
+	geom_point(aes(x=log2FoldChange.x, y= log2FoldChange.y), alpha=1) #
+plot(g)
+xy.vh = res.df#
+sr.vh = s.r#
+m.vh = m#
+save(xy.vh, sr.vh, m.vh, file="~/gitreps/pungitius_sex_chromosome/figure_plotting/xy_vonHippel.Rdata")

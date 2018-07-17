@@ -3,6 +3,23 @@
 
 #Functions:
 
+readinDistance = function(fileName, pair){
+	x=read.table(fileName, sep="\t", header = T, stringsAsFactors=F)
+	x=x[!x$chr %in% to.remove,]
+	x$pair = pair
+	x$mb = (x$lefts + x$rights) / 2 / 1e6
+	x=x[x$mb > leftBound & x$mb < rightBound,]
+	return(x)
+}
+
+
+readin_fd = function(fileName){
+	df = read.table(fileName, header = T)
+	df$mb = (df$lefts + df$rights) / 2 / 1e6
+	df = df[df$mb > left & df$mb < right,]
+	return(df)
+}
+
 
 #reads in a 'biggest monophyletic' results file
 #see gene_treesV2.txt for how to get these

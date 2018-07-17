@@ -107,6 +107,7 @@ cat y0.vcf >> chrXII_pun_Ylabeled.vcf
 ##################################################
 ################### RUN TWISST ###################
 ##################################################
+cp /corral-repl/utexas/Recombining-sex-chro/pungitius/vcfs/filt4_phased/genusPun_chr12_Ylab_chroms.vcf.gz .
 
 
 

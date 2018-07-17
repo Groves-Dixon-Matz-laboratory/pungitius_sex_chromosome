@@ -1,0 +1,38 @@
+-----------
+DRR023130_F.SNPsplit_report.txt
+Reads were specific for genome 1:			75397 (2.94%)
+Reads were specific for genome 2:			738 (0.03%)
+-----------
+DRR023134_F.SNPsplit_report.txt
+Reads were specific for genome 1:			45881 (1.62%)
+Reads were specific for genome 2:			47074 (1.66%)
+-----------
+DRR023135_F.SNPsplit_report.txt
+Reads were specific for genome 1:			83908 (3.09%)
+Reads were specific for genome 2:			797 (0.03%)
+-----------
+DRR023136_F.SNPsplit_report.txt
+Reads were specific for genome 1:			75784 (3.12%)
+Reads were specific for genome 2:			624 (0.03%)
+
+-----------
+DRR023131_M.SNPsplit_report.txt
+Reads were specific for genome 1:			26097 (1.52%)
+Reads were specific for genome 2:			26968 (1.57%)
+-----------
+DRR023132_M.SNPsplit_report.txt
+Reads were specific for genome 1:			45893 (1.50%)
+Reads were specific for genome 2:			46550 (1.53%)
+-----------
+DRR023133_M.SNPsplit_report.txt
+Reads were specific for genome 1:			31475 (1.59%)
+Reads were specific for genome 2:			31868 (1.61%)
+-----------
+DRR023137_M.SNPsplit_report.txt
+Reads were specific for genome 1:			8110 (2.36%)
+Reads were specific for genome 2:			242 (0.07%)
+
+
+======================
+DRR023137_M should be female
+DRR023134_F should be male

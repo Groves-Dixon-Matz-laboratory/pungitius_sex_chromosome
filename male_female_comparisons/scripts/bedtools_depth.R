@@ -122,6 +122,8 @@ outName=paste(spp, 'MvsF_foldDiff.Rdata', sep="_")
 save(res.df, file=outName)
 
 ### optionally save the size factors for another analysis
+# #Save for pungitius read counts against the whole genome
+# #This will be used later for running DESEq on reads mapped to repetitive elements
 # genomeSizeFactors = sizeFactors(dds)
 # save(genomeSizeFactors, file="~/gitreps/pungitius_sex_chromosome/metadata/genomeSizeFactors.Rdata") ## saved for other analyses
 

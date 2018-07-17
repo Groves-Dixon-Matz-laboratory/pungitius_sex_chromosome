@@ -1,0 +1,304 @@
+1.67*2
+1.27*2
+#repetitive_element_deseq.R#
+#
+library('DESeq2')#
+library('ggplot2')#
+library('cowplot')#
+setwd("~/gitreps/pungitius_sex_chromosome/degeneration/repetitive_elements")#
+#
+#LOAD DATA#
+#
+raw=read.table("combinedFamilyCounts.tsv", sep="\t", comment.char="", strip.white=TRUE, header = T )
+colnames(raw) = sub("_sorted.bam", "", colnames(raw))#
+head(raw)
+#clean names#
+colnames(raw) = sub("_sorted.bam", "", colnames(raw))#
+head(raw)#
+#
+#separate out counts and rep element info#
+counts = raw[,4:ncol(raw)]#
+families = as.character(raw$chr)#
+#
+#some names are duplicates, tag to make rownames#
+dupCount = sum(duplicated(families))
+families[duplicated(families)] = paste(families[duplicated(families)], "DUP2", sep="_")
+rownames(counts) = families
+counts = counts[,grep("pun", colnames(counts))]#
+counts = counts[!grepl("Unknown", rownames(counts)),] #remove unknown repetitive element types
+head(counts)
+rdat = read.table("~/gitreps/pungitius_sex_chromosome/metadata/dna_raw_read_counts.tsv", header = T)
+rdat = rdat[grep("pun", rdat$sample),]#
+m = rdat$readCount / 1e6#
+names(m) = rdat$sample#
+head(rdat)#
+print("Names match?")
+sum(rdat$sample==colnames(counts))==ncol(counts)
+#get fpm#
+fpm = sweep(counts, MARGIN=2, FUN="/", STATS=m)
+#double-check#
+head(counts)#
+head(fpm)#
+m
+counts[2,'pun11'] / m['pun11'] == fpm[2,'pun11']
+counts[5,3] / m[3] == fpm[5,3]
+#add project to coldata#
+sdat = read.table("~/gitreps/pungitius_sex_chromosome/metadata/genus_Pun_sex.txt")#
+colnames(sdat) = c('sample', 'sex')#
+rownames(sdat) = sdat$sample#
+samples = colnames(counts)#
+coldata=data.frame(sdat[samples,], row.names=samples)#
+head(coldata)#
+nrow(coldata)#
+ncol(counts)#
+sum(coldata$sample==colnames(fpm))==ncol(fpm)
+#get ratio for mean FPKM between males and females#
+tdat = t(fpm)#
+head(tdat)#
+sum(coldata$sample==rownames(tdat))==ncol(fpm)#
+mdat = data.frame(t(apply(fpm, 1, function(x) tapply(x, INDEX=coldata$sex, mean))))#
+head(mdat)#
+hi = apply(mdat, 1, max)#
+m2=mdat#
+low = apply(m2, 1, min)#
+m2[m2==0] <- min(low[low>0])#
+m2$ratio = m2$M / m2$F#
+m2$log = log(m2$ratio, 2)
+#LOOK AT CPM RESULTS#
+boxplot(m2$log)#
+boxplot(m2$log, outline=F);abline(h=0, lty=2, lwd=0.5)#
+plot(density(m2$log));abline(v=0, lty=2, lwd=0.5)
+#get size factors from PCR duplicate removed/mapped to whole genome dataset#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/genomeSizeFactors.Rdata") #this comes from bedtools_depth.R#
+print(genomeSizeFactors)#
+names(genomeSizeFactors) = tolower(names(genomeSizeFactors))#
+print("Names match?")#
+sum(names(genomeSizeFactors) == coldata$sample)==nrow(coldata)
+#run DESEq#
+dds<-DESeqDataSetFromMatrix(counts,#
+	colData = coldata,#
+	design = formula(~sex))#
+sizeFactors(dds) <-genomeSizeFactors#
+dds<-estimateDispersions(dds)#
+dds<-nbinomWaldTest(dds)
+#GET DESEQ RESULTS#
+res = results(dds, contrast = c('sex', 'M', 'F'), independentFiltering=F)#
+summary(res)#
+head(res[order(res$pvalue),], n=20)#
+rld = rlog(dds)#
+rld.df = assay(rld)
+#VOLCANO PLOT#
+res.df = data.frame(res)#
+res.df$sig = res.df$padj < 0.1#
+res.df$sig[is.na(res.df$sig)]<-FALSE#
+res.df$logp = -log(res.df$pvalue, 10)#
+res.df$logBaseMean = log(res.df$baseMean)#
+head(res.df)
+#plot#
+volcano = ggplot(data=res.df, aes(x=log2FoldChange, y=logp)) + #
+	scale_colour_manual(values=c('black','red')) +#
+	geom_point(data=res.df, aes(color = sig), alpha=0.4) +#
+	xlab("log2 fold difference") +#
+	ylab("-log10 p-value") +#
+	lims(x=c(-3.2, 3.2)) #
+plot(volcano)
+#plot horizontally#
+g = ggplot(data=res.df, aes(y=log2FoldChange, x= logBaseMean)) + #
+	scale_colour_manual(values=c('black','red')) +#
+	geom_point(data=res.df, aes(color = sig), alpha=0.4) +#
+	ylab("log2 fold difference") +#
+	xlab("Mean Coverage") +#
+	theme_bw() #+ ggtitle('Male vs Famale Fold Enrichment')#
+plot(g)
+#high female repeats#
+w = res[res$log2FoldChange < -1,]#
+w#
+#
+#significant repeats#
+s = res[!is.na(res$padj) & res$padj < 0.1,]#
+s#
+#
+#look at density of significant#
+plot(density(s$log2FoldChange), xlim=c(-3.5, 3.5))
+#log at overall log fold differences#
+boxplot(res.df$log2FoldChange)#
+boxplot(res.df$log2FoldChange, outline=F);abline(h=0, lty=2, lwd=0.5)#
+plot(density(res.df$log2FoldChange, na.rm=T))
+#check agreement between DESEq and differences in mean FPKM#
+mgdat = merge(res.df, m2, by = 0)#
+plot(mgdat$log~mgdat$log2FoldChange, xlab="Deseq log2 diff", ylab='FPKM log2 diff')
+#assemble total counter per million reads#
+tfpm = apply(fpm, 2, sum)#
+mt = merge(tfpm, coldata, by = 0)#
+#
+#### PLOT RESULTS FIGURES #####
+res.df = data.frame(res)#
+res.df$logp = -log(res.df$pvalue, 10)#
+s.res.df = res.df[res.df$padj < 0.1,]#
+male = rep('male', nrow(s.res.df))#
+male[s.res.df$log2FoldChange < 0]<-'female'#
+s.res.df$significant = male#
+volcano = ggplot(data=res.df, aes(x=log2FoldChange, y=logp)) + #
+	geom_point(col='black', alpha=0.5) +#
+	geom_point(data=s.res.df, aes(x=log2FoldChange, y=logp, col=significant), size=2.25) +#
+	scale_colour_manual(values=c('firebrick','dodgerblue')) +#
+	xlab("log2 M:F") +#
+	ylab("-log10 p-value") +#
+	lims(x=c(-3.2, 3.2), y=c(0,17)) #
+plot(volcano)
+#DENSITY PLOT FOR SIGNIFICANT#
+den=density(s$log2FoldChange)#
+den.df = data.frame(x=den$x, y=den$y)#
+g1=ggplot(data=den.df, aes(x=x, y=y)) + #
+	geom_vline(aes(xintercept=0), linetype='dashed') +#
+	geom_line(col='grey') + #
+	geom_area(fill='grey') +#
+	lims(x=c(-3.3, 3.3)) +#
+	# scale_x_continuous(limits = c(-0.03, 0.22)) +#
+	# geom_segment(data=d12, aes(x=d, y=y1, xend=d, yend=y2), lineend='round', lwd=1.2) +#
+	labs(x="", y="")#
+plot(g1)#
+#stats#
+pos = s$log2FoldChange > 0#
+male = sum(pos)#
+female = sum(!pos)
+#BOXPLOT#
+mt$pct = mt$x / 1e6 * 100#
+g=ggplot(data=mt) + #
+	geom_boxplot(aes(x=sex, y=pct)) +#
+	labs(y="% reads", x="Sex") +#
+	lims(y=c(6.1, 6.65))#
+plot(g)#
+tapply(mt$x, INDEX=mt$sex, mean)#
+male = mt$x[mt$sex=="M"]#
+female = mt$x[mt$sex=="F"]#
+t.test(x=male, y=female, alternative='greater')
+#save data for plotting with all the other degeration results#
+rep.res = res#
+save(rep.res, mt, s, file="~/gitreps/pungitius_sex_chromosome/figure_plotting/repetitiveElements.Rdata")
+rm(list=ls())
+setwd("~/gitreps/pungitius_sex_chromosome/degeneration/dnds")
+#function to do signed rank test between two chromosomes#
+do.wilcox = function(sp1, sp2, df, stat){#
+	stat1 = df[df$species == sp1, stat]#
+	stat2 = df[df$species == sp2, stat]#
+	sub = df[df$species %in% c(sp1, sp2),]#
+	w=wilcox.test(x=stat1, y=stat2)#
+	boxplot(sub[,stat]~sub[,'species'], outline=F, main=paste("p =",w$p.value))#
+	return(w)#
+}
+#compare for pairwise against threespine#
+d=read.table('ref_chrXII_pairwise_dNdS.tsv', header = T, stringsAsFactors=F)
+#plot for all mutations#
+ad = d[!grepl('private', d$species),]#
+boxplot(ad$dN~ad$species, outline=F, ylab='dN')#
+boxplot(ad$dS~ad$species, outline=F, ylab='dS')#
+boxplot(ad$dNdS~ad$species, outline=F, ylab="dN/dS")#
+do.wilcox('X', 'tym', ad, 'dNdS')
+#plot for "private" mutations#
+pd = d[grepl('private', d$species),]#
+boxplot(pd$dN~pd$species, outline=F, ylab='dN')#
+boxplot(pd$dS~pd$species, outline=F, ylab='dS')#
+boxplot(pd$dNdS~pd$species, outline=F, ylab='dN/dS')#
+do.wilcox('Xprivate', 'tymprivate', pd, 'dNdS')#
+do.wilcox('Xprivate', 'sinprivate', pd, 'dNdS')#
+do.wilcox('Yprivate', 'sinprivate', pd, 'dNdS')#
+do.wilcox('Xprivate', 'Yprivate', pd, 'dNdS')
+#look at X#
+xd=read.table('X_pairwise_dNdS.tsv', header = T, stringsAsFactors=F)#
+xd=sind[!grepl('private', xd$species),]#
+boxplot(xd[,'dN']~xd$species, outline=F, ylab="pairwise dN vs sinensis", main='vs sinensis')#
+boxplot(xd[,'dS']~xd$species, outline=F, ylab="pairwise dS vs sinensis", main='vs sinensis')#
+boxplot(xd[,'dNdS']~xd$species, outline=F, ylab="pairwise dN/dS vs sinensis", main='vs sinensis')#
+do.wilcox('X', 'Y', d, 'dS')#
+do.wilcox('tym', 'Y', d, 'dS')
+#look at sinensis#
+sind=read.table('sin_pairwise_dNdS.tsv', header = T, stringsAsFactors=F)#
+sind=sind[!grepl('private', sind$species),]#
+boxplot(sind[,'dN']~sind$species, outline=F, ylab="pairwise dN vs sinensis", main='vs sinensis')#
+boxplot(sind[,'dS']~sind$species, outline=F, ylab="pairwise dS vs sinensis", main='vs sinensis')#
+boxplot(sind[,'dNdS']~sind$species, outline=F, ylab="pairwise dN/dS vs sinensis", main='vs sinensis')#
+do.wilcox('X', 'Y', d, 'dS')#
+do.wilcox('tym', 'Y', d, 'dS')
+save(ad, pd, sind, file="~/gitreps/pungitius_sex_chromosome/figure_plotting/pairwisedNdS.Rdata")
+setwd("~/gitreps/pungitius_sex_chromosome/degeneration/provean")
+library(plotrix)#
+setwd("~/gitreps/pungitius_sex_chromosome/degeneration/provean")#
+#read in the data#
+readin = function(fileName, sampleName){#
+	d=read.table(fileName, header = T)#
+	d$sample = sampleName#
+	return(d)#
+}#
+#
+x=readin('x_provean_res.tsv', 'x')#
+y= readin('y_provean_res.tsv', 'y')#
+s= readin('sin_provean_res.tsv', 'sin')#
+t= readin('tym_provean_res.tsv', 'tym')#
+d=rbind(x,y,s,t)
+#plot overall scores#
+boxplot(d$score~d$sample, outline=F)#
+mns = tapply(d$score, INDEX=d$sample, function(x) mean(x, na.rm=T))#
+ses = tapply(d$score, INDEX=d$sample, function(x) std.error(x, na.rm=T))#
+plotCI(x=1:length(mns), y=mns, uiw=ses)
+#frequency of bad mutations#
+CUT=-2.5#
+d$bad = as.numeric(d$score <= CUT)#
+d$ok = as.numeric(d$score > CUT)#
+sums = tapply(d$bad, INDEX=d$sample, function(x) sum(x, na.rm=T))#
+oksums = tapply(d$ok, INDEX=d$sample, function(x) sum(x, na.rm=T))#
+ratios = sums / (sums + oksums)#
+tbl = rbind(sums, oksums)#
+barplot(ratios)#
+chisq.test(tbl)
+#SUBSET FOR PRIVATE MUTATIONS#
+#first accross full dataset#
+#these will work for sin, tym, and Y, but not X, #
+#since Y is likely to have stray X variants#
+p = d#
+p$mut = paste(p$gene, p$var, sep="_")#
+counts = table(p$mut)#
+plot(density(counts)) #most of them are shared#
+private = counts[counts==1]#
+pmuts= names(private)
+#to get private alleles for X, remove the Y mutations and repeat#
+no.y = p[p$sample !='y',]#
+counts.noy = table(no.y$mut)#
+private.x = counts.noy[counts.noy==1]#
+pmuts.x = names(private.x)#
+psub.nonx = p[p$mut %in% pmuts & p$sample != 'x',]#
+px = p[p$mut %in% pmuts.x & p$sample == 'x',]
+#now combine the two together#
+psub = rbind(psub.nonx, px)
+#plot overall scores#
+boxplot(psub$score~psub$sample, outline=F)#
+mns = tapply(psub$score, INDEX=psub$sample, function(x) mean(x, na.rm=T))#
+ses = tapply(psub$score, INDEX=psub$sample, function(x) std.error(x, na.rm=T))#
+plotCI(x=1:length(mns), y=mns, uiw=ses)
+boxplot(psub$score~psub$sample, outline=F)
+#plot overall scores#
+boxplot(psub$score~psub$sample, outline=F)
+plotCI(x=1:length(mns), y=mns, uiw=ses)
+plotCI(x=1:length(mns), y=mns, uiw=ses, axes=F)
+plotCI(x=1:length(mns), y=mns, uiw=ses, axes=F, xlim=c(0,5))
+plotCI(x=1:length(mns), y=mns, uiw=ses, axes=F, xlim=c(0.5,5.5))
+plotCI(x=1:length(mns), y=mns, uiw=ses, axes=F, xlim=c(0.5,4.5))
+axis(1, at = c(1:4), labels=names(mns))
+axis(2)
+head(psub)
+save(d, psub, ratios, private.ratios, tbl, private.tbl, file="~/gitreps/pungitius_sex_chromosome/figure_plotting/provean.Rdata")
+#frequency of bad mutations#
+CUT=-2.5#
+psub$bad = as.numeric(psub$score <= CUT)#
+psub$ok = as.numeric(psub$score > CUT)#
+sums = tapply(psub$bad, INDEX=psub$sample, function(x) sum(x, na.rm=T))#
+oksums = tapply(psub$ok, INDEX=psub$sample, function(x) sum(x, na.rm=T))#
+private.ratios = sums / (sums + oksums)#
+private.tbl = rbind(sums, oksums)#
+barplot(sums)#
+barplot(private.ratios)#
+chisq.test(private.tbl)#
+chisq.test(private.tbl[,c('x','y')])#
+#
+#save data for full figure plotting#
+save(d, psub, ratios, private.ratios, tbl, private.tbl, file="~/gitreps/pungitius_sex_chromosome/figure_plotting/provean.Rdata")

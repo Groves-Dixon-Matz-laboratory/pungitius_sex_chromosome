@@ -1,0 +1,330 @@
+#degeneration.txt
+#steps for data processing for detecting evidence of early degeneration on Y
+#Groves Dixon
+#last updated 6-16-18
+
+#########################################################
+#################### INDEL COMPARISON ###################
+#########################################################
+#take the indels that were found in the mpileup run
+#these were set aside as part of the filtering
+
+#get them from here:
+cp /corral-repl/utexas/Recombining-sex-chro/pungitius/vcfs/raw_indels .
+
+#separate by sex and get allele frequencies
+grep CHROM chrV_indels.vcf | tr "\t" "\n" | grep pun | grep "_M" > malePun.txt
+grep CHROM chrV_indels.vcf | tr "\t" "\n" | grep pun | grep "_F" > femalePun.txt
+
+vcftools --vcf chrXII_indels.vcf --keep malePun.txt --recode -c > chrXII_malePun.vcf
+vcftools --vcf chrXII_indels.vcf --keep femalePun.txt --recode -c > chrXII_femalePun.vcf
+
+
+#########################################################
+######### ENRICHMENT FOR REPETITIVE ELEMENTS ############
+#########################################################
+
+##Use Misha's concatFasta.pl to make pseudo chromosomes from the denvo assembly
+#(Repeatmodler wouldn't finish with the small scaffolds)
+concatFasta.pl fasta=Ppungitius_scaffolds.fasta 
+
+
+#make a repeat databases for the 3spine and pseudo-chromosomized denovo assembly
+/work/02260/grovesd/lonestar/RepeatMaskerPrograms/RepeatModeler-open-1.0.10/BuildDatabase -name stickleGenomeRepDb  glazer2015.unmasked.fa
+/work/02260/grovesd/lonestar/RepeatMaskerPrograms/RepeatModeler-open-1.0.10/BuildDatabase -name Ppungitius_scaffolds_ccRepDb Ppungitius_scaffolds_cc.fasta 
+
+#Run modeler on each
+/work/02260/grovesd/lonestar/RepeatMaskerPrograms/RepeatModeler-open-1.0.10/RepeatModeler -database stickleGenomeRepDb -pa 24
+/work/02260/grovesd/lonestar/RepeatMaskerPrograms/RepeatModeler-open-1.0.10/RepeatModeler -database Ppungitius_scaffolds_ccRepDb -p 24
+
+
+#Then concatenate the results and index for bowtie
+cat Ppungitius_scaffolds_ccRepDb-families.fa stickleGenomeRepDb-families.fa > combined_PO_denovo_families.fa
+bowtie2-build combined_PO_denovo_families.fa combined_PO_denovo_families.fa
+
+#Then map the reads against the repeat sets
+>mapDenovo
+for file in *.trim
+do echo "bowtie2 -x ./Ppungitius_scaffolds_ccRepDb-families.fa -U $file -k 1 -p 4 -S ${file/.trim/}.sam --local --very-sensitive" >> mapDenovo
+done
+
+#CONVERT SORT THE SAM FILES
+samSort.py *.sam > convertSort
+launcher_creator.py -n convertSort -j convertSort -q normal -N 2 -w 15 -a $allok -t 02:00:00
+
+#GET COUNTS
+fasta_sequence_characters.py -fa combined_PO_denovo_families.fa > family_lengths.txt
+awk '{print $1"\t0\t"$2}' family_lengths.txt  > family.bed
+echo "bedtools multicov -bams *sorted.bam -bed family.bed > family_counts0.tsv" > multicov
+
+echo -e "chr\tstart\tend\t$(ls *sorted.bam | tr "\n" "\t")" > header
+cat header family_counts0.tsv > family_counts.tsv
+
+
+
+#########################################################
+######### GET SEQUENCES FOR DNDS AND PROVEAN ############
+#########################################################
+
+
+#grab the phased vcf and split by species
+cp /corral-repl/utexas/Recombining-sex-chro/pungitius/vcfs/filt4_phased/genusPun_chr12_Ylab_chroms.vcf.gz .
+
+vcftools --gzvcf genusPun_chr12_Ylab_chroms.vcf.gz --keep y.txt --recode --out y &
+vcftools --gzvcf genusPun_chr12_Ylab_chroms.vcf.gz --keep x.txt --recode --out x &
+vcftools --gzvcf genusPun_chr12_Ylab_chroms.vcf.gz --keep sin.txt --recode --out sin &
+vcftools --gzvcf genusPun_chr12_Ylab_chroms.vcf.gz --keep tym.txt --recode --out tym &
+
+
+#get concensus vcf for each species
+concensus_forAltRef_vcf.R y.recode.vcf Y yconcensus.vcf &
+concensus_forAltRef_vcf.R x.recode.vcf X xconcensus.vcf &
+concensus_forAltRef_vcf.R sin.recode.vcf sin sinconcensus.vcf &
+concensus_forAltRef_vcf.R tym.recode.vcf tym tymconcensus.vcf &
+
+#assemble into single vcf
+cut -f 10 xconcensus.vcf > xGenos
+cut -f 10 sinconcensus.vcf > sinGenos
+cut -f 10 tymconcensus.vcf > tymGenos
+paste -d "\t" yconcensus.vcf xGenos sinGenos tymGenos > Allgenos
+gunzip genusPun_chr12_Ylab_chroms.vcf.gz 
+grep "##" genusPun_chr12_Ylab_chroms.vcf > header
+cat header Allgenos > chr12concensusGenos.vcf
+
+#identify and subset private concensus alleles
+vcftools --vcf chr12concensusGenos.vcf --singletons --out chr12
+grep -v CHROM chr12.singletons | cut -f 1,2 > singletonLoci.txt
+vcftools --vcf chr12concensusGenos.vcf --positions singletonLoci.txt --recode --out chr12_private
+
+#separate into individual vcfs
+vcftools --vcf chr12_private.recode.vcf --indv Y --recode -c > YprivateBuildAltIn.vcf
+vcftools --vcf chr12_private.recode.vcf --indv X --recode -c > XprivateBuildAltIn.vcf
+vcftools --vcf chr12_private.recode.vcf --indv sin --recode -c > sinprivateBuildAltIn.vcf
+vcftools --vcf chr12_private.recode.vcf --indv tym --recode -c > tymprivateBuildAltIn.vcf
+
+#add headers back to full concensus sets
+cat header yconcensus.vcf > YBuildAltIn.vcf
+cat header xconcensus.vcf > XBuildAltIn.vcf
+cat header sinconcensus.vcf > sinBuildAltIn.vcf
+cat header tymconcensus.vcf > tymBuildAltIn.vcf
+
+
+#build alternative refs
+module load java
+module load gatk
+CHROM="chrXII"
+ln -s /work/02260/grovesd/lonestar/stickleback_genome/ref_${CHROM}.fasta
+
+
+>buildAltRefs
+for file in *BuildAltIn.vcf
+do echo "java -Xmx5g -jar $TACC_GATK_DIR/GenomeAnalysisTK.jar \
+-T FastaAlternateReferenceMaker \
+-R /work/02260/grovesd/lonestar/stickleback_genome/ref_${CHROM}.fasta \
+-o ${file/BuildAltIn.vcf/.fasta} \
+-V $file" >>buildAltRefs
+done
+
+
+#next slice out the coding sequences and translate them for singlular use
+>doCodingSlice
+for file in *.fasta
+do echo "slice_coding_from_gtf.py -gff myThreespineStickleback.2016.gtf -fa $file -chr chrXII -odir ${file/.fasta/_prot_fastas} > ${file}_codingSlice.log" >> doCodingSlice
+done
+
+
+#ASSEMBLE THE SEQUENCES FROM EACH SPECIES INTO SINGLE FASTAS
+
+#set up species list
+>speciesList.txt;for file in *.fasta; do echo ${file/.fasta/} >> speciesList.txt;done
+
+#get list of the files
+cd ref_chrXII_prot_fastas/
+ls *.fasta > fas
+mv fas ..
+cd ..
+
+#append the individual fastas together
+mkdir all_fas
+while read file
+do while read s
+do cat ${s}_prot_fastas/${file} >> all_fas/${file}
+echo "" >> all_fas/${file}
+done < speciesList.txt
+done < fas
+
+#pal2nal them to double-check everything is clean and put them in right format for paml
+>reverseTrans; for aln in *PRO.fasta; do echo "pal2nal.pl $aln ${aln/PRO.fasta/}CDS.fasta -output paml -nogap > ${aln/_PRO.fasta/}.codon" >> reverseTrans; done
+
+#if you get no warnings then everything is lining up correctly
+ls *.codon | wc -l
+
+############################################
+################# RUN PAML #################
+############################################
+
+grep ">" ENSGACG00000007950_ENSGACT00000016812_PRO.fasta | sed 's/>//' > speciesList.txt
+
+
+
+##BUILD A PAML CONTROL FILE FOR EACH GENE
+TREE=tree.txt
+>buildControls;for file in *.codon; do echo "build_paml_control.py -i $file -t $TREE -spp speciesList.txt -runMode -2" >> buildControls; done
+launcher_creator.py -n buildControls -j buildControls -w 48 -N 1 -t 0:15:00 -q normal -a $allok
+sbatch buildControls.slurm
+
+#RUN CODEML
+>runCodeml; for file in *.cnt; do echo "codeml $file" >> runCodeml; done
+launcher_creator.py -n runCodeml -j runCodeml -w 24 -q normal -t 00:10:00 -a $allok -q normal -N 1
+sbatch runCodeml.slurm
+
+##NOW PARSE THE CODEML OUTPUTS
+parse_codeml_pairwise_ref_extracts.py -s speciesList.txt -i *.codeml
+
+
+#THEN SEND TO MAC AND ANALYZE WITH compare_pairwise_dnds.R
+
+
+#########################################################
+###################### RUN PROVEAN ######################
+#########################################################
+#after installing provean set the values in provean.sh to fit where thigs are on TACC
+
+eg:
+		BLAST_DB="/scratch/02260/grovesd/ncbi_nr_databse/nr"
+		PSIBLAST="/opt/apps/blast/2.2.31/bin/psiblast"
+		CD_HIT="/home1/02260/grovesd/bin/cd-hit-v4.6.1-2012-08-27/cd-hit"
+		BLASTDBCMD="/opt/apps/blast/2.2.31/bin/blastdbcmd"
+
+
+#if you need a blast database, download from ftp
+#then decompresse the files
+#mine kept in work here: 
+
+
+#get the protein alignments and output variants files in HGVS format
+#go into the directory made by sliceCodon
+mkdir run_provean
+cd run_provean
+
+
+
+#set up commands
+>hgvsGet
+for file in *PRO.fasta
+do echo "get_HGVS_diffs.py -i $file -s1 ref_chrXII -s2 y" >> hgvsGet
+echo "get_HGVS_diffs.py -i $file -s1 ref_chrXII -s2 x" >> hgvsGet
+echo "get_HGVS_diffs.py -i $file -s1 ref_chrXII -s2 sin" >> hgvsGet
+echo "get_HGVS_diffs.py -i $file -s1 ref_chrXII -s2 tym" >> hgvsGet
+done
+
+
+
+#now you have files ready to run provean
+#run for each species in a separate directory
+
+#first assign the species
+subject="tym"
+
+
+
+#get the protein alignments and output variants files in HGVS format
+mkdir run_provean_${subject}
+cd run_provean_${subject}
+
+
+#grab the files to run provean 
+ref="ref_chrXII"
+
+
+#(the reference protein sequence and the HGVS differences from that reference for the species of interest)
+ln -s /work/02260/grovesd/lonestar/stickleback_genome/ref_chrXII_prot_fastas/*PRO.fasta .
+ln -s ../ref_chrXII_${subject}_HGVS_diffs*_PRO.txt .
+
+
+#how many of these genes have at least one substitution?
+ls *HGVS*.txt | wc -l
+
+
+#SET UP COMMANDS FOR PROVEAN
+#note it doesn't like to make the temp directories on it's own
+#so command to make them directly is included
+#since blast is fast, makes sense to parallelize on jobs rather than 
+#threading the blast command.
+
+>runProvean_${subject}
+for hgvsFile in ref_chrXII_${subject}_HGVS_diffs*_PRO.txt
+do file0=${hgvsFile/ref_chrXII_${subject}_HGVS_diffs_/}
+file=${file0/.txt/.fasta}
+echo "mkdir ${file/.fasta/_TEMPDIR} && \
+$PROVEAN -q $file \
+-v ${ref}_${subject}_HGVS_diffs_${file/.fasta/.txt} \
+--tmp_dir ${file/.fasta/_TEMPDIR} \
+--num_threads 1 > ${file/.fasta/_proveanOut.txt}" >>runProvean_${subject}
+done
+
+launcher_creator.py -n runProvean_${subject} -j runProvean_${subject} -q normal -N 4 -w 24 -t 24:00:00 -a $allok -e $email
+
+
+
+
+#GATHER RESULTS
+ln -s /work/02260/grovesd/lonestar/stickleback_genome/myThreespineStickleback.2016.gtf .
+
+subject="sin"
+
+gather_provean_results.py -i *PRO_proveanOut.txt -hgvs ref_chrXII_${subject}_HGVS_diffs_ENSGACG000000* -o ${subject}_provean_res.tsv -gtf myThreespineStickleback.2016.gtf -chr chrXII
+
+#this script will assemble the results, but also output a file with any results files that failed to complete
+#finish running provean using this file
+
+subject="x"
+chr="chrXII"
+>${subject}_finish
+while read GENE
+do echo "mkdir ${GENE}_RETRY_TEMPDIR && \
+$PROVEAN -q ${GENE}_PRO.fasta \
+-v ref_${chr}_${subject}_HGVS_diffs_${GENE}_PRO.txt \
+--tmp_dir ${GENE}_RETRY_TEMPDIR \
+--num_threads 1 > ${GENE}_PRO_proveanOut.txt" >>${subject}_finish
+done < failed_runs.txt
+
+
+
+########## WHEN PROVEAN FAILS TO FINISH
+#collect the output files that didn't finish in a text file manually
+#eg
+head failed_files
+	ENSGACG00000002569_ENSGACT00000013036_PRO_proveanOut.txt
+	ENSGACG00000002569_ENSGACT00000013048_PRO_proveanOut.txt
+	ENSGACG00000002604_ENSGACT00000013001_PRO_proveanOut.txt
+	ENSGACG00000002611_ENSGACT00000012994_PRO_proveanOut.txt
+
+
+subject="femalePun"
+>${subject}_finish
+while read file
+do echo "mkdir ${file/.fasta/}_RETRY_TEMPDIR && \
+$PROVEAN -q $file \
+-v ${ref}_${subject}_HGVS_diffs_${file/.fasta/.txt} \
+--tmp_dir ${file/.fasta/_TEMPDIR} \
+--num_threads 1 > ${file/.fasta/_proveanOut.txt}" >>${subject}_finish
+done < failed_files
+
+
+launcher_creator.py -n ${subject}_finish -j ${subject}_finish -q normal -N 2 -w 48 -a $allok -e $email -t 24:00:00
+
+
+
+###################################################
+############## OUTPUT GENIC POSITIONS #############
+###################################################
+#(Didn't end up using this)
+
+VCF=all_male_pun.vcf
+
+##NOTE, THIS GREATLY REDUCES OVERLAP BETWEEN Y-CALLED ALLELES FOR THE RNA AND DNA DATASETS!
+##SHOULD DOUBLE-CHECK THAT IT IS WORKING AS EXPECTED
+ln -s /work/02260/grovesd/lonestar/stickleback_genome/myThreespineStickleback.2016.transcript.gtf .
+grep "CDS" myThreespineStickleback.2016.transcript.gtf > cds.gtf
+get_genic_vars.R dna_vcf_for_genome_prep_chr12only.vcf cds.gtf dna_vcf_for_genome_prep_genic_chr12only.vcf

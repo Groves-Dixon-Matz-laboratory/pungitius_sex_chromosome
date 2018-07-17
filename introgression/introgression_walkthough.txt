@@ -1,0 +1,266 @@
+#introgression_walkthough.txt
+
+
+##########################################
+################## PCAS ##################
+##########################################
+#Use filt4 equivalent filtered VCFs (--maf 0.005 --max-missing 0.9) with only genus Pungitius represented
+
+#subset for only Pungitius species in a filt4 VCF
+#then subset for the PAR and SDR using VCFtools
+#run PCAs like so:
+
+basic_snp_pca.R chrI_Pungitius_filt4.recode.vcf 12
+basic_snp_pca.R chrXII_Pungitius_filt4_PAR.recode.vcf 12
+basic_snp_pca.R chrXII_Pungitius_filt4_SDR.recode.vcf 12
+basic_snp_pca.R chrM_Pungitius.recode.vcf 12
+
+#also from inferred Y
+basic_snp_pca.R genusPun_chr12_SDR.recode.vcf 12
+basic_snp_pca.R genusPun_chr12_PAR.recode.vcf 12
+
+
+#results:
+chrI_Pungitius_filt4.recode.vcf_pca.Rdata
+chrXII_Pungitius_filt4_PAR.recode.vcf_pca.Rdata
+chrXII_Pungitius_filt4_SDR.recode.vcf_pca.Rdata
+chrM_Pungitius.recode.vcf_pca.Rdata
+genusPun_chr12_PAR.recode.vcf_pca.Rdata
+genusPun_chr12_SDR.recode.vcf_pca
+
+
+###############################################
+################## ADMIXTURE ##################
+###############################################
+#get admixture and plink2 if needed
+cdw
+wget https://www.genetics.ucla.edu/software/admixture/binaries/admixture_linux-1.3.0.tar.gz --no-check-certificate
+tar -zxvf admixture_linux-1.3.0.tar.gz
+wget http://s3.amazonaws.com/plink2-assets/alpha1/plink2_linux_avx2.zip
+export PLINK2="/work/02260/grovesd/lonestar/plink2"
+export ADMIXTURE="/work/02260/grovesd/lonestar/admixture_linux-1.3.0/admixture"
+
+#replace the chromosome notations
+VCF=chrI_genusPungitiusPlusYoshidaPO.recode.vcf
+sed -i.bak 's/chrI/1/' $VCF
+
+#remove PO and make PAR and SDR versions
+VCF=genusPun_chr12_Ylab_chroms.vcf
+vcftools --vcf $VCF --remove po_samples.txt --maf 0.01 --recode --out ${VCF/.vcf/}_FULL
+vcftools --vcf $VCF --remove po_samples.txt --maf 0.01 --chr 12 --from-bp 4000000 --to-bp 16000000 --recode --out ${VCF/.vcf/}_SDR
+vcftools --vcf $VCF --remove po_samples.txt --maf 0.01 --chr 12 --from-bp 0 --to-bp 2000000 --recode --out ${VCF/.vcf/}_PAR
+
+
+#get bed from VCF
+$PLINK2 --vcf ${VCF/.vcf/}_FULL.recode.vcf --make-bed --out ${VCF/.vcf/}_FULL
+$PLINK2 --vcf ${VCF/.vcf/}_SDR.recode.vcf --make-bed --out ${VCF/.vcf/}_SDR
+$PLINK2 --vcf ${VCF/.vcf/}_PAR.recode.vcf --make-bed --out ${VCF/.vcf/}_PAR
+
+#run admixture
+$ADMIXTURE ${VCF/.vcf/}_FULL.bed 3
+$ADMIXTURE ${VCF/.vcf/}_SDR.bed 3
+$ADMIXTURE ${VCF/.vcf/}_PAR.bed 3
+
+
+
+
+##########################################################
+####################### ABBA BABBA #######################
+##########################################################
+#Results from Popgenome are weird, so redoing D-stats with my own script
+#Below are notes for getting D-statistics for full chromosomes and fd for windows
+#The full chromosome files are saved as Rdata files and the windows as .tsv files
+
+for file in *vcf.gz
+do echo "bgzip -d $file &"
+done
+
+
+#convert vcfs to simple count format
+>simplify
+for file in *genusPungitiusPlusYoshidaPO.recode.vcf
+do echo "simplify_vcf.py $file ${file/_genusPungitiusPlusYoshidaPO.recode.vcf/}_simple.tsv &" >>simplify
+done
+
+
+#pick window size
+WINDOWSIZE=100000
+
+
+#set population files
+pop1=female_pun.txt
+pop2=male_pun.txt
+pop3=sin_samples.txt
+outGroup=po_samples.txt
+
+#run script
+>runDstat_FMS
+for file in *simple.tsv
+do echo "my_abba_baba.R ${file} ${pop1},${pop2},${pop3} $outGroup ${file/_simple.tsv/}_Dstats_FMS.Rdata &">>runDstat_FMS
+echo "my_abba_baba_windows.R ${file} ${pop1},${pop2},${pop3} $outGroup $WINDOWSIZE ${file/_simple.tsv/}_Dstats_FMS.tsv &">>runDstat_FMS
+done
+
+
+#set population files
+pop1=female_pun.txt
+pop2=male_pun.txt
+pop3=tym_samples.txt
+outGroup=po_samples.txt
+
+#run script
+>runDstat
+for file in *simple.tsv
+do echo "my_abba_baba.R ${file} ${pop1},${pop2},${pop3} $outGroup ${file/_simple.tsv/}_Dstats_FMT.Rdata">>runDstat
+echo "my_abba_baba_windows.R ${file} ${pop1},${pop2},${pop3} $outGroup $WINDOWSIZE ${file/_simple.tsv/}_Dstats_FMT.tsv">>runDstat
+done
+
+
+#set population files
+pop1=tym_samples.txt
+pop2=sin_samples.txt
+pop3=pun_samples.txt
+outGroup=po_samples.txt
+
+#run script
+>runDstat_TSP
+for file in *simple.tsv
+do echo "my_abba_baba.R ${file} ${pop1},${pop2},${pop3} $outGroup ${file/_simple.tsv/}_Dstats_TSP.Rdata &">>runDstat_TSP
+echo "my_abba_baba_windows.R ${file} ${pop1},${pop2},${pop3} $outGroup $WINDOWSIZE ${file/_simple.tsv/}_Dstats_TSP.tsv &">>runDstat_TSP
+done
+
+
+#####################################################################
+######## DISTANCE MEASURES FULL CHROMOSOMES (dxy and others) ########
+#####################################################################
+
+# RUN FOR FULL CHROMOSOME LENGTHS
+fasta_sequence_characters.py -fa $stickleGenome > chromLengths.txt
+
+#FOR EACH PAIR TO BE COMPARED, ADD COMMANDS WITH CHROMOSOME LENGTHS OR WINDOWS TO SLICE OUT
+
+#for Y vs sinensis
+awk '{print "my_dxy.R "$1"_ys_chroms.vcf "$1"_sin_chroms.vcf 0 " $2 " "$1 " y_sin_"$1"_distances.tsv"}' chromLengths.txt >runFulldxy
+
+#for Y vs tymensis
+awk '{print "my_dxy.R "$1"_ys_chroms.vcf "$1"_tym_chroms.vcf 0 " $2 " "$1 " y_tym_"$1"_distances.tsv"}' chromLengths.txt >>runFulldxy
+
+#for Y vs females
+awk '{print "my_dxy.R "$1"_ys_chroms.vcf "$1"_femalePun_chroms.vcf 0 " $2 " "$1 " y_female_"$1"_distances.tsv"}' chromLengths.txt >>runFulldxy
+
+#for sinensis vs tymensis
+awk '{print "my_dxy.R "$1"_sin_chroms.vcf "$1"_tym_chroms.vcf 0 " $2 " "$1 " sin_tym_"$1"_distances.tsv"}' chromLengths.txt >>runFulldxy
+
+#for female vs sinensis
+awk '{print "my_dxy.R "$1"_femalePun_chroms.vcf "$1"_sin_chroms.vcf 0 " $2 " "$1 " femalePun_sin_"$1"_distances.tsv"}' chromLengths.txt >>runFulldxy
+
+#for female vs tymensis
+awk '{print "my_dxy.R "$1"_femalePun_chroms.vcf "$1"_tym_chroms.vcf 0 " $2 " "$1 " femalePun_tym_"$1"_distances.tsv"}' chromLengths.txt >>runFulldxy
+
+#for male vs sinensis
+awk '{print "my_dxy.R "$1"_malePun_chroms.vcf "$1"_sin_chroms.vcf 0 " $2 " "$1 " malePun_sin_"$1"_distances.tsv"}' chromLengths.txt >>runFulldxy
+
+#for male vs tymensis
+awk '{print "my_dxy.R "$1"_malePun_chroms.vcf "$1"_tym_chroms.vcf 0 " $2 " "$1 " malePun_tym_"$1"_distances.tsv"}' chromLengths.txt >>runFulldxy
+
+
+#run the job
+launcher_creator.py -n runFulldxy -j runFulldxy -q normal -N 1 -w 24 -a $allok -t 02:00:00 -e $email
+
+### ASSEMBLE RESULTS ###
+
+#Below are the old ways of doing all the VCF tools stuff
+cat y_tym_*distances.tsv > all_y_tym_distances0
+cat y_sin_*distances.tsv > all_y_sin_distances0
+cat y_female*distances.tsv > all_y_female_distances0
+cat sin_tym_*distances.tsv > all_sin_tym_distances0
+cat femalePun_sin_*distances.tsv > all_femalePun_sin_distances0
+cat femalePun_tym_*distances.tsv > all_femalePun_tym_distances0
+cat malePun_sin_*distances.tsv > all_malePun_sin_distances0
+cat malePun_tym_*distances.tsv > all_malePun_tym_distances0
+
+
+
+head -n 1 all_y_tym_distances0 > all_y_tym_distances.tsv
+head -n 1 all_y_sin_distances0 > all_y_sin_distances.tsv
+head -n 1 all_y_female_distances0 > all_y_female_distances.tsv
+head -n 1 all_sin_tym_distances0 > all_sin_tym_distances.tsv
+head -n 1 all_femalePun_sin_distances0 > all_femalePun_sin_distances.tsv
+head -n 1 all_femalePun_tym_distances0 > all_femalePun_tym_distances.tsv
+head -n 1 all_malePun_sin_distances0 > all_malePun_sin_distances.tsv
+head -n 1 all_malePun_tym_distances0 > all_malePun_tym_distances.tsv
+
+
+grep -v dxy all_y_tym_distances0 >> all_y_tym_distances.tsv
+grep -v dxy all_y_sin_distances0 >> all_y_sin_distances.tsv
+grep -v dxy all_y_female_distances0 >> all_y_female_distances.tsv
+grep -v dxy all_sin_tym_distances0 >> all_sin_tym_distances.tsv
+grep -v dxy all_femalePun_sin_distances0 >> all_femalePun_sin_distances.tsv
+grep -v dxy all_femalePun_tym_distances0 >> all_femalePun_tym_distances.tsv
+grep -v dxy all_malePun_sin_distances0 >> all_malePun_sin_distances.tsv
+grep -v dxy all_malePun_tym_distances0 >> all_malePun_tym_distances.tsv
+
+
+###### TO RUN WITH WINDOWS INSTEAD:
+
+#choose window size
+WINDOW_SIZE="100000"
+
+#revise the commands
+sed 's/my_dxy.R/my_dxy_windowed.R/' runFulldxy > runWindowdxy0
+>runWindowdxy;while read line; do echo "${line} $WINDOW_SIZE" >> runWindowdxy;done < runWindowdxy0 
+
+#run as shown above
+
+############################################################
+################## SHARED DERIVED ALLELES ##################
+############################################################
+>getDerived
+for vcf in *.vcf
+do for file in *samples.txt
+do echo "vcftools --vcf $vcf --non-ref-af 0.1 --keep $file --recode --out ${vcf/_filt3.vcf/}_${file/_samples.txt/}" >>getDerived
+done
+done
+
+launcher_creator.py -n getDerived -j getDerived -q normal -N 1 -w 48 -a $allok -e $email -t 02:00:00
+sbatch getDerived.slurm
+
+
+#print out the variant counts
+for file in *recode.vcf; do varcount=$(grep -v "^#" $file | wc -l); echo -e $file"\t"$varcount;done
+
+		femalePun.recode.vcf	1411434
+		malePun.recode.vcf	1412807
+		po.recode.vcf	180633
+		sin.recode.vcf	1377296
+		tym.recode.vcf	1349728
+
+
+
+#set up files of the variants found in each vcf
+>getPresence
+for file in *recode.vcf
+do echo "cut -f 2 $file | grep -v ^# > ${file/.recode.vcf/_present.txt}" >>getPresence
+done
+
+
+#send these to Mac and analyze with shared_derived_alleles.R
+
+#This will let you output sets of variants that are specific/exclusive of particular groups
+#lists of unique variants saved here: ~/gitreps/stickle_back_sex_chromosomes/results/shared_derived_alleles
+
+#Next subset the VCFs
+vcftools --vcf malePun.recode.vcf --positions uniqueMalePun.tsv --recode --out uniqueMalePun
+vcftools --vcf femalePun.recode.vcf --positions uniqueFemalePun.tsv --recode --out uniqueFemalePun
+vcftools --vcf sin.recode.vcf --positions uniqueSin.tsv --recode --out uniqueSin
+vcftools --vcf tym.recode.vcf --positions uniqueTym.tsv --recode --out uniqueTym
+
+
+#final set of VCFs to build alternative references from:
+	femalePun.recode.vcf
+	malePun.recode.vcf
+	sin.recode.vcf
+	tym.recode.vcf
+	uniqueFemalePun.recode.vcf
+	uniqueMalePun.recode.vcf
+	uniqueSin.recode.vcf
+	uniqueTym.recode.vcf

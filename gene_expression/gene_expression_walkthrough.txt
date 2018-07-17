@@ -1,4 +1,4 @@
-#RNA_data
+#gene_expression_walkthrough.txt
 
 #outline:
 1. download reads
@@ -8,12 +8,7 @@
 5. get general expression counts for males/females and 3-spine
 6. use SNPs to get Y-linked alleles
 7. mask X and Y alleles in reference
-8. remap to masked reference and 
-
-
-
-
-
+8. remap to masked reference and get allele-specific expression for X and Y
 
 
 #################################
@@ -196,6 +191,7 @@ sbatch mapse.slurm
 samSort.py *.sam > convertSort
 launcher_creator.py -n convertSort -j convertSort -q normal -N 2 -w 12 -a $allok -t 04:00:00 -e $email
 sbatch convertSort.slurm
+#(samSort.py simply prints out the sorting commands)
 
 #REMOVE DUPLICATES
 >removeDups;for file in *sorted.bam; do echo "java -Xms4g -jar /work/02260/grovesd/lonestar/picard/picard-tools-1.119/MarkDuplicates.jar\
