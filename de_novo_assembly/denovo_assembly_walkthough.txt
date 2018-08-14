@@ -1,0 +1,334 @@
+#genome_assembly_with_soap_denovo.txt
+
+####################
+## TRIMMING READS ##
+####################
+
+#############################################################################################
+#----------Installing cutadapt-------------
+BASE=/home1/02260/grovesd/.local/lib/python2.7/site-packages/cutadapt_v1.9.1
+virtualenv $BASE/venv
+$BASE/venv/bin/pip install --install-option="--install-scripts=$BASE/bin" cutadapt==1.9.1
+cutadaptBin=$BASE/bin/
+ls $cutadaptBin
+echo $cutadaptBin
+#add the bin path to your $PATH
+#-------------------------------------------
+
+#NOTES ON READ TRIMMING:
+#GSAF uses NEB-Next
+#The relevent sequences are shown below:
+
+NEBNext Adapter:
+5 ́-/5Phos/GAT CGG AAG AGC ACA CGT CTG AAC TCC AGT C/ideoxyU/A CAC TCT TTC CCT ACA CGA CGC TCT TCC GAT C*T-3 ́
+
+NEBNext Adapter showing secondary structure:
+
+A-CACTCTTTCCCTACACGAC-
+|                     |GCTCTTCCGATCT-3'
+|                     |CGAGAAGGCTAG -5'
+U-CTGACCTCAAGTCTGCACA-
+
+
+NEBNext Index primer 1
+5́ - CAAGCAGAAGACGGCATACGAGATCGTGATGTGACTGGAGTTCAGACGTGTGCTCTTCCGATCT - 3́
+
+Reverse Complement of NEBNext Index primer 1
+AGATCGGAAGAGCACACGTCTGAACTCCAGTCACATCACGATCTCGTATGCCGTCTTCTGCTTG
+
+#the result is that we want to trim this from both the forward and reverse reads
+GATCGGAAGAGC
+
+#generic cutadapt command for paired end read trimming:
+cutadapt -a ADAPTER_FWD -A ADAPTER_REV -o out.1.fastq -p out.2.fastq reads.1.fastq reads.2.fastq
+
+#############################################################################################
+
+#RUN FASTQC TO GET QUALITY ASSESSMENT
+
+module load fastqc
+mkdir raw_Fastqc_Results/
+echo fastqc -o raw_Fastqc_Results/ -f fastq *.fastq > rawFQC
+launcher_creator.py -n rawFQC -j rawFQC -q normal -t 12:00:00 -a $allok
+sbatch rawFQC.slurm
+
+
+
+#Based on these results, want trim the NEBNext sequence from BOTH ENDS OF THE READS
+#Also want to quality trim the ends of the reads
+
+
+#RUNNING THE TRIMMING
+echo "pun
+sin
+tym" > species.txt
+
+#set up trimming commands for each set of paired end reads by looping through files for each of three species
+>trim; while read spp
+do for file in *$spp*_R1_*.fastq
+do pair=${file/R1/R2}
+echo cutadapt -q 28 -b GATCGGAAGAGC -B GATCGGAAGAGC --minimum-length 0 --maximum-length 300\
+ -o ${file/_R1_001.fastq/}_R1.trim -p ${pair/_R2_001.fastq/}_R2.trim $file $pair >> trim;done
+done < species.txt
+
+
+
+#check everything makes sense
+cat trim | wc -l
+	#78 lines : 60 pun + 52 tym + 44 sin = 156 files / 2 = 78
+
+
+#launch
+launcher_creator.py -n trim -j trim -a $allo -e $email -N 2 -q normal -t 10:00:00
+sbatch trim.slurm
+
+
+#doublecheck trimming worked correctly
+>countLines;>lineCountResults.tsv;for file in *R1.trim; do echo "pair=${file/_R1/_R2}; count1=$(cat $file | wc -l); count2=$(cat $pair | wc -l); echo -e "${file/_R1.trim/}\t$count1\t$count2" >> lineCountResults.tsv">>countLines;done
+launcher_creator.py -n countLines -j countLines -q normal -t 2:00:00 -a $allo
+sbatch countLines.slurm
+
+
+
+
+#RUN FASTQC TO MAKE SURE TRIMMING FIXED THE PROBLEMS
+
+module load fastqc
+mkdir trimmed_Fastqc_Results
+echo fastqc -o trimmed_Fastqc_Results/ -f fastq *.trim > trimFQC
+launcher_creator.py -n trimFQC -j trimFQC -q normal -t 12:00:00 -a tagmap
+sbatch trimFQC.slurm
+
+
+
+#remove junk from trimmed files
+for file in Mon_P_tym*.trim; do mv $file ${file/Mon_P_/};done
+for file in Biwa_P_pun*.trim; do mv $file ${file/Biwa_P_/};done
+for file in Yuza_P_sin*.trim; do mv $file ${file/Yuza_P_/}; done
+
+
+
+
+#########################################
+####### sorting read files by sex #######
+#########################################
+mkdir female_pun
+cd female_pun
+
+idFile=female_pun.txt
+sed -i.bak 's/Pun/pun/' $idFile
+while read s; do ln -s ../fastq/*${s}_*.trim .; done < $idFile
+pth="$(pwd)/"
+
+
+
+pth="/scratch/02260/grovesd/sex_chrom_evo_history/wheatlandi/fastq_files/male/"
+
+
+#set up configuration file
+echo "#maximal read length
+max_rd_len=150
+[LIB]
+#average insert size  (get estimate for this using picard/CollectInsertSizeMetrics.jar)
+avg_ins=250
+#if sequence needs to be reversed
+reverse_seq=0
+#in which part(s) the reads are used
+asm_flags=3
+#use only first 100 bps of each read
+rd_len_cutoff=150
+#in which order the reads are used while scaffolding
+rank=1
+# cutoff of pair number for a reliable connection (at least 3 for short insert size)
+pair_num_cutoff=3
+#minimum aligned length to contigs for a reliable read location (at least 32 for short insert size)
+map_len=32
+#Fastq Files to Add:" > ass.config
+
+#now append path information for the fastq files
+
+#set path to the fastq files
+SPP=pun
+
+#append path names (for PUNGITIUS READS)
+for file in $pth*$SPP*_R1.trim; do echo "q1=$file" >> ass.config; echo "q2=${file/_R1.trim/_R2.trim}" >> ass.config;done
+
+#append path names (for wheatlandi)
+for file in $pth*_R1_*.fastq; do echo "q1=$file" >> ass.config; echo "q2=${file/_R1_/_R2_}" >> ass.config;done
+
+sed -i '/*_R/d' ass.config 
+
+SPP=femalePun
+
+#RUN ASSEMBLY ALL AT ONCE
+module load TACC-largemem
+module load soapdenovo2
+echo "/opt/apps/soapdenovo2/r240/SOAPdenovo-63mer all -s ass.config -N 450000000 -p 32 -K 63 -M 0 -o ${SPP}_assembly -w YES 1>ass.log 2>ass.err" > soap_$SPP
+launcher_creator.py -n soap_$SPP -j soap_$SPP -q largemem512GB -t 24:00:00 -a $allok -e $email
+sbatch soap_$SPP.slurm
+
+
+#################################################
+######## MAPPING READS BACK TO SCAFFOLDS ########
+#################################################
+#first reduce the scaffolds to be greater than 500 bp
+
+
+
+
+cd mapping_to_scaffolds/tym_male
+mkdir reads
+cd reads
+ln -s /scratch/02260/grovesd/pungitius/soap_denovo/trimmed_reads_quality/*.trim .
+cd ..
+
+#----------- WITH BOWTIE -----------#
+mkdir concatenated_reads
+cd concatenated_reads
+ln -s /scratch/02260/grovesd/pungitius/soap_denovo/trimmed_reads_quality/*.trim .
+>concat;for file in *R1.trim; do spp=$(echo $file | awk '{split($1, a, "_"); print a[1]}'); echo "cat $file ${file/_R1.trim/_R2.trim} > ${spp}.trim" >> concat;done
+
+
+
+REF=femaleSin_scaffolds.fasta
+spp=Wsin
+>bt${spp};for file in *.trim; do echo "bowtie2 --very-fast --mp 12 -x $REF -U $file -S ${file/.trim/}_${REF/.fasta/}.sam --no-unal -p 48" >> bt${spp}; done
+
+launcher_creator.py -n bt${spp} -j bt${spp} -q normal -N 4 -w 4 -a $allok -e $email -t 24:00:00
+
+
+
+
+###########################################################
+######## GET SCAFFOLD FOLD COVERAGES WITH BEDTOOLS ########
+###########################################################
+#build a window bed file for the scaffolds
+
+REF=malePun_scaffolds.fasta
+cutREF=${REF/.fasta/}_min1000.fasta
+fasta_length_cutoff.py -fa $REF -cut 1000 -o $cutREF
+fasta_sequence_characters.py -fa $cutREF | awk '{print $1"\t0\t"$2}' > scaffolds.bed
+
+
+#run multicov to get overlap
+ls *_Sorted.bam | tr '\n' '\t'
+
+#run multicov to get overlap
+spp='punMale'
+echo "bedtools multicov -bams *_Sorted.bam -bed scaffolds.bed > multicov_scaffolds.bed" > multicov_${spp}
+launcher_creator.py -n multicov_${spp} -j multicov_${spp} -q normal -t 48:00:00 -a $allok -e $email
+sbatch multicov_${spp}.slurm
+
+#list files
+ls *_Sorted.bam | tr '\n' '\t'
+
+#format the results
+echo -e "chr\tstart\tend\t$(ls *_Sorted.bam | tr '\n' '\t')" > header.tsv
+sed 's/_malePun_scaffolds_Sorted.bam//g' header.tsv > scaffold_counts.tsv
+cat multicov_scaffolds.bed >> scaffold_counts.tsv
+
+
+#look at coverage differences with sex_specific_scaffolds.R
+
+#This will let you pick out putative Y or W scaffolds
+#Once you have these, check where they blast to
+subset_fasta.py maleTymScaffoldsV1_1000cut.fasta ys.txt > ys.fasta
+blastn -query ys.fasta -db $stickleGenome -outfmt 6 > yblast.tsv
+blastn -query ys.fasta -db $stickleGenome -outfmt 6 -max_target_seqs 1 > yTopBlast.tsv
+
+#plot the counts and positions for each chromosome with sex_scaff_positions.R
+
+
+##################################################
+##### LINKING SCAFFOLDS TO 3-SPINE REFERENCE #####
+##################################################
+
+default output: qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore
+
+#BLAST THE daft genome against the 3-spine genome to get contig-chromosome matches
+>scaffBlast;for file in *.fasta; do echo "blastn -query $file -db $stickleGenome -out ${file/.fasta/_3spineBastOut.tsv} -num_threads 48 -outfmt 6" >>scaffBlast;done
+launcher_creator.py -n scaffBlast -j scaffBlast -q normal -N 6 -w 1 -t 4:00:00 -a $allok -e $email
+sbatch scaffBlast.slurm
+
+
+
+
+
+#FIND SCAFFOLDS THAT OVERLAP A GIVEN PEAK IN 3-SPINE
+#choose blast results and window
+
+file=tym1_scaffolds_3spineBastOut.tsv
+chr=chrX
+s=1550000
+e=1630000
+
+#get intersecting scaffolds
+blastIntersection.py -i tym1_chrX_hits.tsv -chr chrX -s 1550000 -e 1630000 | cut -f 1 > scaffs.tsv
+
+#build a fasta of those scaffolds
+subset_fasta.py tym1_scaffolds.fasta chrX_peakScaffs.tsv > chrX_peak_scaffolds.fasta
+
+#now blast 
+blastn -query Gaculeatus_CDS.fasta -db chrX_peak_scaffolds.fasta -outfmt 6 | cut -f 1 | uniq | awk '{split($1, a, "."); print a[1]}' > peakGenes.txt
+
+
+#now look for chromosome 7 matching genes that hit on the scaffolds that hit on the peak
+while read p; do grep $p myThreespineStickleback.2016.transcript.gtf; done < peakGenes.txt | awk '{if ($1=="chrVII"); print $12}' | uniq
+
+
+
+#######################################
+##### BUILD A GTF USING EXONERATE #####
+#######################################
+
+
+
+
+#########################################
+##### IDENTIFY SEX-SPECIFIC CONTIGS #####
+#########################################
+#build a bed file for the de novo assembly
+scaffolds_bed.py -fa malePunScaffoldsV1_1000cut.fasta -o malePunScaffoldsV1_1000cut.bed
+
+#sort and convert sams if necessary
+
+#run multicov to get overlap
+ls *sorted.bam > bams.txt
+bamList=$(cat bams | tr '\n' ' ')
+echo "bedtools multicov -bams bams.txt -bed malePunScaffoldsV1_1000cut.bed > scaffold_counts.tsv" > multicov
+launcher_creator.py -n multicov -j multicov -q normal -t 10:00:00 -a $allok -e $email
+sbatch multicov.slurm
+
+
+
+
+
+
+#####################
+##### REDUNDANS #####
+#####################
+/work/02260/grovesd/lonestar/redundans/redundans.py -v -i /scratch/02260/grovesd/pungitius/soap_denovo/trimmed_reads_quality/*${SPP}*.trim
+
+
+
+
+
+#######################################
+##### ALIGN SCAFFOLDS WITH MALTIZ #####
+#######################################
+#copy over the current best assemblies
+cp /corral-repl/utexas/Recombining-sex-chro/pungitius/denovo_assemblies/* .
+
+#reduce them to scaffolds > 500 bp
+
+
+
+
+
+
+
+
+
+
+
+

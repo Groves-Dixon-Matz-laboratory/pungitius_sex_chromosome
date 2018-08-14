@@ -1,6 +1,7 @@
 #y_consistent_trees.R
 #examine phylogenetic results looking gene trees consistent with sex chromosomes
-
+library(ggplot2)
+library(cowplot)
 setwd("~/gitreps/pungitius_sex_chromosome/gene_trees/pre_Y_inference/")
 source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")
 
