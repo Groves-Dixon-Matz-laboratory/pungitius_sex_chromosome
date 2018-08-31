@@ -1,0 +1,165 @@
+#########################################################
+######### GET SEQUENCES FULL GENOME FOR DNDS ############
+#########################################################
+#copy over the phased filt4 vcfs and haploidize them
+cp /corral-repl/utexas/Recombining-sex-chro/pungitius/vcfs/filt4_phased/chr*sin*PHASED.vcf.gz .
+for file in *.gz; do echo "gunzip $file &";done
+for file in *PHASED.vcf; do echo "haploidize_phased_vcf.py -i $file -o ${file/_PHASED.vcf/}_chroms.vcf &";done
+
+
+
+#get concensus vcf for each species
+#note that this script only works for "haploidized" chromosomes
+>getConcensus
+for file in *pun_chroms.vcf; do echo "concensus_forAltRef_vcf.R $file pun ${file/_chroms.vcf/}_concensus0" >> getConcensus;done
+for file in *sin_chroms.vcf; do echo "concensus_forAltRef_vcf.R $file sin ${file/_chroms.vcf/}_concensus0" >> getConcensus;done
+for file in *tym_chroms.vcf; do echo "concensus_forAltRef_vcf.R $file tym ${file/_chroms.vcf/}_concensus0" >> getConcensus;done
+
+
+#ASSEMBLE CONCENSUS CALLS INTO SINGLE VCFS FOR EACH CHROM
+
+#grab chrom names
+grep ">" $stickleGenome | tr -d ">" > chroms.txt
+
+#set up a header
+grep "^##" chrIV_sin_PHASED.vcf > header.txt
+
+#write commands
+>assemble
+while read chr
+do echo "cat header.txt ${chr}_pun_concensus0 > ${chr}_pun_concensus.vcf" >>assemble
+echo "cat header.txt ${chr}_sin_concensus0 > ${chr}_sin_concensus.vcf" >>assemble
+echo "cat header.txt ${chr}_tym_concensus0 > ${chr}_tym_concensus.vcf" >>assemble
+done < chroms.txt
+
+#run
+sh assemble
+
+
+#BUILD ALTERNATIVE REFERENCES
+module load java
+module load gatk
+
+
+#pun
+>buildAltRefs
+for file in *_pun_concensus.vcf
+do CHROM=${file/_pun_concensus.vcf/}
+echo "java -Xmx5g -jar $TACC_GATK_DIR/GenomeAnalysisTK.jar \
+-T FastaAlternateReferenceMaker \
+-R /work/02260/grovesd/lonestar/stickleback_genome/ref_${CHROM}.fasta \
+-o ${file/_pun_concensus.vcf/}_pun_altRef.fasta \
+-V $file" >>buildAltRefs
+done
+
+#sin
+for file in *_sin_concensus.vcf
+do CHROM=${file/_sin_concensus.vcf/}
+echo "java -Xmx5g -jar $TACC_GATK_DIR/GenomeAnalysisTK.jar \
+-T FastaAlternateReferenceMaker \
+-R /work/02260/grovesd/lonestar/stickleback_genome/ref_${CHROM}.fasta \
+-o ${file/_sin_concensus.vcf/}_sin_altRef.fasta \
+-V $file" >>buildAltRefs
+done
+
+#tym
+for file in *_tym_concensus.vcf
+do CHROM=${file/_tym_concensus.vcf/}
+echo "java -Xmx5g -jar $TACC_GATK_DIR/GenomeAnalysisTK.jar \
+-T FastaAlternateReferenceMaker \
+-R /work/02260/grovesd/lonestar/stickleback_genome/ref_${CHROM}.fasta \
+-o ${file/_tym_concensus.vcf/}_tym_altRef.fasta \
+-V $file" >>buildAltRefs
+done
+
+
+#next slice out the coding sequences and translate them for singlular use
+grep ">" $stickleGenome | tr -d ">" > chroms.txt
+
+>doCodingSlice
+while read chr
+do for file in ${chr}_*.fasta
+do echo "slice_coding_from_gtf.py -gff myThreespineStickleback.2016.gtf -fa $file -chr ${chr} -odir ${file/.fasta/}_prot_fastas > ${file}_codingSlice.log" >> doCodingSlice
+done
+done < chroms.txt
+
+
+#also slice the references
+>sliceRef
+while read chr
+do echo "slice_coding_from_gtf.py -gff myThreespineStickleback.2016.gtf -fa ref_${chr}.fasta -chr ${chr} -odir ref_${chr}_prot_fastas > ${file}_codingSlice.log" >>sliceRef
+done < chroms.txt
+
+
+
+#ASSEMBLE THE SEQUENCES FROM EACH SPECIES INTO SINGLE FASTAS
+
+#set up species list
+echo "pun
+sin
+tym" > speciesList.txt
+
+#get list of the files
+mkdir all_fas
+while read chr
+do ls ref_${chr}_prot_fastas/*.fasta | awk '{split($1, a, "/"); print a[2]}' > ${chr}_fasList.txt
+cp ref_${chr}_prot_fastas/*.fasta all_fas
+done < chroms.txt
+
+
+
+#append the individual fastas together
+>catUp
+for listFile in *fasList.txt
+do chr=${listFile/_fasList.txt/}
+while read file
+do while read spp
+do echo "echo '' >> all_fas/${file} && cat ${chr}_${spp}_prot_fastas/${file} >> all_fas/${file}" >>catUp
+done < speciesList.txt
+done < $listFile
+done
+
+
+
+
+#pal2nal them to double-check everything is clean and put them in right format for paml
+>reverseTrans; for aln in *PRO.fasta; do echo "pal2nal.pl $aln ${aln/PRO.fasta/}CDS.fasta -output paml -nogap > ${aln/_PRO.fasta/}.codon" >> reverseTrans; done
+
+
+#unfortunately now have to remove roman numeral garbage
+mkdir fixed
+> fixRoman
+for file in *.codon
+do echo "cat $file | sed 's/chr[XVI]*_//' | sed 's/_chr[XVI]*//' | sed 's/_altRe//' > fixed/${file}" >> fixRoman
+done
+
+
+
+############################################
+################# RUN PAML #################
+############################################
+
+echo "ref
+pun
+sin
+tym" > speciesList.txt
+
+
+
+##BUILD A PAML CONTROL FILE FOR EACH GENE
+TREE=tree.txt
+>buildControls;for file in *.codon; do echo "build_paml_control.py -i $file -t $TREE -spp speciesList.txt -runMode -2" >> buildControls; done
+launcher_creator.py -n buildControls -j buildControls -w 24 -N 1 -t 0:15:00 -q normal -a $allok
+sbatch buildControls.slurm
+
+#RUN CODEML
+>runCodeml; for file in *.cnt; do echo "codeml $file" >> runCodeml; done
+launcher_creator.py -n runCodeml -j runCodeml -w 24 -q normal -t 00:10:00 -a $allok -q normal -N 1
+sbatch runCodeml.slurm
+
+##NOW PARSE THE CODEML OUTPUTS
+parse_codeml_pairwise_ref_extracts.py -s speciesList.txt -i *.codeml
+
+
+#THEN SEND TO MAC AND ANALYZE WITH compare_pairwise_dnds.R
+

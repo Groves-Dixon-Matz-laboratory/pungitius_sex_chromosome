@@ -38,14 +38,14 @@ sbatch runBeagle.slurm
 #consistently placed in exclusively male monophyletic groups.
 
 #window widths and slide sizes (in number of SNPs, not bps) were chosen arbitrarily as:
-width:	slide:
-2000	500
-1000	250
-500		100
-100		25
+width:	slide: nTrees:
+2000	500		1786
+1000	250		3576
+500		100		8944
+100		25		35790
 
 #set up sliding window commands
-sliding_window_tree_launcher.py -i chrXII_pun_filt3_chroms.vcf -wSNP 500 -s 500 -rTrees True
+sliding_window_tree_launcher.py -i chrXII_pun_chroms.vcf -wSNP 100 -s 25 -rTrees True
 
 #Repeated the above for several different window and slide sizes:
 

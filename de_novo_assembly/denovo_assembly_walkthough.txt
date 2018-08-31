@@ -168,6 +168,18 @@ launcher_creator.py -n soap_$SPP -j soap_$SPP -q largemem512GB -t 24:00:00 -a $a
 sbatch soap_$SPP.slurm
 
 
+
+
+#remove short contigs with fasta_length_cutoff.py
+
+
+
+
+#--------- below are additional steps that were not used in publication but are kept for reference ---------#
+
+
+
+
 #################################################
 ######## MAPPING READS BACK TO SCAFFOLDS ########
 #################################################
@@ -298,34 +310,6 @@ bamList=$(cat bams | tr '\n' ' ')
 echo "bedtools multicov -bams bams.txt -bed malePunScaffoldsV1_1000cut.bed > scaffold_counts.tsv" > multicov
 launcher_creator.py -n multicov -j multicov -q normal -t 10:00:00 -a $allok -e $email
 sbatch multicov.slurm
-
-
-
-
-
-
-#####################
-##### REDUNDANS #####
-#####################
-/work/02260/grovesd/lonestar/redundans/redundans.py -v -i /scratch/02260/grovesd/pungitius/soap_denovo/trimmed_reads_quality/*${SPP}*.trim
-
-
-
-
-
-#######################################
-##### ALIGN SCAFFOLDS WITH MALTIZ #####
-#######################################
-#copy over the current best assemblies
-cp /corral-repl/utexas/Recombining-sex-chro/pungitius/denovo_assemblies/* .
-
-#reduce them to scaffolds > 500 bp
-
-
-
-
-
-
 
 
 

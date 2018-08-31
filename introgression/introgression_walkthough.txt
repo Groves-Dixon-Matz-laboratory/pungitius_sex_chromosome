@@ -32,6 +32,9 @@ genusPun_chr12_SDR.recode.vcf_pca
 ###############################################
 ################## ADMIXTURE ##################
 ###############################################
+
+#----- ORIGINAL SET OF INSTRUCTIONS FOR JUST CHR1 AND CHR12 SUBSETS -----#
+
 #get admixture and plink2 if needed
 cdw
 wget https://www.genetics.ucla.edu/software/admixture/binaries/admixture_linux-1.3.0.tar.gz --no-check-certificate
@@ -40,9 +43,6 @@ wget http://s3.amazonaws.com/plink2-assets/alpha1/plink2_linux_avx2.zip
 export PLINK2="/work/02260/grovesd/lonestar/plink2"
 export ADMIXTURE="/work/02260/grovesd/lonestar/admixture_linux-1.3.0/admixture"
 
-#replace the chromosome notations
-VCF=chrI_genusPungitiusPlusYoshidaPO.recode.vcf
-sed -i.bak 's/chrI/1/' $VCF
 
 #remove PO and make PAR and SDR versions
 VCF=genusPun_chr12_Ylab_chroms.vcf
@@ -51,16 +51,43 @@ vcftools --vcf $VCF --remove po_samples.txt --maf 0.01 --chr 12 --from-bp 400000
 vcftools --vcf $VCF --remove po_samples.txt --maf 0.01 --chr 12 --from-bp 0 --to-bp 2000000 --recode --out ${VCF/.vcf/}_PAR
 
 
+#replace the chromosome notations
+
+
 #get bed from VCF
-$PLINK2 --vcf ${VCF/.vcf/}_FULL.recode.vcf --make-bed --out ${VCF/.vcf/}_FULL
-$PLINK2 --vcf ${VCF/.vcf/}_SDR.recode.vcf --make-bed --out ${VCF/.vcf/}_SDR
-$PLINK2 --vcf ${VCF/.vcf/}_PAR.recode.vcf --make-bed --out ${VCF/.vcf/}_PAR
+>runPlink
+for VCF in *recode.vcf
+do echo "$PLINK2 --vcf ${VCF/.vcf/}_FULL.recode.vcf --make-bed --out ${VCF/.vcf/}_FULL &" >> runPlink
+echo "$PLINK2 --vcf ${VCF/.vcf/}_SDR.recode.vcf --make-bed --out ${VCF/.vcf/}_SDR" >> runPlink
+echo "$PLINK2 --vcf ${VCF/.vcf/}_PAR.recode.vcf --make-bed --out ${VCF/.vcf/}_PAR" >> runPlink
+done
 
 #run admixture
 $ADMIXTURE ${VCF/.vcf/}_FULL.bed 3
 $ADMIXTURE ${VCF/.vcf/}_SDR.bed 3
 $ADMIXTURE ${VCF/.vcf/}_PAR.bed 3
 
+
+#----- INSTRUCTIONS FOR ALL CHROMOSOMES WITH THINNING -----#
+#thin the VCFs to handle nonlinkage assumption
+for file in *.vcf
+do echo "vcftools --vcf $file --thin 10000 --recode --out ${file/.recode.vcf/}_10K_thinned &"
+done
+
+
+#make the bed files
+>runPlink
+for VCF in *recode.vcf
+do echo "$PLINK2 --vcf ${VCF} --make-bed --out ${VCF/.recode.vcf/}" >> runPlink
+done
+
+
+#for all chroms
+K=3
+>runAddMix
+for file in *.bed
+do echo "$ADMIXTURE $file $K" >>runAddMix
+done
 
 
 

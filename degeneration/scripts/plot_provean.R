@@ -83,6 +83,7 @@ barplot(sums)
 barplot(private.ratios)
 chisq.test(private.tbl)
 chisq.test(private.tbl[,c('x','y')])
+chisq.test(private.tbl[,c('sin','y')])
 
 #save data for full figure plotting
 save(d, psub, ratios, private.ratios, tbl, private.tbl, file="~/gitreps/pungitius_sex_chromosome/figure_plotting/provean.Rdata")

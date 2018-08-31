@@ -1,0 +1,855 @@
+#set up data to plot in order#
+spp=ad$species#
+spp[spp=="Y"]<-"punY"#
+spp[spp=="X"]<-"punX"#
+ad$species=spp#
+ad$species = factor(ad$species, levels=c("tym", "sin", "punY", "punX"), ordered=T)#
+levels(ad$species)
+#set up data for line segments at medians#
+meds = data.frame(tapply(ad$dNdS, INDEX=ad$species, function(x) median(x, na.rm=T)))#
+colnames(meds) = c('y')#
+meds$x1 = 1:4 - 0.2#
+meds$x2 = 1:4 + 0.2#
+all.dnds.violin = ggplot(data=ad) + #
+	geom_violin(aes(x=sppNum, y=dNdS, fill=sppNum, col=sppNum), na.rm=T) +#
+	# geom_point(data=pmeds, aes(x=x, y=y), pch="-", size=10) +#
+	geom_segment(data=meds, aes(x=x1, y=y, xend=x2, yend=y), lwd=1.5) +#
+	scale_color_manual(values=c(sin.col, tym.col, female.col, male.col)) +#
+	scale_fill_manual(values=c(sin.col, tym.col, female.col, male.col)) +#
+	scale_x_discrete(breaks=1:4, labels=names(num)) +#
+	lims(y=c(-.1, 0.5)) +#
+	labs(y='dN/dS', x='', subtitle='All variants') +#
+	theme(legend.position="none",axis.text.x = element_text(angle= xlabAngle))#
+print(all.dnds.violin)
+#set up data for line segments at medians#
+meds = data.frame(tapply(ad$dNdS, INDEX=ad$species, function(x) median(x, na.rm=T)))#
+colnames(meds) = c('y')#
+meds$x1 = 1:4 - 0.2#
+meds$x2 = 1:4 + 0.2#
+all.dnds.violin = ggplot(data=ad) + #
+	geom_violin(aes(x=species, y=dNdS, fill=sppNum, col=sppNum), na.rm=T) +#
+	# geom_point(data=pmeds, aes(x=x, y=y), pch="-", size=10) +#
+	geom_segment(data=meds, aes(x=x1, y=y, xend=x2, yend=y), lwd=1.5) +#
+	scale_color_manual(values=c(sin.col, tym.col, female.col, male.col)) +#
+	scale_fill_manual(values=c(sin.col, tym.col, female.col, male.col)) +#
+	scale_x_discrete(breaks=1:4, labels=names(num)) +#
+	lims(y=c(-.1, 0.5)) +#
+	labs(y='dN/dS', x='', subtitle='All variants') +#
+	theme(legend.position="none",axis.text.x = element_text(angle= xlabAngle))#
+print(all.dnds.violin)
+all.dnds.violin = ggplot(data=ad) + #
+	geom_violin(aes(x=species, y=dNdS, fill=sppNum, col=sppNum), na.rm=T) +#
+	# geom_point(data=pmeds, aes(x=x, y=y), pch="-", size=10) +#
+	geom_segment(data=meds, aes(x=x1, y=y, xend=x2, yend=y), lwd=1.5) +#
+	scale_color_manual(values=c(sin.col, tym.col, female.col, male.col)) +#
+	scale_fill_manual(values=c(sin.col, tym.col, female.col, male.col)) +#
+	# scale_x_discrete(breaks=1:4, labels=names(num)) +#
+	lims(y=c(-.1, 0.5)) +#
+	labs(y='dN/dS', x='', subtitle='All variants') +#
+	theme(legend.position="none",axis.text.x = element_text(angle= xlabAngle))#
+print(all.dnds.violin)
+all.dnds.violin = ggplot(data=ad) + #
+	geom_violin(aes(x=species, y=dNdS, fill=species, col=species), na.rm=T) +#
+	# geom_point(data=pmeds, aes(x=x, y=y), pch="-", size=10) +#
+	geom_segment(data=meds, aes(x=x1, y=y, xend=x2, yend=y), lwd=1.5) +#
+	scale_color_manual(values=c(sin.col, tym.col, female.col, male.col)) +#
+	scale_fill_manual(values=c(sin.col, tym.col, female.col, male.col)) +#
+	# scale_x_discrete(breaks=1:4, labels=names(num)) +#
+	lims(y=c(-.1, 0.5)) +#
+	labs(y='dN/dS', x='', subtitle='All variants') +#
+	theme(legend.position="none",axis.text.x = element_text(angle= xlabAngle))#
+print(all.dnds.violin)
+#standard boxplot to doublecheck the figure#
+quartz()#
+boxplot(ad$dNdS~ad$species, outline=F)
+all.dS.violin = ggplot(data=ad) + #
+	geom_violin(aes(x=species, y=dS, fill=species, col=species), na.rm=T) +#
+	# geom_point(data=pmeds, aes(x=x, y=y), pch="-", size=10) +#
+	geom_segment(data=meds, aes(x=x1, y=y, xend=x2, yend=y), lwd=1.5) +#
+	scale_color_manual(values=c(sin.col, tym.col, female.col, male.col)) +#
+	scale_fill_manual(values=c(sin.col, tym.col, female.col, male.col)) +#
+	lims(y=c(-.1, 0.5)) +#
+	labs(y='dS', x='', subtitle='All variants') +#
+	theme(legend.position="none",axis.text.x = element_text(angle= xlabAngle))#
+print(all.dS.violin)
+all.dS.violin = ggplot(data=ad) + #
+	geom_violin(aes(x=species, y=dS, fill=species, col=species), na.rm=T) +#
+	# geom_point(data=pmeds, aes(x=x, y=y), pch="-", size=10) +#
+	geom_segment(data=meds, aes(x=x1, y=y, xend=x2, yend=y), lwd=1.5) +#
+	scale_color_manual(values=c(sin.col, tym.col, female.col, male.col)) +#
+	scale_fill_manual(values=c(sin.col, tym.col, female.col, male.col)) +#
+	lims(y=c(-.1, 0.5)) +#
+	labs(y='pairwise dS against G. aculeatus', x='', subtitle='All variants') +#
+	theme(legend.position="none",axis.text.x = element_text(angle= xlabAngle))#
+print(all.dS.violin)
+boxplot(ad$dS~ad$species, outline=F)
+#PRIVATE VARIANTS VIOLIN PLOT#
+pd$sppNum = pd$species#
+pd$sppNum[pd$species=='tym']<-1#
+pd$sppNum[pd$species=='sin']<-2#
+pd$sppNum[pd$species=='Y']<-3#
+pd$sppNum[pd$species=='X']<-4#
+#
+pmeds = data.frame(tapply(pd$dNdS, INDEX=pd$sppNum, function(x) median(x, na.rm=T)))#
+colnames(pmeds) = c('y')#
+pmeds$sppNum = rownames(pmeds)#
+pmeds$spp = spp#
+pmeds$x1 = 1:4 - 0.2#
+pmeds$x2 = 1:4 + 0.2#
+pmeds#
+#
+private.dnds.violin = ggplot(data=pd) + #
+	geom_violin(aes(x=sppNum, y=dNdS, fill=sppNum, col=sppNum), na.rm=T) +#
+	geom_segment(data=pmeds, aes(x=x1, y=y, xend=x2, yend=y), lwd=1) +#
+	scale_color_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	scale_fill_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	scale_x_discrete(breaks=1:4, labels=names(num)) +#
+	lims(y=c(-.1, 0.5)) +#
+	labs(y='dN/dS', x='', subtitle ='Private variants') +#
+	theme(legend.position="none",axis.text.x = element_text(angle= xlabAngle))#
+print(private.dnds.violin)
+head(pd)
+#set up data to plot species in order#
+spp=pd$species#
+spp[spp=="Y"]<-"punY"#
+spp[spp=="X"]<-"punX"#
+pd$species=spp#
+pd$species = factor(pd$species, levels=c("tym", "sin", "punY", "punX"), ordered=T)#
+levels(pd$species)
+#set up medians#
+pmeds = data.frame(tapply(pd$dNdS, INDEX=pd$sppNum, function(x) median(x, na.rm=T)))#
+colnames(pmeds) = c('y')#
+pmeds$sppNum = rownames(pmeds)#
+pmeds$spp = spp#
+pmeds$x1 = 1:4 - 0.2#
+pmeds$x2 = 1:4 + 0.2#
+pmeds
+spp=pd$species
+spp[spp=="Y"]<-"punY"#
+spp[spp=="X"]<-"punX"#
+pd$species=spp
+pd$species = factor(pd$species, levels=c("tym", "sin", "punY", "punX"), ordered=T)
+levels(pd$species)
+pmeds = data.frame(tapply(pd$dNdS, INDEX=pd$species, function(x) median(x, na.rm=T)))
+colnames(pmeds) = c('y')
+pmeds$species = rownames(pmeds)
+pmeds
+pmeds$sppNum = rownames(pmeds)
+pmeds$x1 = 1:4 - 0.2#
+pmeds$x2 = 1:4 + 0.2#
+pmeds
+private.dnds.violin = ggplot(data=pd) + #
+	geom_violin(aes(x=species, y=dNdS, fill=species, col=species), na.rm=T) +#
+	geom_segment(data=pmeds, aes(x=x1, y=y, xend=x2, yend=y), lwd=1) +#
+	scale_color_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	scale_fill_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	scale_x_discrete(breaks=1:4, labels=names(num)) +#
+	lims(y=c(-.1, 0.5)) +#
+	labs(y='dN/dS', x='', subtitle ='Private variants') +#
+	theme(legend.position="none",axis.text.x = element_text(angle= xlabAngle))#
+print(private.dnds.violin)
+private.dnds.violin = ggplot(data=pd) + #
+	geom_violin(aes(x=species, y=dNdS, fill=species, col=species), na.rm=T) +#
+	geom_segment(data=pmeds, aes(x=x1, y=y, xend=x2, yend=y), lwd=1) +#
+	scale_color_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	scale_fill_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	# scale_x_discrete(breaks=1:4, labels=names(num)) +#
+	lims(y=c(-.1, 0.5)) +#
+	labs(y='dN/dS', x='', subtitle ='Private variants') +#
+	theme(legend.position="none",axis.text.x = element_text(angle= xlabAngle))#
+print(private.dnds.violin)
+boxplot(pd$dNdS~pd$species, outline=F, ylim=c(-.1, 0.5))
+#set up medians#
+pmeds = data.frame(tapply(pd$dS, INDEX=pd$species, function(x) median(x, na.rm=T)))#
+colnames(pmeds) = c('y')#
+pmeds$spp = rownames(pmeds)#
+pmeds$x1 = 1:4 - 0.2#
+pmeds$x2 = 1:4 + 0.2#
+pmeds
+private.dS.violin = ggplot(data=pd) + #
+	geom_violin(aes(x=species, y=dS, fill=species, col=species), na.rm=T) +#
+	geom_segment(data=pmeds, aes(x=x1, y=y, xend=x2, yend=y), lwd=1) +#
+	scale_color_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	scale_fill_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	# scale_x_discrete(breaks=1:4, labels=names(num)) +#
+	lims(y=c(-.1, 0.5)) +#
+	labs(y='pairwise dS vs G. aculeatus', x='', subtitle ='Private variants') +#
+	theme(legend.position="none",axis.text.x = element_text(angle= xlabAngle))#
+print(private.dS.violin)
+private.dS.violin = ggplot(data=pd) + #
+	geom_violin(aes(x=species, y=dS, fill=species, col=species), na.rm=T) +#
+	geom_segment(data=pmeds, aes(x=x1, y=y, xend=x2, yend=y), lwd=1) +#
+	scale_color_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	scale_fill_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	# scale_x_discrete(breaks=1:4, labels=names(num)) +#
+	lims(y=c(-.1, 0.2)) +#
+	labs(y='pairwise dS vs G. aculeatus', x='', subtitle ='Private variants') +#
+	theme(legend.position="none",axis.text.x = element_text(angle= xlabAngle))#
+print(private.dS.violin)
+private.dS.violin = ggplot(data=pd) + #
+	geom_violin(aes(x=species, y=dS, fill=species, col=species), na.rm=T) +#
+	geom_segment(data=pmeds, aes(x=x1, y=y, xend=x2, yend=y), lwd=1) +#
+	scale_color_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	scale_fill_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	# scale_x_discrete(breaks=1:4, labels=names(num)) +#
+	lims(y=c(-.02, 0.2)) +#
+	labs(y='pairwise dS vs G. aculeatus', x='', subtitle ='Private variants') +#
+	theme(legend.position="none",axis.text.x = element_text(angle= xlabAngle))#
+print(private.dS.violin)
+private.dS.violin = ggplot(data=pd) + #
+	geom_violin(aes(x=species, y=dS, fill=species, col=species), na.rm=T) +#
+	geom_segment(data=pmeds, aes(x=x1, y=y, xend=x2, yend=y), lwd=1) +#
+	scale_color_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	scale_fill_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	# scale_x_discrete(breaks=1:4, labels=names(num)) +#
+	lims(y=c(-.02, 0.1)) +#
+	labs(y='pairwise dS vs G. aculeatus', x='', subtitle ='Private variants') +#
+	theme(legend.position="none",axis.text.x = element_text(angle= xlabAngle))#
+print(private.dS.violin)
+private.dS.violin = ggplot(data=pd) + #
+	geom_violin(aes(x=species, y=dS, fill=species, col=species), na.rm=T) +#
+	geom_segment(data=pmeds, aes(x=x1, y=y, xend=x2, yend=y), lwd=1) +#
+	scale_color_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	scale_fill_manual(values=c(tym.col, sin.col, male.col, female.col)) +#
+	# scale_x_discrete(breaks=1:4, labels=names(num)) +#
+	lims(y=c(-.01, 0.1)) +#
+	labs(y='pairwise dS vs G. aculeatus', x='', subtitle ='Private variants') +#
+	theme(legend.position="none",axis.text.x = element_text(angle= xlabAngle))#
+print(private.dS.violin)
+ll
+head(sind)
+spp=sind$species
+setwd("~/gitreps/pungitius_sex_chromosome/data_processing_stats")
+d=read.csv("depth_data.csv")#
+head(d)
+d=d[,!grepl("X", colnames(d))]
+head(d)
+#get estimate for genome length#
+cl = read.table("chromLengths.txt")#
+colnames(cl) = c('chr', 'len')#
+totl = sum(cl$len)
+totl
+d$cov = (d$raw * readLen * pe) / totl
+totl = sum(cl$len)#
+#get fold coverage#
+readLen = 150#
+pe = 2#
+d$cov = (d$raw * readLen * pe) / totl
+mean(d$cov)
+d$spp = substr(d$sample.1, start=1, stop=1)
+head(d)
+sppMeans = tapply(d$cov, INDEX=d$spp)
+sppMeans
+sppMeans = tapply(d$cov, INDEX=d$spp, mean)
+sppMeans
+chromList
+load("/Users/grovesdixon/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")
+chromList
+chroms
+ll=load("/Users/grovesdixon/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")
+ll
+cdat
+write.table(cdat, file="~/junk/chroms.txt", sep="\t", quote=F, row.names=F)
+#-------- PROVEAN RESULTS --------##
+ll=load("provean.Rdata")#
+#d = the provean scores#
+#psub = the provean scores for mutations private to each species/chromosomes#
+#ratios = the ratio of bad to ok mutations (bad <= -2.5 score)#
+#private.ratios = same but for private mutations#
+#tbl = the table of bad and ok mutations to use for chi square test#
+#private.tbl = same but for private mutations#
+colnames(d)[7]='species'#
+colnames(psub)[7]='species'#
+d$score = d$score*-1#
+psub$score = psub$score*-1#
+head(d)#
+head(psub)
+rm(list=ls())
+#plot_pcas.R#
+#This script plots PCA results generated with basic_snp_pca.R#
+#
+library(ggplot2)#
+library(cowplot)#
+library(scales)#
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/pca_results/weird_sin")
+rm(list=ls())
+#plot_pcas.R#
+#This script plots PCA results generated with basic_snp_pca.R#
+#
+library(ggplot2)#
+library(cowplot)#
+library(scales)#
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/pca_results/weird_sin")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")
+#This script plots PCA results generated with basic_snp_pca.R#
+#
+library(ggplot2)#
+library(cowplot)#
+library(scales)#
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/pca_results/weird_sin")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+###########################
+########## PCAs ###########
+###########################
+TEXTLABS=F#
+#PCA FOR MALES full chr12#
+ll=load("sample.vcf_pca.Rdata")
+ll
+head(pca)
+pcad = pca$scores
+head(pcad)
+pcad = data.frame(pca$scores)
+pcad$sample = rownames(pcad)
+g = ggplot(data=pcad) + geom_point(aes(x=PC1, y=PC2, color=sample))#
+plot(g)
+pcad$sample = substr(rownames(pcad), start=1, stop=3)
+pcad$species = substr(rownames(pcad), start=1, stop=3)
+g = ggplot(data=pcad) + geom_point(aes(x=PC1, y=PC2, color=species))
+plot(g)
+pcad$sample = rownames(pcad)
+pcad$species[pcad$sample=="Sin8"]<-'sin8'
+g = ggplot(data=pcad) + geom_point(aes(x=PC1, y=PC2, color=species))#
+plot(g)
+pcad$species[pcad$sample=="Sin2"]<-'sin2'
+g = ggplot(data=pcad) + geom_point(aes(x=PC1, y=PC2, color=species))#
+plot(g)
+#########################
+TEXTLABS=F#
+#PCA FOR MALES full chr12#
+ll=load("sample.vcf_pca.Rdata")#
+pcad = data.frame(pca$scores)#
+pcad$sample = rownames(pcad)#
+pcad$species = substr(rownames(pcad), start=1, stop=3)#
+head(pcad)#
+pcad$species[pcad$sample=="Sin8"]<-'sin8'#
+pcad$species[pcad$sample=="Sin20"]<-'sin20'#
+g = ggplot(data=pcad) + geom_point(aes(x=PC1, y=PC2, color=species))#
+plot(g)
+g = ggplot(data=pcad) + geom_point(aes(x=PC1, y=PC2, color=species, shape=species))#
+plot(g)
+setwd("~/gitreps/pungitius_sex_chromosome/full_genome_dS")
+gdat = read.table("gene_locations.txt")
+head(gdat)
+gdat = read.table("gene_locations.txt", header = T)
+head(gdat)
+ddat = read.table("ref_pairwise_dNdS.tsv")
+head(ddat)
+ddat = read.table("ref_pairwise_dNdS.tsv", header=True)
+ddat = read.table("ref_pairwise_dNdS.tsv", header=T)
+head(ddat)
+library(ggplot2)#
+library(cowplot)#
+library(scales)
+boxplot(ddat$dS~ddat$species)
+boxplot(ddat$dS~ddat$species, outline=F)
+boxplot(ddat$dS~ddat$species, outline=F, ylab = "pairwise dS vs G. aculeatus")
+mns = tapply(ddat$dS, INDEX=ddat$species)
+mns
+mns = tapply(ddat$dS, INDEX=ddat$species, mean)
+mns
+mns = tapply(ddat$dS, INDEX=ddat$species, function(x) mean(x, na.omit=T))
+mns
+mns = tapply(ddat$dS, INDEX=ddat$species, function(x) mean(x, na.rm=T))
+mns
+head(gdat)
+head(ddat)
+head(gdat)
+ddat$geneId = sapply(ddat$gene, function(x) strsplit(x, "_")[[1]][1])
+x="ENSGACG00000001417_ENSGACT00000007265"
+strsplit(x, "_")[[1]][1]
+ddat$geneId = sapply(ddat$gene, function(x) return(strsplit(x, "_")[[1]][1]))
+ddat$geneId = sapply(as.character(ddat$gene), function(x) return(strsplit(x, "_")[[1]][1]))
+head(ddat)
+c12 = gdat[gdat$chr=='chrXII', 'geneId']
+head(c12)
+c12 = as.character(gdat[gdat$chr=='chrXII', 'geneId'])
+head(c12)
+dim(ddat)
+ddat=ddat[!ddat$geneId %in% c12,]
+head(ddat)
+dim(ddat)
+length(unique(ddat$geneId))
+#upload pairwise dNdS vs 3spine#
+ddat = read.table("sin_pairwise_dNdS.tsv", header=T)#
+head(ddat)
+boxplot(ddat$dS~ddat$species, outline=F, ylab = "pairwise dS vs G. aculeatus")
+ddat=ddat[ddat$species!='ref',]
+boxplot(ddat$dS~ddat$species, outline=F, ylab = "pairwise dS vs G. aculeatus")
+ddat = read.table("sin_pairwise_dNdS.tsv", header=T, stringsAsFactors=F)
+ddat=ddat[ddat$species!='ref',]#
+head(ddat)#
+#
+boxplot(ddat$dS~ddat$species, outline=F, ylab = "pairwise dS vs G. aculeatus")
+mns = tapply(ddat$dS, INDEX=ddat$species, function(x) mean(x, na.rm=T))#
+mns
+#upload pairwise dNdS vs 3spine#
+ddat = read.table("ref_pairwise_dNdS.tsv", header=T)#
+ddat$geneId = sapply(as.character(ddat$gene), function(x) return(strsplit(x, "_")[[1]][1]))#
+dim(ddat)#
+ddat=ddat[!ddat$geneId %in% c12,]#
+head(ddat)#
+dim(ddat)#
+#
+boxplot(ddat$dS~ddat$species, outline=F, ylab = "pairwise dS vs G. aculeatus")#
+mns = tapply(ddat$dS, INDEX=ddat$species, function(x) mean(x, na.rm=T))#
+mns
+#upload pairwise dNdS vs 3spine#
+ddat = read.table("sin_pairwise_dNdS.tsv", header=T, stringsAsFactors=F)#
+ddat=ddat[ddat$species!='ref',]#
+head(ddat)#
+#
+boxplot(ddat$dS~ddat$species, outline=F, ylab = "pairwise dS vs P. sinensis")#
+mns = tapply(ddat$dS, INDEX=ddat$species, function(x) mean(x, na.rm=T))
+setwd("~/gitreps/pungitius_sex_chromosome/full_genome_admixture/k3")
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")
+names = read.table("names.txt")
+names = read.table("names.txt")
+auto.in = format_admixture(tbl.auto, names, sex)
+length(names)
+nrow(names)
+head(names)
+names = read.table("names.txt")$V1
+head(names)
+length(names)
+tbl.auto$name = names
+###########################
+#upload data#
+tbl.auto=read.table("chrXIII.3.Q")#
+#
+#format#
+colnames(tbl.auto) = c('tym', 'pun', 'sin') #(set these based on the labeled plot below)#
+tbl.auto=tbl.auto[,c('pun', 'sin', 'tym')]#
+names = read.table("names.txt")$V1#
+head(names)#
+length(names)#
+tbl.auto$name = names
+head(tbl.auto)
+tbl.auto$spp = substr(tbl.auto$name, start=1, stop=3)
+head(tbl.auto)
+boxplot(tbl.auto$pun~tbl.auto$spp)
+nopun = tbl.auto[tbl.auto$spp !='pun',]
+boxplot(nopun$pun~ nopun$spp)
+#look at sharing#
+nopun = tbl.auto[tbl.auto$spp !='pun',]#
+boxplot(nopun$pun~ nopun$spp)
+nopun
+nopun = tbl.auto[tbl.auto$spp !='Pun',]
+boxplot(nopun$pun~nopun$spp)
+#----------------- K2 -----------------##
+#
+setwd("~/gitreps/pungitius_sex_chromosome/full_genome_admixture/k2")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#upload data#
+tbl.auto=read.table("chrXIII.3.Q")
+setwd("~/gitreps/pungitius_sex_chromosome/full_genome_admixture/k2")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#upload data#
+tbl.auto=read.table("chrXIII.2.Q")
+tbl.auto
+tbl.auto$name = names#
+tbl.auto$spp = substr(tbl.auto$name, start=1, stop=3)
+head(tbl.auto)
+boxplot(tbl.auto$V1~tbl.auto$spp)
+boxplot(tbl.auto$V2~tbl.auto$spp)
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")
+ll
+head(chromlist)
+c=chromlist[1]
+infile = paste(c, "3.Q", sep=".")
+infile
+tbl.auto = read.table(infile)
+setwd("~/gitreps/pungitius_sex_chromosome/full_genome_admixture/k3")
+tbl.auto = read.table(infile)
+#upload data#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+head(chromlist)#
+c=chromlist[1]#
+infile = paste(c, "3.Q", sep=".")#
+tbl.auto = read.table(infile)#
+tbl.auto$chr = c#
+for (c in chromlist[2:length(chromlist)]){#
+	infile = paste(c, "3.Q", sep=".")#
+	to.add = read.table(infile)#
+	to.add$chr = c#
+	tbl.auto = rbind(tbl.auto, to.add)#
+}
+#format#
+colnames(tbl.auto) = c('tym', 'pun', 'sin') #(set these based on the labeled plot below)#
+tbl.auto=tbl.auto[,c('pun', 'sin', 'tym')]#
+names = read.table("names.txt")$V1#
+head(names)#
+length(names)#
+tbl.auto$name = names#
+tbl.auto$spp = substr(tbl.auto$name, start=1, stop=3)#
+head(tbl.auto)
+#upload data#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+head(chromlist)#
+c=chromlist[1]#
+infile = paste(c, "3.Q", sep=".")#
+tbl.auto = read.table(infile)#
+tbl.auto$chr = c
+head(tbl.auto)
+for (c in chromlist[2:length(chromlist)]){#
+	infile = paste(c, "3.Q", sep=".")#
+	to.add = read.table(infile)#
+	to.add$chr = c#
+	tbl.auto = rbind(tbl.auto, to.add)#
+}
+head(tbl.auto)
+colnames(tbl.auto) = c('tym', 'pun', 'sin', 'chr') #(set these based on the labeled plot below)
+head(tbl.auto)
+#upload data#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+names = read.table("names.txt")$V1#
+head(chromlist)#
+c=chromlist[1]#
+infile = paste(c, "3.Q", sep=".")#
+tbl.auto = read.table(infile)#
+tbl.auto$chr = c#
+tbl.auto$name = names#
+for (c in chromlist[2:length(chromlist)]){#
+	infile = paste(c, "3.Q", sep=".")#
+	to.add = read.table(infile)#
+	to.add$chr = c#
+	tbl.auto$name=names#
+	tbl.auto = rbind(tbl.auto, to.add)#
+}#
+#format#
+colnames(tbl.auto) = c('tym', 'pun', 'sin', 'chr', 'name') #(s
+#upload data#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+names = read.table("names.txt")$V1#
+head(chromlist)#
+c=chromlist[1]#
+infile = paste(c, "3.Q", sep=".")#
+tbl.auto = read.table(infile)#
+tbl.auto$chr = c#
+tbl.auto$name = names
+head(tbl.auto)
+#upload data#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+names = read.table("names.txt")$V1#
+head(chromlist)#
+c=chromlist[1]#
+infile = paste(c, "3.Q", sep=".")#
+tbl.auto = read.table(infile)#
+tbl.auto$chr = c#
+tbl.auto$name = names#
+for (c in chromlist[2:length(chromlist)]){#
+	infile = paste(c, "3.Q", sep=".")#
+	to.add = read.table(infile)#
+	to.add$chr = c#
+	to.add$name=names#
+	tbl.auto = rbind(tbl.auto, to.add)#
+}#
+#format#
+colnames(tbl.auto) = c('tym', 'pun', 'sin', 'chr', 'name') #(set these based on the labeled plot below)#
+head(tbl.auto)
+tbl.auto$spp = substr(tbl.auto$name, start=1, stop=3)
+#look at sharing#
+nopun = tbl.auto[tbl.auto$spp !='Pun',]#
+boxplot(nopun$pun~nopun$spp)
+#----------------- K3 -----------------##
+#
+setwd("~/gitreps/pungitius_sex_chromosome/full_genome_admixture/k2")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#upload data#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+names = read.table("names.txt")$V1#
+head(chromlist)#
+c=chromlist[1]#
+infile = paste(c, "2.Q", sep=".")#
+tbl.auto = read.table(infile)#
+tbl.auto$chr = c#
+tbl.auto$name = names#
+for (c in chromlist[2:length(chromlist)]){#
+	infile = paste(c, "2.Q", sep=".")#
+	to.add = read.table(infile)#
+	to.add$chr = c#
+	to.add$name=names#
+	tbl.auto = rbind(tbl.auto, to.add)#
+}#
+#format#
+colnames(tbl.auto) = c('tym', 'pun', 'sin', 'chr', 'name') #(set these based on the labeled plot below)#
+head(tbl.auto)#
+tbl.auto$spp = substr(tbl.auto$name, start=1, stop=3)#
+head(tbl.auto)
+#look at sharing#
+nopun = tbl.auto[tbl.auto$spp !='Pun',]#
+boxplot(nopun$pun~nopun$spp)
+setwd("~/gitreps/pungitius_sex_chromosome/full_genome_admixture/k2")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#upload data#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+names = read.table("names.txt")$V1#
+head(chromlist)#
+c=chromlist[1]#
+infile = paste(c, "2.Q", sep=".")#
+tbl.auto = read.table(infile)#
+tbl.auto$chr = c#
+tbl.auto$name = names#
+for (c in chromlist[2:length(chromlist)]){#
+	infile = paste(c, "2.Q", sep=".")#
+	to.add = read.table(infile)#
+	to.add$chr = c#
+	to.add$name=names#
+	tbl.auto = rbind(tbl.auto, to.add)#
+}
+head(tbl.auto)
+boxplot(nopun$V1~nopun$spp)
+boxplot(nopun$V2~nopun$spp)
+x=read.table("chrXII.3.Q")
+setwd("~/gitreps/pungitius_sex_chromosome/full_genome_admixture/k3")
+x=read.table("chrXII.3.Q")
+head(x)
+x$name=names
+x$spp=substr(names, start=1, stop=3)
+p=x[x$spp="Pun",]
+p=x[x$spp=="Pun",]
+hist(p$V3)
+#----------------- K3 -----------------##
+#
+setwd("~/gitreps/pungitius_sex_chromosome/full_genome_admixture/k3")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#upload data#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+names = read.table("names.txt")$V1#
+head(chromlist)#
+c=chromlist[1]#
+infile = paste(c, "3.Q", sep=".")#
+tbl.auto = read.table(infile)#
+tbl.auto$chr = c#
+tbl.auto$name = names#
+for (c in chromlist[2:length(chromlist)]){#
+	infile = paste(c, "3.Q", sep=".")#
+	to.add = read.table(infile)#
+	to.add$chr = c#
+	to.add$name=names#
+	tbl.auto = rbind(tbl.auto, to.add)#
+}#
+#format#
+colnames(tbl.auto) = c('tym', 'pun', 'sin', 'chr', 'name') #(set these based on the labeled plot below)#
+head(tbl.auto)#
+tbl.auto$spp = substr(tbl.auto$name, start=1, stop=3)#
+head(tbl.auto)
+#look at sharing#
+nopun = tbl.auto[tbl.auto$spp !='Pun',]#
+boxplot(nopun$V2~nopun$spp)
+boxplot(nopun$pun~nopun$spp)
+nopun = tbl.auto[tbl.auto$spp !='Sin',]
+nosin = tbl.auto[tbl.auto$spp !='Sin',]#
+boxplot(nosin$sin~nopun$spp)
+boxplot(nosin$sin~nopun$spp, outline=F)
+boxplot(nosin$sin~nopun$spp)
+nopun = tbl.auto[tbl.auto$spp !='Pun',]#
+boxplot(nopun$pun~nopun$spp)
+head(nosin)
+nosin[nosin$sin>1e-5,]
+boxplot(nosin$sin~nopun$spp)
+boxplot(nosin$sin~nosin$spp)
+nopun = tbl.auto[tbl.auto$spp !='Pun',]#
+boxplot(nopun$pun~nopun$spp)
+nopun[nopun$pun>1e-5,]
+some = nopun[nopun$pun>1e-5,]
+table(some$spp)
+rm(list=ls())
+#----------------- K3 -----------------##
+#admixture results using K=3 ancestral populations#
+#
+setwd("~/gitreps/pungitius_sex_chromosome/full_genome_admixture/k3")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#upload data#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+names = read.table("names.txt")$V1#
+head(chromlist)#
+c=chromlist[1]#
+infile = paste(c, "3.Q", sep=".")#
+tbl.auto = read.table(infile)#
+tbl.auto$chr = c#
+tbl.auto$name = names#
+for (c in chromlist[2:length(chromlist)]){#
+	infile = paste(c, "3.Q", sep=".")#
+	to.add = read.table(infile)#
+	to.add$chr = c#
+	to.add$name=names#
+	tbl.auto = rbind(tbl.auto, to.add)#
+}
+#format#
+colnames(tbl.auto) = c('tym', 'pun', 'sin', 'chr', 'name') #(set these based on the labeled plot below)#
+head(tbl.auto)#
+tbl.auto$spp = substr(tbl.auto$name, start=1, stop=3)#
+head(tbl.auto)
+#look at sharing#
+nopun = tbl.auto[tbl.auto$spp !='Pun',]#
+boxplot(nopun$pun~nopun$spp)
+some = nopun[nopun$pun>1e-5,]#
+table(some$spp)
+head(tbl.auto)
+nosin = tbl.auto[tbl.auto$spp !='Sin',]#
+boxplot(nosin$sin~nosin$spp)#
+head(nosin)#
+nosin[nosin$sin>1e-5,]
+x=read.table("chrXII.3.Q")#
+head(x)#
+x$name=names#
+x$spp=substr(names, start=1, stop=3)#
+p=x[x$spp=="Pun",]#
+hist(p$V3)
+nosin = tbl.auto[tbl.auto$spp !='Sin',]#
+boxplot(nosin$sin~nosin$spp)#
+head(nosin)#
+nosin[nosin$sin>1e-5,]
+rm(list=ls())
+library(ggplot2)#
+library(cowplot)#
+library(scales)#
+library(reshape)#
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/admixture")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#
+################################
+########## ADMIXTURE ###########
+################################
+#upload data#
+tbl.auto=read.table("chrI_FULL.3.Q")#
+tbl.par=read.table("chrXII_PAR.3.Q")#
+tbl.sdr=read.table("chrXII_SDR.3.Q")#
+#
+#format#
+colnames(tbl.auto) = c('tym', 'pun', 'sin') #(set these based on the labeled plot below)#
+colnames(tbl.par) = c('tym', 'pun', 'sin')#
+colnames(tbl.sdr) = c('tym', 'pun', 'sin')#
+tbl.auto=tbl.auto[,c('pun', 'sin', 'tym')]#
+tbl.par=tbl.par[,c('pun', 'sin', 'tym')]#
+tbl.sdr=tbl.sdr[,c('pun', 'sin', 'tym')]#
+names = read.table("names.txt")#
+sex = read.table("~/gitreps/pungitius_sex_chromosome/metadata/pun_pheno.txt")#
+auto.in = format_admixture(tbl.auto, names, sex)#
+par.in = format_admixture(tbl.par, names, sex)#
+sdr.in = format_admixture(tbl.sdr, names, sex)
+library(ggplot2)#
+library(cowplot)#
+library(scales)#
+library(reshape)#
+setwd("~/gitreps/pungitius_sex_chromosome/introgression/admixture")
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")
+tbl.auto=read.table("chrI_FULL.3.Q")
+tbl.par=read.table("chrXII_PAR.3.Q")
+tbl.sdr=read.table("chrXII_SDR.3.Q")
+colnames(tbl.auto) = c('tym', 'pun', 'sin') #(set these based on the labeled plot below)
+colnames(tbl.par) = c('tym', 'pun', 'sin')#
+colnames(tbl.sdr) = c('tym', 'pun', 'sin')#
+tbl.auto=tbl.auto[,c('pun', 'sin', 'tym')]#
+tbl.par=tbl.par[,c('pun', 'sin', 'tym')]#
+tbl.sdr=tbl.sdr[,c('pun', 'sin', 'tym')]#
+names = read.table("names.txt")
+names = read.table("names.txt")#
+sex = read.table("~/gitreps/pungitius_sex_chromosome/metadata/pun_pheno.txt")#
+auto.in = format_admixture(tbl.auto, names, sex)#
+par.in = format_admixture(tbl.par, names, sex)#
+sdr.in = format_admixture(tbl.sdr, names, sex)
+#build plots#
+plot_admixture(auto.in)#
+plot_admixture(par.in)#
+plot_admixture(sdr.in)#
+legendPosition="top"#
+legendPosition="none"#
+auto = plot_admixture_bars_only(auto.in, legendPosition)#
+par = plot_admixture_bars_only(par.in, legendPosition)#
+sdr = plot_admixture_bars_only(sdr.in, legendPosition)
+#plot panel#
+plot_grid(auto, par,sdr,  ncol=3, label_size=20)
+#upload data#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+names = read.table("names.txt")$V1#
+head(chromlist)#
+c=chromlist[1]#
+infile = paste(c, "3.Q", sep=".")#
+tbl.auto = read.table(infile)#
+tbl.auto$chr = c#
+tbl.auto$name = names#
+for (c in chromlist[2:length(chromlist)]){#
+	infile = paste(c, "3.Q", sep=".")#
+	to.add = read.table(infile)#
+	to.add$chr = c#
+	to.add$name=names#
+	tbl.auto = rbind(tbl.auto, to.add)#
+}#
+#format#
+colnames(tbl.auto) = c('tym', 'pun', 'sin', 'chr', 'name') #(set these based on the labeled plot below)#
+head(tbl.auto)#
+tbl.auto$spp = substr(tbl.auto$name, start=1, stop=3)#
+head(tbl.auto)#
+#
+#look at sharing#
+nopun = tbl.auto[tbl.auto$spp !='Pun',]#
+boxplot(nopun$pun~nopun$spp)#
+#
+#look at the outliers#
+some = nopun[nopun$pun>1e-5,]#
+table(some$spp)
+boxplot(nopun$pun~nopun$spp)
+nosin = tbl.auto[tbl.auto$spp !='Sin',]#
+boxplot(nosin$sin~nosin$spp)#
+head(nosin)#
+nosin[nosin$sin>1e-5,]
+#format#
+colnames(tbl.auto) = c('tym', 'pun', 'sin', 'chr', 'name') #(set these based on the labeled plot below)#
+head(tbl.auto)#
+tbl.auto$spp = substr(tbl.auto$name, start=1, stop=3)#
+head(tbl.auto)
+#look at sharing#
+nopun = tbl.auto[tbl.auto$spp !='Pun',]#
+boxplot(nopun$pun~nopun$spp)
+#look at the outliers#
+some = nopun[nopun$pun>1e-5,]#
+table(some$spp)#
+#
+nosin = tbl.auto[tbl.auto$spp !='Sin',]#
+boxplot(nosin$sin~nosin$spp)
+head(nosin)#
+nosin[nosin$sin>1e-5,]
+x=read.table("chrXII.3.Q")#
+head(x)#
+x$name=names#
+x$spp=substr(names, start=1, stop=3)#
+p=x[x$spp=="Pun",]#
+hist(p$V3)
+#----------------- K3 -----------------##
+#admixture results using K=3 ancestral populations#
+#
+setwd("~/gitreps/pungitius_sex_chromosome/full_genome_admixture/k3")#
+source("~/gitreps/pungitius_sex_chromosome/pun_sex_chrom_functions.R")#
+#upload data#
+ll=load("~/gitreps/pungitius_sex_chromosome/metadata/chromList.Rdata")#
+names = read.table("names.txt")$V1#
+head(chromlist)#
+c=chromlist[1]#
+infile = paste(c, "3.Q", sep=".")#
+tbl.auto = read.table(infile)#
+tbl.auto$chr = c#
+tbl.auto$name = names#
+for (c in chromlist[2:length(chromlist)]){#
+	infile = paste(c, "3.Q", sep=".")#
+	to.add = read.table(infile)#
+	to.add$chr = c#
+	to.add$name=names#
+	tbl.auto = rbind(tbl.auto, to.add)#
+}
+#format#
+colnames(tbl.auto) = c('tym', 'pun', 'sin', 'chr', 'name') #(set these based on the labeled plot below)#
+head(tbl.auto)#
+tbl.auto$spp = substr(tbl.auto$name, start=1, stop=3)#
+head(tbl.auto)
+#look at sharing#
+nopun = tbl.auto[tbl.auto$spp !='Pun',]#
+boxplot(nopun$pun~nopun$spp)
+#look at the outliers#
+some = nopun[nopun$pun>1e-5,]#
+table(some$spp)
+nosin = tbl.auto[tbl.auto$spp !='Sin',]#
+boxplot(nosin$sin~nosin$spp)#
+head(nosin)#
+nosin[nosin$sin>1e-5,]
+nosin

@@ -1,0 +1,121 @@
+#plot and do stats on pairwise dN/dS values from PAML#
+setwd("~/gitreps/pungitius_sex_chromosome/degeneration/dnds")#
+#function to do signed rank test between two chromosomes#
+do.wilcox = function(sp1, sp2, df, stat){#
+	stat1 = df[df$species == sp1, stat]#
+	stat2 = df[df$species == sp2, stat]#
+	sub = df[df$species %in% c(sp1, sp2),]#
+	w=wilcox.test(x=stat1, y=stat2)#
+	boxplot(sub[,stat]~sub[,'species'], outline=F, main=paste("p =",w$p.value))#
+	return(w)#
+}
+#compare for pairwise against threespine#
+d=read.table('ref_chrXII_pairwise_dNdS.tsv', header = T, stringsAsFactors=F)#
+#
+#plot for all mutations#
+ad = d[!grepl('private', d$species),]#
+boxplot(ad$dN~ad$species, outline=F, ylab='dN')#
+boxplot(ad$dS~ad$species, outline=F, ylab='dS')#
+boxplot(ad$dNdS~ad$species, outline=F, ylab="dN/dS")#
+do.wilcox('X', 'tym', ad, 'dNdS')
+#plot for "private" mutations#
+pd = d[grepl('private', d$species),]#
+boxplot(pd$dN~pd$species, outline=F, ylab='dN')#
+boxplot(pd$dS~pd$species, outline=F, ylab='dS')#
+boxplot(pd$dNdS~pd$species, outline=F, ylab='dN/dS')#
+do.wilcox('Xprivate', 'tymprivate', pd, 'dNdS')#
+do.wilcox('Xprivate', 'sinprivate', pd, 'dNdS')#
+do.wilcox('Yprivate', 'sinprivate', pd, 'dNdS')#
+do.wilcox('Xprivate', 'Yprivate', pd, 'dNdS')#
+#look at X#
+xd=read.table('X_pairwise_dNdS.tsv', header = T, stringsAsFactors=F)#
+xd=sind[!grepl('private', xd$species),]#
+boxplot(xd[,'dN']~xd$species, outline=F, ylab="pairwise dN vs sinensis", main='vs sinensis')#
+boxplot(xd[,'dS']~xd$species, outline=F, ylab="pairwise dS vs sinensis", main='vs sinensis')#
+boxplot(xd[,'dNdS']~xd$species, outline=F, ylab="pairwise dN/dS vs sinensis", main='vs sinensis')#
+do.wilcox('X', 'Y', d, 'dS')#
+do.wilcox('tym', 'Y', d, 'dS')
+#look at sinensis#
+sind=read.table('sin_pairwise_dNdS.tsv', header = T, stringsAsFactors=F)#
+sind=sind[!grepl('private', sind$species),]#
+boxplot(sind[,'dN']~sind$species, outline=F, ylab="pairwise dN vs sinensis", main='vs sinensis')#
+boxplot(sind[,'dS']~sind$species, outline=F, ylab="pairwise dS vs sinensis", main='vs sinensis')#
+boxplot(sind[,'dNdS']~sind$species, outline=F, ylab="pairwise dN/dS vs sinensis", main='vs sinensis')#
+do.wilcox('X', 'Y', d, 'dS')#
+do.wilcox('tym', 'Y', d, 'dS')
+#look at sinensis#
+sind=read.table('sin_pairwise_dNdS.tsv', header = T, stringsAsFactors=F)#
+sind=sind[!grepl('private', sind$species),]#
+boxplot(sind[,'dN']~sind$species, outline=F, ylab="pairwise dN vs sinensis", main='vs sinensis')#
+boxplot(sind[,'dS']~sind$species, outline=F, ylab="pairwise dS vs sinensis", main='vs sinensis')#
+boxplot(sind[,'dNdS']~sind$species, outline=F, ylab="pairwise dN/dS vs sinensis", main='vs sinensis')#
+do.wilcox('X', 'Y', d, 'dS')#
+do.wilcox('tym', 'Y', d, 'dS')
+boxplot(sind[,'dS']~sind$species, outline=F, ylab="pairwise dS vs sinensis", main='vs sinensis')
+#upload pairwise dNdS vs 3spine#
+ddat = read.table("ref_pairwise_dNdS.tsv", header=T)#
+ddat$geneId = sapply(as.character(ddat$gene), function(x) return(strsplit(x, "_")[[1]][1]))#
+dim(ddat)#
+ddat=ddat[!ddat$geneId %in% c12,]#
+head(ddat)#
+dim(ddat)
+#full_dS.R#
+#plot dS between species from autosomes to get idea of how closely related they are#
+library(ggplot2)#
+library(cowplot)#
+library(scales)#
+setwd("~/gitreps/pungitius_sex_chromosome/full_genome_dS")#
+#upload gene location data#
+gdat = read.table("gene_locations.txt", header = T)#
+c12 = as.character(gdat[gdat$chr=='chrXII', 'geneId'])#
+head(gdat)#
+head(c12)#
+#
+#upload pairwise dNdS vs 3spine#
+ddat = read.table("ref_pairwise_dNdS.tsv", header=T)#
+ddat$geneId = sapply(as.character(ddat$gene), function(x) return(strsplit(x, "_")[[1]][1]))#
+dim(ddat)#
+ddat=ddat[!ddat$geneId %in% c12,]#
+head(ddat)#
+dim(ddat)
+boxplot(ddat$dS~ddat$species, outline=F, ylab = "pairwise dS vs G. aculeatus")
+mns = tapply(ddat$dS, INDEX=ddat$species, function(x) mean(x, na.rm=T))#
+mns#
+length(unique(ddat$geneId))#
+#upload pairwise dNdS vs 3spine#
+ddat = read.table("sin_pairwise_dNdS.tsv", header=T, stringsAsFactors=F)#
+ddat=ddat[ddat$species!='ref',]#
+head(ddat)
+boxplot(ddat$dS~ddat$species, outline=F, ylab = "pairwise dS vs P. sinensis")#
+mns = tapply(ddat$dS, INDEX=ddat$species, function(x) mean(x, na.rm=T))#
+mns
+ll=load("~/gitreps/pungitius_sex_chromosome/figure_plotting/pairwisedNdS.Rdata")
+ll
+boxplot(sind[,'dS']~sind$species, outline=F, ylab="pairwise dS vs sinensis", main='vs sinensis')
+par(mfrow=c(3,1))
+par(mfrow=c(1,3))
+#upload pairwise dNdS vs 3spine#
+ddat = read.table("ref_pairwise_dNdS.tsv", header=T)#
+ddat$geneId = sapply(as.character(ddat$gene), function(x) return(strsplit(x, "_")[[1]][1]))#
+dim(ddat)#
+ddat=ddat[!ddat$geneId %in% c12,]#
+head(ddat)#
+dim(ddat)#
+#
+boxplot(ddat$dS~ddat$species, outline=F, ylab = "pairwise dS vs G. aculeatus")
+par(mfrow=c(1,1))
+boxplot(ddat$dS~ddat$species, outline=F, ylab = "pairwise dS vs G. aculeatus")
+#upload pairwise dNdS vs 3spine#
+ddats = read.table("sin_pairwise_dNdS.tsv", header=T, stringsAsFactors=F)#
+ddats=ddats[ddats$species!='ref',]#
+head(ddats)#
+#
+boxplot(ddats$dS~ddats$species, outline=F, ylab = "pairwise dS vs P. sinensis")#
+mns = tapply(ddats$dS, INDEX=ddats$species, function(x) mean(x, na.rm=T))#
+mns
+boxplot(ddat$dS~ddat$species, outline=F, ylab = "pairwise dS vs G. aculeatus")
+boxplot(ddats$dS~ddats$species, outline=F, ylab = "pairwise dS vs P. sinensis")
+boxplot(sind[,'dS']~sind$species, outline=F, ylab="pairwise dS vs sinensis", main='vs sinensis')
+boxplot(ddat$dS~ddat$species, outline=F, ylab = "pairwise dS vs G. aculeatus")
+boxplot(ddats$dS~ddats$species, outline=F, ylab = "pairwise dS vs P. sinensis")
+boxplot(sind[,'dS']~sind$species, outline=F, ylab="pairwise dS vs sinensis", main='vs sinensis')

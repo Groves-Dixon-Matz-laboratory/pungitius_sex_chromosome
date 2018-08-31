@@ -50,6 +50,14 @@ plot distance stats with plot_distance.R
 
 plot big multipanel line plot with plot_genomic_windows.R
 
+#--- full_genome_admixture
+
+this was done based on reviewer comments so was kept separately
+
+instructions to build input files can be found in introgression_walkthrough.txt
+
+analyze them with full_genome_admixture.R
+
 
 ##################################
 ########## degeneration ##########
@@ -62,6 +70,14 @@ analyze repetitive element differences with repetitive_element_deseq.R
 analyze dnds differences with compare_pairwise_dnds.R
 
 analyze provean scores with plot_provean.R
+
+#--- full_genome_dS:
+
+this was added based on reviewer comments
+
+follow dnds_all_chroms.txt
+
+analyze with full_dS.R
 
 ###################################
 ######### gene expression #########
@@ -112,8 +128,6 @@ to gather everything together, use figure7_exploratory.R
 the main work is done with steps above
 
 these files are for convenient re-plotting
-
-
 
 
 
