@@ -262,7 +262,7 @@ plot(absViolin)
 #---------- ALLELE-SPECIFIC EXPRESSION DATA ----------#
 
 #load xy expression white
-ll=load("~/gitreps/stickle_back_sex_chromosomes/allele_specific_expression/xy_white.Rdata")
+ll=load("~/gitreps/pungitius_sex_chromosome/gene_expression/allele_specific_expression/xy_white.Rdata")
 #m.w = merged dataset with sex differences and XY within male differences for white dataset
 ll
 
@@ -287,6 +287,7 @@ m=merge(dcont, xy, by = 'geneId')
 head(m)
 lmx = lm(m$fc~m$fcYX)
 plot(m$fc~m$fcYX)
+summary(lmx)
 
 
 #keep the dna controlled one
