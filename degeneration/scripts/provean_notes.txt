@@ -1,0 +1,140 @@
+#########################################################
+###################### RUN PROVEAN ######################
+#########################################################
+#assumes you have generated *PRO.fasta and *CDS.fasta files as in dNdS pipeline
+#these would be in the all_fas/ directory made above
+#after installing provean set the values in provean.sh to fit where thigs are on TACC
+
+eg:
+		BLAST_DB="/scratch/02260/grovesd/ncbi_nr_databse/nr"
+		PSIBLAST="/opt/apps/blast/2.2.31/bin/psiblast"
+		CD_HIT="/home1/02260/grovesd/bin/cd-hit-v4.6.1-2012-08-27/cd-hit"
+		BLASTDBCMD="/opt/apps/blast/2.2.31/bin/blastdbcmd"
+
+
+#if you need a blast database, download from ftp
+#then decompresse the files
+#mine:
+ls /scratch/02260/grovesd/ncbi_nr_databse/nr*.phi | wc -l
+	#88
+
+
+#get the protein alignments and output variants files in HGVS format
+#go into the directory made by sliceCodon
+mkdir run_provean
+cd run_provean
+
+
+#GET HGVS DIFFERENCES FROM REFERENCE FOR EACH SPECIES
+#using the PRO.fasta alignment files, with each taxon + the refernce represented
+
+#Basic Command:
+	#get_HGVS_diffs.py -i ENSGACG00000002558_ENSGACT00000013102_PRO.fasta -s1 reference_seq_ID -s2 subject_seq_ID
+
+#output:
+	#ref_chrXII_Y_HGVS_diffs_ENSGACG00000002558_ENSGACT00000013102_PRO.txt
+
+
+#set up commands:
+>hgvsGet
+for file in *PRO.fasta
+do echo "get_HGVS_diffs.py -i $file -s1 ref_chrXII -s2 Y" >> hgvsGet
+echo "get_HGVS_diffs.py -i $file -s1 ref_chrXII -s2 X" >> hgvsGet
+echo "get_HGVS_diffs.py -i $file -s1 ref_chrXII -s2 sin" >> hgvsGet
+echo "get_HGVS_diffs.py -i $file -s1 ref_chrXII -s2 tym" >> hgvsGet
+done
+
+
+
+#now you have files ready to run provean
+#run for each species in a separate directory
+
+#first assign the species
+export subject="sin"
+
+
+
+#get the protein alignments and output variants files in HGVS format
+mkdir run_provean_${subject}
+cd run_provean_${subject}
+
+
+#assign the reference sequence ID (eg >ref_chrXII in fa file)
+export ref="ref_chrXII"
+
+
+#pull symbolic links for reference fasta files (with only the reference)
+#(the reference protein sequences by themselves)
+ln -s /work/02260/grovesd/lonestar/stickleback_genome/ref_chrXII_prot_fastas/*PRO.fasta .
+
+#and the HGVS differences from that reference for the species of interest output with get_HGVS_diffs.py
+ln -s ../all_fas/ref_chrXII_${subject}_HGVS_diffs*_PRO.txt .
+
+
+#how many of these genes have at least one substitution?
+ls *HGVS*.txt | wc -l
+
+
+#SET UP COMMANDS FOR PROVEAN
+#note it didn't like to make the temp directories on it's own
+#so command to make them directly is included
+#since blast is fast, makes sense to parallelize on jobs rather than 
+#threading the blast command.
+
+
+#Basic command:
+
+mkdir ENSGACG00000002664_ENSGACT00000012819_PRO_TEMPDIR && \
+/work/02260/grovesd/lonestar/provean-1.1.5/install_dir/bin/provean.sh \
+-q ENSGACG00000002664_ENSGACT00000012819_PRO.fasta \
+-v ref_chrXII_sin_HGVS_diffs_ENSGACG00000002664_ENSGACT00000012819_PRO.txt \
+--tmp_dir ENSGACG00000002664_ENSGACT00000012819_PRO_TEMPDIR \
+--num_threads 1 > ENSGACG00000002664_ENSGACT00000012819_PRO_proveanOut.txt
+
+
+
+#make blank job file
+>runProvean_${subject}
+
+#for each 
+for hgvsFile in ref_chrXII_${subject}_HGVS_diffs*_PRO.txt
+do file0=${hgvsFile/ref_chrXII_${subject}_HGVS_diffs_/}
+file=${file0/.txt/.fasta}
+echo "mkdir ${file/.fasta/_TEMPDIR} && \
+$PROVEAN -q $file \
+-v ${ref}_${subject}_HGVS_diffs_${file/.fasta/.txt} \
+--tmp_dir ${file/.fasta/_TEMPDIR} \
+--num_threads 1 > ${file/.fasta/_proveanOut.txt}" >>runProvean_${subject}
+done
+
+launcher_creator.py -n runProvean_${subject} -j runProvean_${subject} -q normal -N 4 -w 24 -t 48:00:00 -a $allok -e $email
+
+
+
+
+#GATHER RESULTS
+
+#grab the gtf
+ln -s /work/02260/grovesd/lonestar/stickleback_genome/myThreespineStickleback.2016.gtf .
+
+#assign subject
+export subject="sin"
+
+#gather
+gather_provean_results.py -i *PRO_proveanOut.txt -hgvs ref_chrXII_${subject}_HGVS_diffs_ENSGACG000000* -o ${subject}_provean_res.tsv -gtf myThreespineStickleback.2016.gtf -chr chrXII
+
+
+#I found that there were often jobs that would not complete
+#this script will assemble the results, but also output a file with any results files that failed to complete
+#finish running provean using this file failed_runs.txt
+
+subject="x"
+chr="chrXII"
+>${subject}_finish
+while read GENE
+do echo "mkdir ${GENE}_RETRY_TEMPDIR && \
+$PROVEAN -q ${GENE}_PRO.fasta \
+-v ref_${chr}_${subject}_HGVS_diffs_${GENE}_PRO.txt \
+--tmp_dir ${GENE}_RETRY_TEMPDIR \
+--num_threads 1 > ${GENE}_PRO_proveanOut.txt" >>${subject}_finish
+done < failed_runs.txt
